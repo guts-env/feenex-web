@@ -1,6 +1,6 @@
 import { useMutation } from '@tanstack/react-query'
 import AuthService from '@/api/services/AuthService/service'
-import { type ILoginRes } from '@/types/api'
+import { type ILoginRes, type IRefreshTokenRes } from '@/types/api'
 import {
   type IForgotPasswordFormValues,
   type ILoginFormValues,
@@ -33,6 +33,14 @@ export const useAcceptInvite = () => {
   })
 }
 
+export const useRefreshToken = () => {
+  return useMutation({
+    mutationFn: (): Promise<IRefreshTokenRes> => {
+      return AuthService.refreshToken()
+    },
+  })
+}
+
 export const useForgotPassword = () => {
   return useMutation({
     mutationFn: (data: IForgotPasswordFormValues): Promise<void> => {
@@ -51,8 +59,8 @@ export const useResetPassword = () => {
 
 export const useLogout = () => {
   return useMutation({
-    mutationFn: (data: { refresh: string }): Promise<void> => {
-      return AuthService.logout(data)
+    mutationFn: (): Promise<void> => {
+      return AuthService.logout()
     },
   })
 }

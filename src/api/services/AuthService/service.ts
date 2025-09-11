@@ -7,7 +7,7 @@ import {
   type IResetPasswordFormValues,
   type IAcceptInviteFormValues,
 } from '@/forms/schema/auth'
-import { type ILoginRes } from '@/types/api'
+import { type ILoginRes, type IRefreshTokenRes } from '@/types/api'
 
 export default class AuthService {
   public static readonly login = (data: ILoginFormValues): Promise<ILoginRes> => {
@@ -35,6 +35,14 @@ export default class AuthService {
     })
   }
 
+  public static readonly refreshToken = (): Promise<IRefreshTokenRes> => {
+    return request({
+      url: AuthEndpoints.refresh(),
+      method: 'GET',
+      withCredentials: true,
+    })
+  }
+
   public static readonly requestPasswordReset = (data: IForgotPasswordFormValues): Promise<void> => {
     return request({
       url: AuthEndpoints.requestPasswordReset(),
@@ -48,6 +56,14 @@ export default class AuthService {
       url: AuthEndpoints.resetPassword(),
       method: 'PATCH',
       data,
+    })
+  }
+
+  public static readonly logout = (): Promise<void> => {
+    return request({
+      url: AuthEndpoints.logout(),
+      method: 'POST',
+      withCredentials: true,
     })
   }
 
@@ -66,14 +82,6 @@ export default class AuthService {
   //     data,
   //   })
   // }
-
-  public static readonly logout = (data: { refresh: string }): Promise<void> => {
-    return request({
-      url: AuthEndpoints.logout(),
-      method: 'POST',
-      data,
-    })
-  }
 
   // public static readonly logoutAll = (data: { refresh: string }): Promise<void> => {
   //   return request({

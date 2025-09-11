@@ -1,9 +1,5 @@
-import axios, {
-  AxiosError,
-  type AxiosRequestConfig,
-  type AxiosResponse,
-  type InternalAxiosRequestConfig,
-} from 'axios';
+import axios, { AxiosError, type AxiosRequestConfig, type AxiosResponse, type InternalAxiosRequestConfig } from 'axios'
+import { useUserStore } from '@/stores/useUserStore'
 
 export const client = (() => {
   return axios.create({
@@ -15,28 +11,28 @@ export const client = (() => {
     paramsSerializer: {
       indexes: null,
     },
-  });
-})();
+  })
+})()
 
 client.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
-    const accessToken = localStorage.getItem('accessToken');
+    const accessToken = useUserStore.getState().token
 
     if (accessToken) {
-      config.headers.Authorization = `Bearer ${accessToken}`;
+      config.headers.Authorization = `Bearer ${accessToken}`
     }
-    return config;
+    return config
   },
   (error: AxiosError) => {
-    return Promise.reject(error);
+    return Promise.reject(error)
   },
-);
+)
 
 const request = async (options: AxiosRequestConfig) => {
   const onSuccess = (response: AxiosResponse) => {
-    const { data } = response;
-    return data;
-  };
+    const { data } = response
+    return data
+  }
 
   const onError = function (error: AxiosError<{ message?: string }>) {
     return Promise.reject({
@@ -44,10 +40,10 @@ const request = async (options: AxiosRequestConfig) => {
       status: error.status,
       code: error.code,
       response: error.response,
-    });
-  };
+    })
+  }
 
-  return client(options).then(onSuccess).catch(onError);
-};
+  return client(options).then(onSuccess).catch(onError)
+}
 
-export default request;
+export default request

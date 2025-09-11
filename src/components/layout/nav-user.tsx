@@ -7,7 +7,7 @@ import {
   LogOut,
   // Sparkles,
 } from "lucide-react"
-
+import { useShallow } from 'zustand/react/shallow'
 import {
   Avatar,
   AvatarFallback,
@@ -28,13 +28,25 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar"
+import { useLogout } from '@/api/services/AuthService/mutation'
 import { useUserStore } from '@/stores/useUserStore'
-import { useShallow } from 'zustand/react/shallow'
+import { RoutesEnum } from '@/constants/enums'
 
 export function NavUser() {
   const { isMobile } = useSidebar()
 
-  const { user } = useUserStore(useShallow((state) => ({ user: state.user })))
+  const { user, logout } = useUserStore(useShallow((state) => ({ user: state.user, logout: state.logout })))
+
+  const { mutate: logoutMtn } = useLogout()
+
+  const handleLogout = () => {
+    logoutMtn(undefined, {
+      onSettled: () => {
+        logout()
+        window.location.href = RoutesEnum.LOGIN
+      },
+    })
+  }
 
   return (
     <SidebarMenu>
@@ -93,7 +105,7 @@ export function NavUser() {
               </DropdownMenuItem> */}
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
+            <DropdownMenuItem onClick={handleLogout}>
               <LogOut />
               Log out
             </DropdownMenuItem>

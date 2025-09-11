@@ -38,3 +38,7 @@ export interface ILoginRes {
   }
   accessToken: string
 }
+
+export interface IRefreshTokenRes {
+  accessToken: string
+}

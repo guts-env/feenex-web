@@ -1,5 +1,8 @@
 import { create } from 'zustand'
+import { persist } from 'zustand/middleware'
+import { USER_STORE } from '@/constants/store'
 import { type IUserProfile } from '@/types/users'
+
 export interface UserStore {
   user: IUserProfile | null
   token: string | null
@@ -8,10 +11,18 @@ export interface UserStore {
   logout: () => void
 }
 
-export const useUserStore = create<UserStore>((set) => ({
-  user: null,
-  token: null,
-  setToken: (token) => set({ token }),
-  setUser: (user) => set({ user }),
-  logout: () => set({ user: null, token: null }),
-}))
+export const useUserStore = create<UserStore>()(
+  persist(
+    (set) => ({
+      user: null,
+      token: null,
+      setToken: (token) => set({ token }),
+      setUser: (user) => set({ user }),
+      logout: () => set({ user: null, token: null }),
+    }),
+    {
+      name: USER_STORE,
+      partialize: (state) => ({ user: state.user }),
+    },
+  ),
+)
