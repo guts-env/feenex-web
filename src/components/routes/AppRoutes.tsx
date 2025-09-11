@@ -5,23 +5,28 @@ import {
 } from 'react-router-dom';
 import PublicRoute from '@/components/routes/PublicRoutes';
 import PrivateRoute from '@/components/routes/PrivateRoute';
+import AppLayout from '@/components/layout/AppLayout';
 
 const Login = lazy(() => import('@/pages/Login'));
 const Register = lazy(() => import('@/pages/Register'));
+const AcceptInvite = lazy(() => import('@/pages/AcceptInvite'));
 const ForgotPassword = lazy(() => import('@/pages/ForgotPassword'));
 const ResetPassword = lazy(() => import('@/pages/ResetPassword'));
-const AcceptInvite = lazy(() => import('@/pages/AcceptInvite'));
 const Dashboard = lazy(() => import('@/pages/Dashboard'));
+const Expenses = lazy(() => import('@/pages/Expenses'));
 
 const AppRoutes: React.FC = () => {
   return (
     <RouterRoutes>
       <Route path="/login" element={<PublicRoute element={<Login />} />} />
       <Route path="/register" element={<PublicRoute element={<Register />} />} />
+      <Route path="/accept-invite" element={<PublicRoute element={<AcceptInvite />} />} />
       <Route path="/forgot-password" element={<PublicRoute element={<ForgotPassword />} />} />
       <Route path="/reset-password" element={<PublicRoute element={<ResetPassword />} />} />
-      <Route path="/accept-invite" element={<PublicRoute element={<AcceptInvite />} />} />
-      <Route path="/" element={<PrivateRoute element={<Dashboard />} />} />
+      <Route element={<PrivateRoute element={<AppLayout />} />}>
+        <Route path="/" element={<Dashboard />} />
+        <Route path="/expenses" element={<Expenses />} />
+      </Route>
     </RouterRoutes>
   );
 };

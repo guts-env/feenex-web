@@ -7,8 +7,9 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { useLoginForm } from '@/forms/hooks/useAuthForm'
 import { useLogin } from '@/api/services/AuthService/mutation';
+import { useUserStore } from '@/stores/useUserStore';
 import { type ILoginFormValues } from '@/forms/schema/auth';
-import { type IStoreUser, useUserStore } from '@/stores/useUserStore';
+import { type ILoginRes } from '@/types/api';
 
 export default function LoginForm({
   className,
@@ -27,8 +28,19 @@ export default function LoginForm({
     setError(null);
 
     login(data, {
-      onSuccess: (data: { user: IStoreUser, accessToken: string }) => {
-        setUser(data.user);
+      onSuccess: (data: ILoginRes) => {
+        const { user } = data;
+
+        setUser({
+          id: user.id,
+          email: user.email,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          middleName: user.middleName,
+          profilePhoto: user.profilePhoto,
+          organization: user.organization,
+          role: user.role,
+        });
         setToken(data.accessToken);
         navigate('/');
       },

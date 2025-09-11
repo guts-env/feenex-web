@@ -1,25 +1,11 @@
-import { create } from 'zustand';
-
-export interface IStoreUser {
-  id: string;
-  email: string;
-  organization: {
-    id: string;
-    name: string;
-    type: 'business' | 'personal';
-  };
-  role: {
-    id: string;
-    name: 'business_admin' | 'personal_admin' | 'member';
-  };
-}
-
+import { create } from 'zustand'
+import { type IUserProfile } from '@/types/users'
 export interface UserStore {
-  user: IStoreUser | null;
-  token: string | null;
-  setToken: (token: string | null) => void;
-  setUser: (user: IStoreUser | null) => void;
-  logout: () => void;
+  user: IUserProfile | null
+  token: string | null
+  setToken: (token: string | null) => void
+  setUser: (user: IUserProfile | null) => void
+  logout: () => void
 }
 
 export const useUserStore = create<UserStore>((set) => ({
@@ -28,4 +14,4 @@ export const useUserStore = create<UserStore>((set) => ({
   setToken: (token) => set({ token }),
   setUser: (user) => set({ user }),
   logout: () => set({ user: null, token: null }),
-}));
+}))
