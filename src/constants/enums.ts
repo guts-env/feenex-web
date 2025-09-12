@@ -19,3 +19,10 @@ export enum RoleEnum {
   PERSONAL_ADMIN = 'personal_admin',
   MEMBER = 'member',
 }
+
+export enum ExpenseStatusEnum {
+  DRAFT = 'draft',
+  PENDING = 'pending',
+  REJECTED = 'rejected',
+  VERIFIED = 'verified',
+}

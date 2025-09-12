@@ -47,6 +47,7 @@
   --radius: 0.65rem;
   --background: oklch(0.992 0.003 152.48);
   --foreground: oklch(0.184 0.013 152.95);
+  --font-plus-jakarta-sans: "Plus Jakarta Sans", sans-serif;
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.184 0.013 152.95);
   --popover: oklch(1 0 0);
@@ -120,5 +121,13 @@
   }
   body {
     @apply bg-background text-foreground;
+  }
+  
+  * {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  *::-webkit-scrollbar {
+    display: none;
   }
 }

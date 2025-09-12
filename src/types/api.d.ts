@@ -42,3 +42,67 @@ export interface ILoginRes {
 export interface IRefreshTokenRes {
   accessToken: string
 }
+
+export interface IExpenseLineItemRes {
+  name: string
+  quantity: number
+  price: number
+}
+
+export interface IExpenseOtherDetailsRes {
+  key: string
+  value: string
+}
+
+export interface IExpenseRes {
+  id: string
+  merchantName: string
+  photos: string[]
+  amount: number
+  date: string
+  category: {
+    id: string
+    name: string
+  }
+  createdBy: Partial<IPartialUserRes>
+  createdAt: string
+  updatedBy: Partial<IPartialUserRes>
+  updatedAt: string
+  verifiedBy: Partial<IPartialUserRes>
+  verifiedAt: string
+  status: ExpenseStatusEnum
+  items?: IExpenseLineItemRes[]
+  otherDetails?: IExpenseOtherDetailsRes[]
+}
+
+export interface IExpenseListParams {
+  offset: number
+  limit: number
+  search?: string
+}
+
+export interface IExpenseListRes {
+  data: IExpenseRes[]
+  count: number
+}
+
+export interface IUploadPresigned {
+  key: string
+  fileName: string
+  contentType: string
+  fileSize: number
+}
+
+export type IUploadPresignedRes = string
+
+export interface IUploadGetPresigned {
+  keys: string[]
+}
+
+interface IUploadGetPresignedResItem {
+  key: string
+  url: string
+  fileName: string
+}
+
+export type IUploadGetPresignedRes = IUploadGetPresignedResItem[]

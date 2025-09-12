@@ -4,17 +4,19 @@ import { QueryClientProvider } from '@tanstack/react-query';
 import queryClient from '@/api/queryClient';
 import AppRoutes from '@/components/routes/AppRoutes';
 import { ThemeProvider } from '@/components/theme/theme-provider';
+import { Toaster } from 'sonner';
 
 const App = () => {
 
   return (
-    <ThemeProvider defaultTheme='system' storageKey='feenex-web-theme'>
+    <ThemeProvider defaultTheme='system' storageKey='WEB_THEME'>
       <QueryClientProvider client={queryClient}>
         <Router>
           <Suspense fallback={<p>Replace with splash</p>}>
             <AppRoutes />
           </Suspense>
         </Router>
+        <Toaster richColors closeButton position='bottom-right' />
       </QueryClientProvider>
     </ThemeProvider>
   );

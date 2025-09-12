@@ -1,6 +1,10 @@
+import ExpensesTable from '@/pages/Expenses/ExpensesTable'
+
 function Expenses() {
   return (
-    <div>Expenses</div>
+    <div>
+      <ExpensesTable />
+    </div>
   )
 }
 

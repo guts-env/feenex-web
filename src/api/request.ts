@@ -1,5 +1,6 @@
 import axios, { AxiosError, type AxiosRequestConfig, type AxiosResponse, type InternalAxiosRequestConfig } from 'axios'
 import { useUserStore } from '@/stores/useUserStore'
+import AuthService from './services/AuthService/service'
 
 export const client = (() => {
   return axios.create({
@@ -17,10 +18,16 @@ export const client = (() => {
 client.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
     const accessToken = useUserStore.getState().token
+    const user = useUserStore.getState().user
 
     if (accessToken) {
       config.headers.Authorization = `Bearer ${accessToken}`
     }
+
+    if (user) {
+      config.headers['x-organization-id'] = user.organization.id
+    }
+
     return config
   },
   (error: AxiosError) => {
@@ -34,7 +41,19 @@ const request = async (options: AxiosRequestConfig) => {
     return data
   }
 
-  const onError = function (error: AxiosError<{ message?: string }>) {
+  const onError = async function (error: AxiosError<{ message?: string }>): Promise<unknown> {
+    if (error.status === 401) {
+      try {
+        const accessToken = await AuthService.refreshAccessToken()
+        useUserStore.getState().setToken(accessToken.accessToken)
+        return request(options)
+      } catch {
+        AuthService.logout()
+        useUserStore.getState().logout()
+        window.location.href = '/login'
+      }
+    }
+
     return Promise.reject({
       message: error.response?.data?.message || error.message,
       status: error.status,

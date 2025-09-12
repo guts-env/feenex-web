@@ -6,6 +6,7 @@ import { RoutesEnum } from '@/constants/enums';
 import { useUserStore } from '@/stores/useUserStore';
 import { useQuery } from '@tanstack/react-query';
 import AuthService from '@/api/services/AuthService/service';
+import { AuthQueryKeys } from '@/api/services/AuthService/config';
 
 interface PrivateRouteProps {
   element: ReactNode;
@@ -17,8 +18,8 @@ const PrivateRoute: React.FC<PrivateRouteProps> = ({ element }) => {
   const { token, setToken } = useUserStore(useShallow((state) => ({ token: state.token, setToken: state.setToken })));
 
   const { data, isLoading, isError } = useQuery({
-    queryKey: ['refreshToken'],
-    queryFn: AuthService.refreshToken,
+    queryKey: AuthQueryKeys.refreshAccessToken(token ?? ''),
+    queryFn: () => AuthService.refreshAccessToken(),
     enabled: !token,
     retry: false,
     refetchOnWindowFocus: false,

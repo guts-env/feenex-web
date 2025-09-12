@@ -13,7 +13,8 @@ const AcceptInvite = lazy(() => import('@/pages/AcceptInvite'));
 const ForgotPassword = lazy(() => import('@/pages/ForgotPassword'));
 const ResetPassword = lazy(() => import('@/pages/ResetPassword'));
 const Dashboard = lazy(() => import('@/pages/Dashboard'));
-const Expenses = lazy(() => import('@/pages/Expenses'));
+const Expenses = lazy(() => import('@/pages/Expenses/ExpensesTable'));
+const Settings = lazy(() => import('@/pages/Settings'));
 
 const AppRoutes: React.FC = () => {
   return (
@@ -26,6 +27,7 @@ const AppRoutes: React.FC = () => {
       <Route element={<PrivateRoute element={<AppLayout />} />}>
         <Route path="/" element={<Dashboard />} />
         <Route path="/expenses" element={<Expenses />} />
+        <Route path="/settings" element={<Settings />} />
       </Route>
     </RouterRoutes>
   );

@@ -35,9 +35,9 @@ export default class AuthService {
     })
   }
 
-  public static readonly refreshToken = (): Promise<IRefreshTokenRes> => {
+  public static readonly refreshAccessToken = (): Promise<IRefreshTokenRes> => {
     return request({
-      url: AuthEndpoints.refresh(),
+      url: AuthEndpoints.refreshAccessToken(),
       method: 'GET',
       withCredentials: true,
     })
@@ -66,22 +66,6 @@ export default class AuthService {
       withCredentials: true,
     })
   }
-
-  // public static readonly acceptInvite = (data: AcceptInviteDto): Promise<AcceptInviteDtoRes> => {
-  //   return request({
-  //     url: AuthEndpoints.acceptInvite(),
-  //     method: 'POST',
-  //     data,
-  //   })
-  // }
-
-  // public static readonly refresh = (data: RefreshDto): Promise<RefreshDtoRes> => {
-  //   return request({
-  //     url: AuthEndpoints.refresh(),
-  //     method: 'POST',
-  //     data,
-  //   })
-  // }
 
   // public static readonly logoutAll = (data: { refresh: string }): Promise<void> => {
   //   return request({

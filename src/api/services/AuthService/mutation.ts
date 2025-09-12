@@ -1,6 +1,6 @@
 import { useMutation } from '@tanstack/react-query'
 import AuthService from '@/api/services/AuthService/service'
-import { type ILoginRes, type IRefreshTokenRes } from '@/types/api'
+import { type ILoginRes } from '@/types/api'
 import {
   type IForgotPasswordFormValues,
   type ILoginFormValues,
@@ -29,14 +29,6 @@ export const useAcceptInvite = () => {
   return useMutation({
     mutationFn: (data: IAcceptInviteFormValues): Promise<void> => {
       return AuthService.acceptInvite(data)
-    },
-  })
-}
-
-export const useRefreshToken = () => {
-  return useMutation({
-    mutationFn: (): Promise<IRefreshTokenRes> => {
-      return AuthService.refreshToken()
     },
   })
 }
