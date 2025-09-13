@@ -9,7 +9,7 @@ import {
   type Updater,
 } from '@tanstack/react-table'
 import debounce from 'lodash/debounce'
-import { MoreHorizontal } from 'lucide-react'
+import { MoreHorizontal, Plus } from 'lucide-react'
 import { toast } from 'sonner'
 import { format } from 'date-fns'
 import queryClient from '@/api/queryClient'
@@ -21,8 +21,9 @@ import { DataTable } from '@/components/ui/data-table'
 import { Button } from '@/components/ui/button'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import ExpenseStatusBadge from '@/components/features/ExpenseStatusBadge'
-import { ExpenseDetails } from '@/pages/Expenses/ExpenseDetails'
-import DeleteExpenseDialog from '@/pages/Expenses/DeleteExpenseDialog'
+import ExpenseDetails from '@/pages/Expenses/ExpenseDetails'
+import DeleteExpense from '@/pages/Expenses/DeleteExpense'
+import AddExpense from '@/pages/Expenses/AddExpense'
 import { ExpenseStatusEnum } from '@/constants/enums'
 import { type IExpenseRes } from '@/types/api'
 
@@ -108,6 +109,7 @@ function ExpensesTable() {
   const [search, setSearch] = useState('')
   const [selectedExpense, setSelectedExpense] = useState<IExpenseRes | undefined>(undefined)
   const [deleteExpenseId, setDeleteExpenseId] = useState<string | undefined>(undefined)
+  const [addExpenseModalOpen, setAddExpenseModalOpen] = useState(false)
 
   const { data, isLoading, isError } = useQuery({
     queryKey: ExpenseQueryKeys.list({
@@ -215,16 +217,27 @@ function ExpensesTable() {
         onPaginationChange={setPagination}
         onSearchChange={(search) => handleSearch(search)}
         searchPlaceholder="Search expenses..."
+        rightSlot={
+          <Button onClick={() => setAddExpenseModalOpen(true)}>
+            <Plus />
+            Add Expense
+          </Button>
+        }
       />
       <ExpenseDetails
         expense={selectedExpense}
         open={!!selectedExpense}
         onOpenChange={(open) => !open && setSelectedExpense(undefined)}
       />
-      <DeleteExpenseDialog
+      <DeleteExpense
         deleteExpenseId={deleteExpenseId}
         setDeleteExpenseId={setDeleteExpenseId}
         handleDelete={handleDelete}
+      />
+      <AddExpense
+        open={addExpenseModalOpen}
+        onOpenChange={setAddExpenseModalOpen}
+        onExpenseAdded={invalidateExpenseList}
       />
     </div>
   )

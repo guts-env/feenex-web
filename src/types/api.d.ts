@@ -1,108 +1,129 @@
-import type { OrgTypeEnum, RoleEnum } from '@/constants/enums'
+import type { OrgTypeEnum, RoleEnum } from '@/constants/enums';
 
 export interface ApiErrorPayload {
-  code: string
-  status: number
-  message: string
+  code: string;
+  status: number;
+  message: string;
   response: {
     data: {
-      message: string
-    }
-  }
+      message: string;
+    };
+  };
 }
 
 export interface ILoginUserRes {
-  id: string
-  email: string
-  firstName: string
-  lastName?: string
-  middleName?: string
-  profilePhoto?: string
+  id: string;
+  email: string;
+  firstName: string;
+  lastName?: string;
+  middleName?: string;
+  profilePhoto?: string;
 }
 
 export interface ILoginOrganizationRes {
-  id: string
-  name: string
-  type: OrgTypeEnum
+  id: string;
+  name: string;
+  type: OrgTypeEnum;
 }
 
 export interface ILoginRoleRes {
-  id: string
-  name: RoleEnum
+  id: string;
+  name: RoleEnum;
 }
 
 export interface ILoginRes {
   user: ILoginUserRes & {
-    organization: ILoginOrganizationRes
-    role: ILoginRoleRes
-  }
-  accessToken: string
+    organization: ILoginOrganizationRes;
+    role: ILoginRoleRes;
+  };
+  accessToken: string;
 }
 
 export interface IRefreshTokenRes {
-  accessToken: string
+  accessToken: string;
 }
 
 export interface IExpenseLineItemRes {
-  name: string
-  quantity: number
-  price: number
+  name: string;
+  quantity: number;
+  price: number;
 }
 
 export interface IExpenseOtherDetailsRes {
-  key: string
-  value: string
+  key: string;
+  value: string;
 }
 
 export interface IExpenseRes {
-  id: string
-  merchantName: string
-  photos: string[]
-  amount: number
-  date: string
+  id: string;
+  merchantName: string;
+  photos: string[];
+  amount: number;
+  date: string;
   category: {
-    id: string
-    name: string
-  }
-  createdBy: Partial<IPartialUserRes>
-  createdAt: string
-  updatedBy: Partial<IPartialUserRes>
-  updatedAt: string
-  verifiedBy: Partial<IPartialUserRes>
-  verifiedAt: string
-  status: ExpenseStatusEnum
-  items?: IExpenseLineItemRes[]
-  otherDetails?: IExpenseOtherDetailsRes[]
+    id: string;
+    name: string;
+  };
+  createdBy: Partial<IPartialUserRes>;
+  createdAt: string;
+  updatedBy: Partial<IPartialUserRes>;
+  updatedAt: string;
+  verifiedBy: Partial<IPartialUserRes>;
+  verifiedAt: string;
+  status: ExpenseStatusEnum;
+  items?: IExpenseLineItemRes[];
+  otherDetails?: IExpenseOtherDetailsRes[];
 }
 
 export interface IExpenseListParams {
-  offset: number
-  limit: number
-  search?: string
+  offset: number;
+  limit: number;
+  search?: string;
 }
 
 export interface IExpenseListRes {
-  data: IExpenseRes[]
-  count: number
+  data: IExpenseRes[];
+  count: number;
 }
 
 export interface IUploadPresigned {
-  key: string
-  fileName: string
-  contentType: string
-  fileSize: number
+  key: string;
+  filename: string;
+  contentType: string;
+  filesize: number;
 }
 
-export type IUploadPresignedRes = string
+export type IUploadPresignedRes = {
+  url: string;
+  key: string;
+};
 
 export interface IUploadGetPresigned {
-  keys: string[]
+  keys: string[];
 }
 
 interface IUploadGetPresignedResItem {
-  key: string
-  url: string
-  fileName: string
+  key: string;
+  url: string;
+  fileName: string;
 }
 
-export type IUploadGetPresignedRes = IUploadGetPresignedResItem[]
+export type IUploadGetPresignedRes = IUploadGetPresignedResItem[];
+
+export interface IUploadFile {
+  url: string;
+  file: File;
+}
+
+export type IUploadFileRes = void;
+
+export interface ICategoryListParams {
+  offset: number;
+  limit: number;
+  search?: string;
+}
+
+export interface ICategoryRes {
+  id: string;
+  name: string;
+}

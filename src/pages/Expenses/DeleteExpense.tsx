@@ -8,8 +8,9 @@ import {
   AlertDialogAction,
   AlertDialogCancel,
 } from '@/components/ui/alert-dialog'
+import { Button } from '@/components/ui/button'
 
-function DeleteExpenseDialog({
+function DeleteExpense({
   deleteExpenseId,
   setDeleteExpenseId,
   handleDelete,
@@ -30,15 +31,15 @@ function DeleteExpenseDialog({
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
           <AlertDialogAction
-            className="destructive"
             onClick={() => {
               if (deleteExpenseId) {
                 handleDelete(deleteExpenseId)
                 setDeleteExpenseId(undefined)
               }
             }}
+            asChild
           >
-            Delete
+            <Button variant="destructive">Delete</Button>
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
@@ -46,4 +47,4 @@ function DeleteExpenseDialog({
   )
 }
 
-export default DeleteExpenseDialog
+export default DeleteExpense

@@ -26,3 +26,14 @@ export enum ExpenseStatusEnum {
   REJECTED = 'rejected',
   VERIFIED = 'verified',
 }
+
+export enum UploadTypeEnum {
+  RECEIPTS = 'receipts',
+  IMPORTS = 'imports',
+}
+
+export enum UploadStatusEnum {
+  UPLOADING = 'uploading',
+  UPLOADED = 'uploaded',
+  ERROR = 'error',
+}

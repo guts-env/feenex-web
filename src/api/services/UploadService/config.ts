@@ -1,4 +1,4 @@
 export const UploadEndpoints = {
-  upload: () => 'upload/presigned/',
+  generatePresigned: () => 'upload/presigned/',
   downloadPresigned: () => 'upload/download-presigned/',
-}
+};

@@ -1,6 +1,7 @@
-import request from '@/api/request'
-import { ExpenseEndpoints } from '@/api/services/ExpenseService/config'
-import { type IExpenseListParams, type IExpenseListRes } from '@/types/api'
+import request from '@/api/request';
+import { ExpenseEndpoints } from '@/api/services/ExpenseService/config';
+import { type IAddManualExpenseFormValues } from '@/forms/schema/expenses';
+import { type IExpenseListParams, type IExpenseListRes } from '@/types/api';
 
 export default class ExpenseService {
   public static readonly list = async (params: IExpenseListParams): Promise<IExpenseListRes> => {
@@ -8,20 +9,30 @@ export default class ExpenseService {
       url: ExpenseEndpoints.list(),
       method: 'GET',
       params,
-    })
-  }
+    });
+  };
+
+  public static readonly createManual = async (
+    data: IAddManualExpenseFormValues,
+  ): Promise<void> => {
+    return request({
+      url: ExpenseEndpoints.createManual(),
+      method: 'POST',
+      data,
+    });
+  };
 
   public static readonly verify = async (id: string): Promise<void> => {
     return request({
       url: ExpenseEndpoints.verify(id),
       method: 'PATCH',
-    })
-  }
+    });
+  };
 
   public static readonly delete = async (id: string): Promise<void> => {
     return request({
       url: ExpenseEndpoints.delete(id),
       method: 'DELETE',
-    })
-  }
+    });
+  };
 }

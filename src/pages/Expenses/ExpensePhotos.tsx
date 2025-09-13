@@ -6,7 +6,11 @@ export default function ExpensePhotos({ photos }: { photos: string[] }) {
       <CarouselContent>
         {photos.map((photo, index) => (
           <CarouselItem key={index}>
-            <img src={photo} alt="Photo" className="w-full h-full object-cover" />
+            <img
+              src={photo}
+              alt="Photo"
+              className={`${photos.length > 1 ? 'w-3/4 mx-auto' : 'w-full'} h-full object-cover rounded-md`}
+            />
           </CarouselItem>
         ))}
       </CarouselContent>
