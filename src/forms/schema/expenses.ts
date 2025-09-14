@@ -35,3 +35,9 @@ export const AddManualExpenseSchema = z.object({
 });
 
 export type IAddManualExpenseFormValues = z.infer<typeof AddManualExpenseSchema>;
+
+export const AddAutoExpenseSchema = z.object({
+  photos: z.array(z.string()).min(1, 'Photos are required'),
+});
+
+export type IAddAutoExpenseFormValues = z.infer<typeof AddAutoExpenseSchema>;

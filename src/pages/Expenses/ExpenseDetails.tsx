@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { format } from 'date-fns';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
-import ExpenseStatusBadge from '@/components/features/ExpenseStatusBadge';
+import ExpenseStatusBadge from '@/pages/Expenses/ExpenseStatusBadge';
 import ExpensePhotos from '@/pages/Expenses/ExpensePhotos';
 import ExpenseItems from '@/pages/Expenses/ExpenseItems';
 import ExpenseOtherDetails from '@/pages/Expenses/ExpenseOtherDetails';
@@ -43,8 +43,6 @@ export default function ExpenseDetails({
   onOpenChange: (open: boolean) => void;
 }) {
   const [internalData, setinternalData] = useState<IExpenseRes | undefined>(undefined);
-
-  console.log(internalData);
 
   const { mutate: getDownloadPresigned } = useDownloadPresigned();
 
@@ -108,27 +106,37 @@ export default function ExpenseDetails({
                   title="Merchant Name"
                   content={internalData?.merchantName ?? '-'}
                 />
-                <ExpenseDetailsContent
-                  title="Status"
-                  content={<ExpenseStatusBadge status={internalData?.status} />}
-                />
-                <ExpenseDetailsContent
-                  title="Category"
-                  content={internalData?.category?.name ?? '-'}
-                />
-                <ExpenseDetailsContent
-                  title="Date"
-                  content={
-                    internalData?.date ? format(new Date(internalData?.date), 'MMM dd, yyyy') : '-'
-                  }
-                />
-                <ExpenseDetailsContent
-                  title="Total Amount"
-                  content={Intl.NumberFormat('ph-PH', {
-                    style: 'currency',
-                    currency: 'PHP',
-                  }).format(internalData?.amount ?? 0)}
-                />
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <ExpenseDetailsContent
+                    title="Total Amount"
+                    content={Intl.NumberFormat('ph-PH', {
+                      style: 'currency',
+                      currency: 'PHP',
+                    }).format(internalData?.amount ?? 0)}
+                  />
+                  <ExpenseDetailsContent
+                    title="Date"
+                    content={
+                      internalData?.date
+                        ? format(new Date(internalData?.date), 'MMM dd, yyyy')
+                        : '-'
+                    }
+                  />
+                </div>
+
+                {/* Status and Category in same row */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <ExpenseDetailsContent
+                    title="Status"
+                    content={<ExpenseStatusBadge status={internalData?.status} />}
+                  />
+                  <ExpenseDetailsContent
+                    title="Category"
+                    content={internalData?.category?.name ?? '-'}
+                  />
+                </div>
+
                 {internalData?.items && internalData?.items.length > 0 && (
                   <ExpenseDetailsContent
                     title="Items"
@@ -177,7 +185,7 @@ export default function ExpenseDetails({
                   }
                 />
               ) : (
-                <AuditTrailItem label="Unverified" user="-" />
+                <AuditTrailItem label="Unverified" user="-" date="-" />
               )}
             </div>
           </div>

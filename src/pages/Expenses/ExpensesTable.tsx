@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { useQuery } from '@tanstack/react-query'
+import { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import {
   type ColumnDef,
   type SortingState,
@@ -7,25 +7,31 @@ import {
   type VisibilityState,
   type PaginationState,
   type Updater,
-} from '@tanstack/react-table'
-import debounce from 'lodash/debounce'
-import { MoreHorizontal, Plus } from 'lucide-react'
-import { toast } from 'sonner'
-import { format } from 'date-fns'
-import queryClient from '@/api/queryClient'
-import { ExpenseQueryKeys } from '@/api/services/ExpenseService/config'
-import ExpenseQuery from '@/api/services/ExpenseService/query'
-import { useDeleteExpense, useVerifyExpense } from '@/api/services/ExpenseService/mutation'
-import { DataTable } from '@/components/ui/data-table'
+} from '@tanstack/react-table';
+import debounce from 'lodash/debounce';
+import { MoreHorizontal, Plus } from 'lucide-react';
+import { toast } from 'sonner';
+import { format } from 'date-fns';
+import queryClient from '@/api/queryClient';
+import { ExpenseQueryKeys } from '@/api/services/ExpenseService/config';
+import ExpenseQuery from '@/api/services/ExpenseService/query';
+import { useDeleteExpense, useVerifyExpense } from '@/api/services/ExpenseService/mutation';
+import { DataTable } from '@/components/ui/data-table';
 // import { Checkbox } from '@/components/ui/checkbox'
-import { Button } from '@/components/ui/button'
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
-import ExpenseStatusBadge from '@/components/features/ExpenseStatusBadge'
-import ExpenseDetails from '@/pages/Expenses/ExpenseDetails'
-import DeleteExpense from '@/pages/Expenses/DeleteExpense'
-import AddExpense from '@/pages/Expenses/AddExpense'
-import { ExpenseStatusEnum } from '@/constants/enums'
-import { type IExpenseRes } from '@/types/api'
+import { Button } from '@/components/ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import ExpenseStatusBadge from '@/pages/Expenses/ExpenseStatusBadge';
+import ExpenseDetails from '@/pages/Expenses/ExpenseDetails';
+import DeleteExpense from '@/pages/Expenses/DeleteExpense';
+import AddExpense from '@/pages/Expenses/AddExpense';
+import { useExpenseSocket } from '@/hooks/useExpenseSocket';
+import { ExpenseStatusEnum } from '@/constants/enums';
+import { type IExpenseRes } from '@/types/api';
 
 const columns: ColumnDef<IExpenseRes>[] = [
   // {
@@ -59,14 +65,17 @@ const columns: ColumnDef<IExpenseRes>[] = [
     id: 'Amount',
     accessorKey: 'amount',
     header: 'Amount',
-    cell: ({ row }) => Intl.NumberFormat('ph-PH', { style: 'currency', currency: 'PHP' }).format(row.original.amount),
+    cell: ({ row }) =>
+      Intl.NumberFormat('ph-PH', { style: 'currency', currency: 'PHP' }).format(
+        row.original.amount,
+      ),
   },
   {
     id: 'Date',
     header: 'Date',
     accessorKey: 'date',
     cell: ({ row }) => {
-      return format(row.original.date, 'MMM dd, yyyy')
+      return format(row.original.date, 'MMM dd, yyyy');
     },
   },
   {
@@ -74,7 +83,7 @@ const columns: ColumnDef<IExpenseRes>[] = [
     accessorKey: 'status',
     header: 'Status',
     cell: ({ row }) => {
-      return <ExpenseStatusBadge status={row.original.status} />
+      return <ExpenseStatusBadge status={row.original.status} />;
     },
   },
   {
@@ -95,39 +104,45 @@ const columns: ColumnDef<IExpenseRes>[] = [
     accessorKey: 'verifiedBy',
     cell: ({ row }) => row.original.verifiedBy?.firstName,
   },
-]
+];
 
 function ExpensesTable() {
-  const [sorting, setSorting] = useState<SortingState>([])
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
-  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
-  const [rowSelection, setRowSelection] = useState({})
+  const [sorting, setSorting] = useState<SortingState>([]);
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
+  const [rowSelection, setRowSelection] = useState({});
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
     pageSize: 10,
-  })
-  const [search, setSearch] = useState('')
-  const [selectedExpense, setSelectedExpense] = useState<IExpenseRes | undefined>(undefined)
-  const [deleteExpenseId, setDeleteExpenseId] = useState<string | undefined>(undefined)
-  const [addExpenseModalOpen, setAddExpenseModalOpen] = useState(false)
+  });
+  const [search, setSearch] = useState('');
+  const [selectedExpense, setSelectedExpense] = useState<IExpenseRes | undefined>(undefined);
+  const [deleteExpenseId, setDeleteExpenseId] = useState<string | undefined>(undefined);
+  const [addExpenseModalOpen, setAddExpenseModalOpen] = useState(false);
 
-  const { data, isLoading, isError } = useQuery({
+  const { data, refetch, isLoading, isError } = useQuery({
     queryKey: ExpenseQueryKeys.list({
       offset: pagination.pageIndex * pagination.pageSize,
       limit: pagination.pageSize,
       search,
     }),
     queryFn: () =>
-      ExpenseQuery.list({ offset: pagination.pageIndex * pagination.pageSize, limit: pagination.pageSize, search }),
-  })
+      ExpenseQuery.list({
+        offset: pagination.pageIndex * pagination.pageSize,
+        limit: pagination.pageSize,
+        search,
+      }),
+  });
 
-  const { mutate: deleteExpense } = useDeleteExpense()
-  const { mutate: verifyExpense } = useVerifyExpense()
+  const { mutate: deleteExpense } = useDeleteExpense();
+  const { mutate: verifyExpense } = useVerifyExpense();
+
+  useExpenseSocket(data?.data ?? [], refetch);
 
   const handleSearch = debounce((search: Updater<string>) => {
-    setSearch(search)
-    setPagination({ ...pagination, pageIndex: 0 })
-  }, 500)
+    setSearch(search);
+    setPagination({ ...pagination, pageIndex: 0 });
+  }, 500);
 
   const invalidateExpenseList = () => {
     queryClient.invalidateQueries({
@@ -136,36 +151,36 @@ function ExpensesTable() {
         limit: pagination.pageSize,
         search,
       }),
-    })
-  }
+    });
+  };
 
   const handleVerify = (id: string) => {
     verifyExpense(id, {
       onSuccess: () => {
-        invalidateExpenseList()
-        toast.success('Expense verified! 🎉')
+        invalidateExpenseList();
+        toast.success('Expense verified! 🎉');
       },
       onError: (error) => {
         toast.error('Failed to verify expense', {
           description: error.message,
-        })
+        });
       },
-    })
-  }
+    });
+  };
 
   const handleDelete = (id: string) => {
     deleteExpense(id, {
       onSuccess: () => {
-        invalidateExpenseList()
-        toast.success('Expense deleted! 🎉')
+        invalidateExpenseList();
+        toast.success('Expense deleted! 🎉');
       },
       onError: (error) => {
         toast.error('Failed to delete expense', {
           description: error.message,
-        })
+        });
       },
-    })
-  }
+    });
+  };
 
   const columnsWithActions = columns.concat({
     id: 'Actions',
@@ -173,8 +188,8 @@ function ExpensesTable() {
     accessorKey: 'actions',
     enableHiding: false,
     cell: ({ row }) => {
-      const id = row.original.id
-      const status = row.original.status
+      const id = row.original.id;
+      const status = row.original.status;
 
       return (
         <DropdownMenu>
@@ -185,7 +200,9 @@ function ExpensesTable() {
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuItem onClick={() => setSelectedExpense(row.original)}>View</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setSelectedExpense(row.original)}>
+              View
+            </DropdownMenuItem>
             {status !== ExpenseStatusEnum.VERIFIED && (
               <DropdownMenuItem onClick={() => handleVerify(id)}>Verify</DropdownMenuItem>
             )}
@@ -193,9 +210,9 @@ function ExpensesTable() {
             <DropdownMenuItem onClick={() => setDeleteExpenseId(id)}>Delete</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
-      )
+      );
     },
-  })
+  });
 
   return (
     <div>
@@ -240,7 +257,7 @@ function ExpensesTable() {
         onExpenseAdded={invalidateExpenseList}
       />
     </div>
-  )
+  );
 }
 
-export default ExpensesTable
+export default ExpensesTable;

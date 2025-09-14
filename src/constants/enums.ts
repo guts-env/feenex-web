@@ -27,6 +27,11 @@ export enum ExpenseStatusEnum {
   VERIFIED = 'verified',
 }
 
+export enum ExpenseTypeEnum {
+  MANUAL = 'manual',
+  AUTO = 'auto',
+}
+
 export enum UploadTypeEnum {
   RECEIPTS = 'receipts',
   IMPORTS = 'imports',

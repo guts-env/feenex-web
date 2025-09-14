@@ -1,5 +1,6 @@
 import { useMemo, useState, useEffect } from 'react';
 import { type ControllerRenderProps, type FieldValues, type Path } from 'react-hook-form';
+import { Plus, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -12,7 +13,6 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Card } from '@/components/ui/card';
-import { Plus, Trash2 } from 'lucide-react';
 
 export interface ExpenseItem {
   name?: string;

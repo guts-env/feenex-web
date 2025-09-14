@@ -1,6 +1,11 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
-import { type IAddManualExpenseFormValues, AddManualExpenseSchema } from '../schema/expenses';
+import {
+  type IAddAutoExpenseFormValues,
+  type IAddManualExpenseFormValues,
+  AddAutoExpenseSchema,
+  AddManualExpenseSchema,
+} from '@/forms/schema/expenses';
 import { ExpenseStatusEnum } from '@/constants/enums';
 
 export const useAddManualExpenseForm = () => {
@@ -13,5 +18,11 @@ export const useAddManualExpenseForm = () => {
       amount: undefined,
       categoryId: '',
     },
+  });
+};
+
+export const useAddAutoExpenseForm = () => {
+  return useForm<IAddAutoExpenseFormValues>({
+    resolver: zodResolver(AddAutoExpenseSchema),
   });
 };

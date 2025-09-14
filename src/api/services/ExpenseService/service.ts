@@ -1,6 +1,9 @@
 import request from '@/api/request';
 import { ExpenseEndpoints } from '@/api/services/ExpenseService/config';
-import { type IAddManualExpenseFormValues } from '@/forms/schema/expenses';
+import {
+  type IAddAutoExpenseFormValues,
+  type IAddManualExpenseFormValues,
+} from '@/forms/schema/expenses';
 import { type IExpenseListParams, type IExpenseListRes } from '@/types/api';
 
 export default class ExpenseService {
@@ -17,6 +20,14 @@ export default class ExpenseService {
   ): Promise<void> => {
     return request({
       url: ExpenseEndpoints.createManual(),
+      method: 'POST',
+      data,
+    });
+  };
+
+  public static readonly createAuto = async (data: IAddAutoExpenseFormValues): Promise<void> => {
+    return request({
+      url: ExpenseEndpoints.createAuto(),
       method: 'POST',
       data,
     });
