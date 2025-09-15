@@ -1,5 +1,5 @@
-import { z } from 'zod'
-import { OrgTypeEnum } from '@/constants/enums'
+import { z } from 'zod';
+import { OrgTypeEnum } from '@/constants/enums';
 
 export const LoginSchema = z.object({
   email: z.email({
@@ -8,9 +8,9 @@ export const LoginSchema = z.object({
   password: z.string().min(8, {
     error: 'Password must be at least 8 characters',
   }),
-})
+});
 
-export type ILoginFormValues = z.infer<typeof LoginSchema>
+export type ILoginFormValues = z.infer<typeof LoginSchema>;
 
 export const RegisterSchema = z
   .object({
@@ -18,7 +18,9 @@ export const RegisterSchema = z
       error: 'First name is required',
     }),
     middleName: z.string().optional(),
-    lastName: z.string().optional(),
+    lastName: z.string().min(1, {
+      error: 'Last name is required',
+    }),
     email: z.email({
       error: (iss) => (!iss.input ? 'Email is required' : 'Invalid email address'),
     }),
@@ -39,18 +41,18 @@ export const RegisterSchema = z
         code: 'custom',
         path: ['confirmPassword'],
         message: 'Passwords do not match',
-      })
+      });
     }
     if (data.orgType === OrgTypeEnum.BUSINESS && (!data.orgName || data.orgName.trim() === '')) {
       ctx.addIssue({
         code: 'custom',
         path: ['orgName'],
         message: 'Organization name is required for business accounts',
-      })
+      });
     }
-  })
+  });
 
-export type IRegisterFormValues = z.infer<typeof RegisterSchema>
+export type IRegisterFormValues = z.infer<typeof RegisterSchema>;
 
 export const AcceptInviteSchema = z
   .object({
@@ -73,19 +75,19 @@ export const AcceptInviteSchema = z
         code: 'custom',
         path: ['confirmPassword'],
         message: 'Passwords do not match',
-      })
+      });
     }
-  })
+  });
 
-export type IAcceptInviteFormValues = z.infer<typeof AcceptInviteSchema>
+export type IAcceptInviteFormValues = z.infer<typeof AcceptInviteSchema>;
 
 export const ForgotPasswordSchema = z.object({
   email: z.email({
     error: (iss) => (!iss.input ? 'Email is required' : 'Invalid email address'),
   }),
-})
+});
 
-export type IForgotPasswordFormValues = z.infer<typeof ForgotPasswordSchema>
+export type IForgotPasswordFormValues = z.infer<typeof ForgotPasswordSchema>;
 
 export const ResetPasswordSchema = z
   .object({
@@ -104,8 +106,8 @@ export const ResetPasswordSchema = z
         code: 'custom',
         path: ['confirmPassword'],
         message: 'Passwords do not match',
-      })
+      });
     }
-  })
+  });
 
-export type IResetPasswordFormValues = z.infer<typeof ResetPasswordSchema>
+export type IResetPasswordFormValues = z.infer<typeof ResetPasswordSchema>;
