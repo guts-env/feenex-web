@@ -1,4 +1,4 @@
-import type { OrgTypeEnum, RoleEnum } from '@/constants/enums';
+import type { ExpenseStatusEnum, OrgTypeEnum, RoleEnum } from '@/constants/enums';
 
 export interface ApiErrorPayload {
   code: string;
@@ -64,11 +64,11 @@ export interface IExpenseRes {
     id: string;
     name: string;
   };
-  createdBy: Partial<IPartialUserRes>;
+  createdBy: Partial<IUserRes>;
   createdAt: string;
-  updatedBy: Partial<IPartialUserRes>;
+  updatedBy: Partial<IUserRes>;
   updatedAt: string;
-  verifiedBy: Partial<IPartialUserRes>;
+  verifiedBy: Partial<IUserRes>;
   verifiedAt: string;
   status: ExpenseStatusEnum;
   items?: IExpenseLineItemRes[];

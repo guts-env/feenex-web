@@ -14,9 +14,13 @@ import {
 import ManualExpenseForm from '@/pages/Expenses/ManualExpenseForm';
 import AutoExpenseForm from '@/pages/Expenses/AutoExpenseForm';
 import { ExpenseTypeEnum } from '@/constants/enums';
-import type { IManualExpenseFormRef, IAutoExpenseFormRef, AddExpenseProps } from '@/types/expenses';
+import type {
+  IManualExpenseFormRef,
+  IAutoExpenseFormRef,
+  IAddExpenseProps,
+} from '@/types/expenses';
 
-function AddExpense({ open, onOpenChange, onExpenseAdded }: AddExpenseProps) {
+function AddExpense({ open, onOpenChange, onExpenseAdded }: IAddExpenseProps) {
   const [activeTab, setActiveTab] = useState<ExpenseTypeEnum>(ExpenseTypeEnum.AUTO);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [pendingAction, setPendingAction] = useState<{

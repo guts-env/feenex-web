@@ -6,6 +6,7 @@ import ExpensePhotos from '@/pages/Expenses/ExpensePhotos';
 import ExpenseItems from '@/pages/Expenses/ExpenseItems';
 import ExpenseOtherDetails from '@/pages/Expenses/ExpenseOtherDetails';
 import { useDownloadPresigned } from '@/api/services/UploadService/mutation';
+import { ExpenseStatusEnum } from '@/constants/enums';
 import type { IExpenseRes } from '@/types/api';
 
 function ExpenseDetailsContent({
@@ -129,7 +130,11 @@ export default function ExpenseDetails({
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <ExpenseDetailsContent
                     title="Status"
-                    content={<ExpenseStatusBadge status={internalData?.status} />}
+                    content={
+                      <ExpenseStatusBadge
+                        status={internalData?.status || ExpenseStatusEnum.DRAFT}
+                      />
+                    }
                   />
                   <ExpenseDetailsContent
                     title="Category"
