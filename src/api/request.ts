@@ -9,6 +9,7 @@ export const client = (() => {
       Accept: 'application/json',
       'Content-Type': 'application/json',
     },
+    withCredentials: true,
     paramsSerializer: {
       indexes: null,
     },

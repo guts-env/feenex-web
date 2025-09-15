@@ -40,7 +40,6 @@ export default function LoginForm({ className, ...props }: React.ComponentProps<
 
     login(data, {
       onSuccess: (data: ILoginRes) => {
-        console.log(data);
         const { user } = data;
 
         setUser({
