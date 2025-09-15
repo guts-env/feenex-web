@@ -20,14 +20,19 @@ const PrivateRoute: React.FC<PrivateRouteProps> = ({ element }) => {
 
   useEffect(() => {
     const initializeAuth = async () => {
-      if (!token && !hasAttemptedRefresh) {
-        hasAttemptedRefresh = true;
-        const response = await AuthService.refreshAccessToken();
-        if (response?.accessToken) {
-          setToken(response.accessToken);
+      try {
+        if (!token && !hasAttemptedRefresh) {
+          hasAttemptedRefresh = true;
+          const response = await AuthService.refreshAccessToken();
+          if (response?.accessToken) {
+            setToken(response.accessToken);
+          }
         }
+      } catch {
+        /* empty */
+      } finally {
+        setIsInitializing(false);
       }
-      setIsInitializing(false);
     };
 
     initializeAuth();

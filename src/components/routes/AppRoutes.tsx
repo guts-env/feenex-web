@@ -23,7 +23,7 @@ const AppRoutes: React.FC = () => {
       <Route path="/forgot-password" element={<PublicRoute element={<ForgotPassword />} />} />
       <Route path="/reset-password" element={<PublicRoute element={<ResetPassword />} />} />
       <Route element={<PrivateRoute element={<AppLayout />} />}>
-        {/* <Route path="/" element={<Expenses />} /> */}
+        <Route path="/" element={<Navigate to="/expenses" replace />} />
         <Route path="/expenses" element={<Expenses />} />
         <Route path="/organization" element={<Organization />} />
         <Route path="/settings" element={<Settings />} />
