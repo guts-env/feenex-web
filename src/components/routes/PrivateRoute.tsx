@@ -15,7 +15,9 @@ interface PrivateRouteProps {
 const PrivateRoute: React.FC<PrivateRouteProps> = ({ element }) => {
   const navigate = useNavigate();
 
-  const { token, setToken } = useUserStore(useShallow((state) => ({ token: state.token, setToken: state.setToken })));
+  const { token, setToken } = useUserStore(
+    useShallow((state) => ({ token: state.token, setToken: state.setToken })),
+  );
 
   const { data, isLoading, isError } = useQuery({
     queryKey: AuthQueryKeys.refreshAccessToken(token ?? ''),
@@ -40,12 +42,7 @@ const PrivateRoute: React.FC<PrivateRouteProps> = ({ element }) => {
   }
 
   if (!token && isError) {
-    return (
-      <Navigate
-        to={RoutesEnum.LOGIN}
-        replace
-      />
-    );
+    return <Navigate to={RoutesEnum.LOGIN} replace />;
   }
 
   return <>{element}</>;

@@ -1,8 +1,6 @@
-'use client'
-
-import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { OrgTypeEnum } from '@/constants/enums'
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { OrgTypeEnum } from '@/constants/enums';
 import {
   type ILoginFormValues,
   type IRegisterFormValues,
@@ -14,7 +12,7 @@ import {
   ForgotPasswordSchema,
   ResetPasswordSchema,
   AcceptInviteSchema,
-} from '@/forms/schema/auth'
+} from '@/forms/schema/auth';
 
 export const useLoginForm = () => {
   return useForm<ILoginFormValues>({
@@ -23,8 +21,8 @@ export const useLoginForm = () => {
       email: '',
       password: '',
     },
-  })
-}
+  });
+};
 
 export const useRegisterForm = () => {
   return useForm<IRegisterFormValues>({
@@ -39,8 +37,8 @@ export const useRegisterForm = () => {
       orgType: OrgTypeEnum.BUSINESS,
       orgName: '',
     },
-  })
-}
+  });
+};
 
 export const useAcceptInviteForm = () => {
   return useForm<IAcceptInviteFormValues>({
@@ -52,8 +50,8 @@ export const useAcceptInviteForm = () => {
       password: '',
       confirmPassword: '',
     },
-  })
-}
+  });
+};
 
 export const useForgotPasswordForm = () => {
   return useForm<IForgotPasswordFormValues>({
@@ -61,8 +59,8 @@ export const useForgotPasswordForm = () => {
     defaultValues: {
       email: '',
     },
-  })
-}
+  });
+};
 
 export const useResetPasswordForm = () => {
   return useForm<IResetPasswordFormValues>({
@@ -71,5 +69,5 @@ export const useResetPasswordForm = () => {
       newPassword: '',
       confirmPassword: '',
     },
-  })
-}
+  });
+};

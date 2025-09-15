@@ -4,7 +4,6 @@ import { QueryClientProvider } from '@tanstack/react-query';
 import queryClient from '@/api/queryClient';
 import AppRoutes from '@/components/routes/AppRoutes';
 import { ThemeProvider } from '@/components/theme/theme-provider';
-import { Toaster } from 'sonner';
 
 const App = () => {
 
@@ -16,7 +15,6 @@ const App = () => {
             <AppRoutes />
           </Suspense>
         </Router>
-        <Toaster richColors closeButton position='bottom-right' />
       </QueryClientProvider>
     </ThemeProvider>
   );

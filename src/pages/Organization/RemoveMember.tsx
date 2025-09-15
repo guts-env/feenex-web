@@ -10,35 +10,35 @@ import {
 } from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
 
-function DeleteExpense({
-  deleteExpenseId,
-  handleDelete,
+function RemoveMember({
+  removeMemberId,
+  handleRemove,
   onClose,
 }: {
-  deleteExpenseId: string | undefined;
-  handleDelete: (id: string) => void;
+  removeMemberId: string | undefined;
+  handleRemove: (id: string) => void;
   onClose: () => void;
 }) {
   return (
-    <AlertDialog open={!!deleteExpenseId} onOpenChange={(open) => !open && onClose()}>
+    <AlertDialog open={!!removeMemberId} onOpenChange={(open) => !open && onClose()}>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Delete Expense</AlertDialogTitle>
+          <AlertDialogTitle>Remove Member</AlertDialogTitle>
           <AlertDialogDescription>
-            Are you sure you want to delete this expense? This action cannot be undone.
+            Are you sure you want to remove this member? This action cannot be undone.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
           <AlertDialogAction
             onClick={() => {
-              if (deleteExpenseId) {
-                handleDelete(deleteExpenseId);
+              if (removeMemberId) {
+                handleRemove(removeMemberId);
               }
             }}
             asChild
           >
-            <Button variant="destructive">Delete</Button>
+            <Button variant="destructive">Remove</Button>
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
@@ -46,4 +46,4 @@ function DeleteExpense({
   );
 }
 
-export default DeleteExpense;
+export default RemoveMember;

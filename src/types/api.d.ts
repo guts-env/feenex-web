@@ -11,7 +11,18 @@ export interface ApiErrorPayload {
   };
 }
 
-export interface ILoginUserRes {
+export interface IOrganizationRes {
+  id: string;
+  name: string;
+  type: OrgTypeEnum;
+}
+
+export interface IRoleRes {
+  id: string;
+  name: RoleEnum;
+}
+
+export interface IUserRes {
   id: string;
   email: string;
   firstName: string;
@@ -20,21 +31,10 @@ export interface ILoginUserRes {
   profilePhoto?: string;
 }
 
-export interface ILoginOrganizationRes {
-  id: string;
-  name: string;
-  type: OrgTypeEnum;
-}
-
-export interface ILoginRoleRes {
-  id: string;
-  name: RoleEnum;
-}
-
 export interface ILoginRes {
-  user: ILoginUserRes & {
-    organization: ILoginOrganizationRes;
-    role: ILoginRoleRes;
+  user: IUserRes & {
+    organization: IOrganizationRes;
+    role: IRoleRes;
   };
   accessToken: string;
 }
@@ -126,4 +126,26 @@ export interface ICategoryListParams {
 export interface ICategoryRes {
   id: string;
   name: string;
+}
+
+export interface IOrganizationRes {
+  id: string;
+  name: string;
+  type: OrgTypeEnum;
+}
+
+export interface IOrganizationMembersListParams {
+  offset: number;
+  limit: number;
+  search?: string;
+}
+
+export interface IOrganizationMemberRes extends IUserRes {
+  role: IRoleRes;
+  joinedAt: string;
+}
+
+export interface IOrganizationMembersListRes {
+  data: IOrganizationMemberRes[];
+  count: number;
 }

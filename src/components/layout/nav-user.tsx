@@ -1,52 +1,48 @@
-"use client"
-
 import {
-  BadgeCheck,
+  // BadgeCheck,
   ChevronsUpDown,
   // CreditCard,
   LogOut,
   // Sparkles,
-} from "lucide-react"
-import { useShallow } from 'zustand/react/shallow'
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from "@/components/ui/avatar"
+} from 'lucide-react';
+import { useShallow } from 'zustand/react/shallow';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuGroup,
+  // DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+} from '@/components/ui/dropdown-menu';
 import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
   useSidebar,
-} from "@/components/ui/sidebar"
-import { useLogout } from '@/api/services/AuthService/mutation'
-import { useUserStore } from '@/stores/useUserStore'
-import { RoutesEnum } from '@/constants/enums'
+} from '@/components/ui/sidebar';
+import { useLogout } from '@/api/services/AuthService/mutation';
+import { useUserStore } from '@/stores/useUserStore';
+import { RoutesEnum } from '@/constants/enums';
 
 export function NavUser() {
-  const { isMobile } = useSidebar()
+  const { isMobile } = useSidebar();
 
-  const { user, logout } = useUserStore(useShallow((state) => ({ user: state.user, logout: state.logout })))
+  const { user, logout } = useUserStore(
+    useShallow((state) => ({ user: state.user, logout: state.logout })),
+  );
 
-  const { mutate: logoutMtn } = useLogout()
+  const { mutate: logoutMtn } = useLogout();
 
   const handleLogout = () => {
     logoutMtn(undefined, {
       onSettled: () => {
-        logout()
-        window.location.href = RoutesEnum.LOGIN
+        logout();
+        window.location.href = RoutesEnum.LOGIN;
       },
-    })
-  }
+    });
+  };
 
   return (
     <SidebarMenu>
@@ -59,10 +55,15 @@ export function NavUser() {
             >
               <Avatar className="h-8 w-8 rounded-lg">
                 <AvatarImage src={user?.profilePhoto} alt={user?.firstName} />
-                <AvatarFallback className="rounded-lg">{user?.firstName.charAt(0)}{user?.lastName?.charAt(0)}</AvatarFallback>
+                <AvatarFallback className="rounded-lg">
+                  {user?.firstName.charAt(0)}
+                  {user?.lastName?.charAt(0)}
+                </AvatarFallback>
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-medium">{user?.firstName} {user?.lastName}</span>
+                <span className="truncate font-medium">
+                  {user?.firstName} {user?.lastName}
+                </span>
                 <span className="truncate text-xs">{user?.email}</span>
               </div>
               <ChevronsUpDown className="ml-auto size-4" />
@@ -70,7 +71,7 @@ export function NavUser() {
           </DropdownMenuTrigger>
           <DropdownMenuContent
             className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg"
-            side={isMobile ? "bottom" : "right"}
+            side={isMobile ? 'bottom' : 'right'}
             align="end"
             sideOffset={4}
           >
@@ -78,32 +79,37 @@ export function NavUser() {
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                 <Avatar className="h-8 w-8 rounded-lg">
                   <AvatarImage src={user?.profilePhoto} alt={user?.firstName} />
-                  <AvatarFallback className="rounded-lg">{user?.firstName.charAt(0)}{user?.lastName?.charAt(0)}</AvatarFallback>
+                  <AvatarFallback className="rounded-lg">
+                    {user?.firstName.charAt(0)}
+                    {user?.lastName?.charAt(0)}
+                  </AvatarFallback>
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-medium">{user?.firstName} {user?.lastName}</span>
+                  <span className="truncate font-medium">
+                    {user?.firstName} {user?.lastName}
+                  </span>
                   <span className="truncate text-xs">{user?.email}</span>
                 </div>
               </div>
             </DropdownMenuLabel>
-            {/* <DropdownMenuSeparator /> */}
-            {/* <DropdownMenuGroup>
+            {/* <DropdownMenuSeparator />
+            <DropdownMenuGroup>
               <DropdownMenuItem>
                 <Sparkles />
                 Upgrade to Pro
               </DropdownMenuItem>
-            </DropdownMenuGroup> */}
+            </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
               <DropdownMenuItem>
                 <BadgeCheck />
                 Account
               </DropdownMenuItem>
-              {/* <DropdownMenuItem>
+              <DropdownMenuItem>
                 <Bell />
                 Notifications
-              </DropdownMenuItem> */}
-            </DropdownMenuGroup>
+              </DropdownMenuItem>
+            </DropdownMenuGroup> */}
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={handleLogout}>
               <LogOut />
@@ -113,5 +119,5 @@ export function NavUser() {
         </DropdownMenu>
       </SidebarMenuItem>
     </SidebarMenu>
-  )
+  );
 }

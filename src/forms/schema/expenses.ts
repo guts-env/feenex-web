@@ -41,3 +41,16 @@ export const AddAutoExpenseSchema = z.object({
 });
 
 export type IAddAutoExpenseFormValues = z.infer<typeof AddAutoExpenseSchema>;
+
+export const AddMultipleAutoExpensesSchema = z.object({
+  expenses: z
+    .array(
+      z.object({
+        id: z.string(),
+        photos: z.array(z.string()).min(1, 'At least one photo is required for each expense'),
+      }),
+    )
+    .min(1, 'At least one expense is required'),
+});
+
+export type IAddMultipleAutoExpensesFormValues = z.infer<typeof AddMultipleAutoExpensesSchema>;

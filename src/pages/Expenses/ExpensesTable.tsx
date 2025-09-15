@@ -1,13 +1,6 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import {
-  type ColumnDef,
-  type SortingState,
-  type ColumnFiltersState,
-  type VisibilityState,
-  type PaginationState,
-  type Updater,
-} from '@tanstack/react-table';
+import { type ColumnDef, type SortingState, type Updater } from '@tanstack/react-table';
 import debounce from 'lodash/debounce';
 import { MoreHorizontal, Plus } from 'lucide-react';
 import { toast } from 'sonner';
@@ -32,6 +25,9 @@ import AddExpense from '@/pages/Expenses/AddExpense';
 import { useExpenseSocket } from '@/hooks/useExpenseSocket';
 import { ExpenseStatusEnum } from '@/constants/enums';
 import { type IExpenseRes } from '@/types/api';
+import { CompoundButton } from '@/components/ui/compound-button';
+import MultipleAutoExpensesForm from './MultipleAutoExpensesForm';
+import { usePaginationOnDelete } from '@/hooks/usePaginationOnDelete';
 
 const columns: ColumnDef<IExpenseRes>[] = [
   // {
@@ -107,18 +103,22 @@ const columns: ColumnDef<IExpenseRes>[] = [
 ];
 
 function ExpensesTable() {
+  /* Table State */
   const [sorting, setSorting] = useState<SortingState>([]);
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
-  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = useState({});
-  const [pagination, setPagination] = useState<PaginationState>({
-    pageIndex: 0,
-    pageSize: 10,
-  });
   const [search, setSearch] = useState('');
+  /* Modals and Sheets */
   const [selectedExpense, setSelectedExpense] = useState<IExpenseRes | undefined>(undefined);
   const [deleteExpenseId, setDeleteExpenseId] = useState<string | undefined>(undefined);
   const [addExpenseModalOpen, setAddExpenseModalOpen] = useState(false);
+  const [multipleAutoExpensesFormOpen, setMultipleAutoExpensesFormOpen] = useState(false);
+
+  const { pagination, setPagination, handleDeleteWithPagination } = usePaginationOnDelete({
+    initialPagination: {
+      pageIndex: 0,
+      pageSize: 10,
+    },
+  });
 
   const { data, refetch, isLoading, isError } = useQuery({
     queryKey: ExpenseQueryKeys.list({
@@ -169,17 +169,22 @@ function ExpensesTable() {
   };
 
   const handleDelete = (id: string) => {
-    deleteExpense(id, {
-      onSuccess: () => {
-        invalidateExpenseList();
-        toast.success('Expense deleted! 🎉');
-      },
-      onError: (error) => {
-        toast.error('Failed to delete expense', {
-          description: error.message,
-        });
-      },
-    });
+    deleteExpense(
+      id,
+      handleDeleteWithPagination({
+        currentPageData: data?.data ?? [],
+        onSuccess: () => {
+          invalidateExpenseList();
+          toast.success('Expense deleted! 🎉');
+          setDeleteExpenseId(undefined);
+        },
+        onError: (error) => {
+          toast.error('Failed to delete expense', {
+            description: error.message,
+          });
+        },
+      }),
+    );
   };
 
   const columnsWithActions = columns.concat({
@@ -214,31 +219,50 @@ function ExpensesTable() {
     },
   });
 
+  const emptyState = (
+    <div className="flex flex-col items-center justify-center h-full py-8">
+      <p className="text-lg text-muted-foreground pb-1">No expenses found.</p>
+      <p className="text-sm text-muted-foreground">
+        Click "Add Expense" to start adding expenses or check the filters
+      </p>
+      <Button variant="link" onClick={() => setAddExpenseModalOpen(true)} className="mt-4">
+        <Plus className="size-4" />
+        Add Expense
+      </Button>{' '}
+    </div>
+  );
+
   return (
-    <div>
-      {isLoading && <div>Loading...</div>}
-      {isError && <div>Error</div>}
+    <>
       <DataTable<IExpenseRes, unknown>
+        loading={isLoading}
+        error={isError ? 'Failed to fetch expenses' : ''}
+        emptyState={emptyState}
         columns={columnsWithActions}
         data={data?.data ?? []}
         pageCount={data?.count ? Math.ceil(data.count / pagination.pageSize) : 0}
         sorting={sorting}
         onSortingChange={setSorting}
-        columnFilters={columnFilters}
-        onColumnFiltersChange={setColumnFilters}
-        columnVisibility={columnVisibility}
-        onColumnVisibilityChange={setColumnVisibility}
         rowSelection={rowSelection}
         onRowSelectionChange={setRowSelection}
         pagination={pagination}
         onPaginationChange={setPagination}
         onSearchChange={(search) => handleSearch(search)}
+        searchValue={search}
         searchPlaceholder="Search expenses..."
         rightSlot={
-          <Button onClick={() => setAddExpenseModalOpen(true)}>
+          <CompoundButton
+            onMainClick={() => setAddExpenseModalOpen(true)}
+            dropdownItems={[
+              {
+                label: 'Process Multiple Expenses',
+                onClick: () => setMultipleAutoExpensesFormOpen(true),
+              },
+            ]}
+          >
             <Plus />
             Add Expense
-          </Button>
+          </CompoundButton>
         }
       />
       <ExpenseDetails
@@ -248,15 +272,20 @@ function ExpensesTable() {
       />
       <DeleteExpense
         deleteExpenseId={deleteExpenseId}
-        setDeleteExpenseId={setDeleteExpenseId}
         handleDelete={handleDelete}
+        onClose={() => setDeleteExpenseId(undefined)}
       />
       <AddExpense
         open={addExpenseModalOpen}
         onOpenChange={setAddExpenseModalOpen}
         onExpenseAdded={invalidateExpenseList}
       />
-    </div>
+      <MultipleAutoExpensesForm
+        open={multipleAutoExpensesFormOpen}
+        onOpenChange={setMultipleAutoExpensesFormOpen}
+        onExpenseAdded={invalidateExpenseList}
+      />
+    </>
   );
 }
 
