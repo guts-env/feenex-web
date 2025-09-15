@@ -24,7 +24,6 @@ import {
 } from '@/components/ui/sidebar';
 import { useLogout } from '@/api/services/AuthService/mutation';
 import { useUserStore } from '@/stores/useUserStore';
-import { RoutesEnum } from '@/constants/enums';
 
 export function NavUser() {
   const { isMobile } = useSidebar();
@@ -39,7 +38,6 @@ export function NavUser() {
     logoutMtn(undefined, {
       onSettled: () => {
         logout();
-        window.location.href = RoutesEnum.LOGIN;
       },
     });
   };
