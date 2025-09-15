@@ -1,47 +1,47 @@
-import React, { useEffect, type ReactNode } from 'react';
-import { Navigate, useNavigate } from 'react-router-dom';
+import React, { useEffect, useState, type ReactNode } from 'react';
+import { Navigate } from 'react-router-dom';
 import { useShallow } from 'zustand/react/shallow';
 import { Loader2 } from 'lucide-react';
-import { RoutesEnum } from '@/constants/enums';
 import { useUserStore } from '@/stores/useUserStore';
-import { useQuery } from '@tanstack/react-query';
 import AuthService from '@/api/services/AuthService/service';
-import { AuthQueryKeys } from '@/api/services/AuthService/config';
+import { RoutesEnum } from '@/constants/enums';
 
 interface PrivateRouteProps {
   element: ReactNode;
 }
 
-const PrivateRoute: React.FC<PrivateRouteProps> = ({ element }) => {
-  const navigate = useNavigate();
+let hasAttemptedRefresh = false;
 
+const PrivateRoute: React.FC<PrivateRouteProps> = ({ element }) => {
+  const [isInitializing, setIsInitializing] = useState(true);
   const { token, setToken } = useUserStore(
     useShallow((state) => ({ token: state.token, setToken: state.setToken })),
   );
 
-  const { data, isLoading, isError } = useQuery({
-    queryKey: AuthQueryKeys.refreshAccessToken(token ?? ''),
-    queryFn: () => AuthService.refreshAccessToken(),
-    enabled: !token,
-    retry: false,
-    refetchOnWindowFocus: false,
-  });
-
   useEffect(() => {
-    if (data) {
-      setToken(data.accessToken);
-    }
-  }, [data, isError, setToken, navigate]);
+    const initializeAuth = async () => {
+      if (!token && !hasAttemptedRefresh) {
+        hasAttemptedRefresh = true;
+        const response = await AuthService.refreshAccessToken();
+        if (response?.accessToken) {
+          setToken(response.accessToken);
+        }
+      }
+      setIsInitializing(false);
+    };
 
-  if (isLoading) {
+    initializeAuth();
+  }, [token, setToken]);
+
+  if (isInitializing) {
     return (
-      <div>
+      <div className="flex items-center justify-center min-h-screen">
         <Loader2 className="size-4 animate-spin" /> Loading...
       </div>
     );
   }
 
-  if (!token && isError) {
+  if (!token) {
     return <Navigate to={RoutesEnum.LOGIN} replace />;
   }
 
