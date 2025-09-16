@@ -49,7 +49,7 @@ export default function AcceptInviteForm({
         <div className="flex flex-col items-center gap-2 text-center">
           <h1 className="text-2xl font-bold">Join Organization</h1>
           <p className="text-muted-foreground text-sm text-balance">
-            Create your FeeNex account to join the organization
+            Create your Feenex account to join the organization
           </p>
         </div>
         <div className="flex flex-col gap-6">

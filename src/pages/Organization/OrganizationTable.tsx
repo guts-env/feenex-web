@@ -50,12 +50,16 @@ function OrganizationTable() {
       limit: pagination.pageSize,
       search,
     }),
-    queryFn: () =>
-      OrganizationQuery.getMembers({
+    queryFn: async () => {
+      const result = await OrganizationQuery.getMembers({
         offset: pagination.pageIndex * pagination.pageSize,
         limit: pagination.pageSize,
         search,
-      }),
+      });
+
+      await new Promise((resolve) => setTimeout(resolve, 300));
+      return result;
+    },
   });
 
   const { mutate: removeMember } = useRemoveMember();

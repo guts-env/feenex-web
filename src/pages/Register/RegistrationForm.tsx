@@ -39,9 +39,9 @@ export default function RegistrationForm({
     <Form {...form}>
       <form className={cn("flex flex-col gap-6", className)} {...props} onSubmit={form.handleSubmit(onSubmit)}>
         <div className="flex flex-col items-center gap-2 text-center">
-          <h1 className="text-2xl font-bold">Welcome to FeeNex!</h1>
+          <h1 className="text-2xl font-bold">Welcome to Feenex!</h1>
           <p className="text-muted-foreground text-sm text-balance">
-            Create your FeeNex account
+            Create your Feenex account
           </p>
         </div>
         <div className="flex flex-col gap-6">

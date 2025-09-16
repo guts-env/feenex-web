@@ -1,10 +1,10 @@
 import React, { useEffect, useState, type ReactNode } from 'react';
 import { Navigate } from 'react-router-dom';
 import { useShallow } from 'zustand/react/shallow';
-import { Loader2 } from 'lucide-react';
 import { useUserStore } from '@/stores/useUserStore';
 import AuthService from '@/api/services/AuthService/service';
 import { RoutesEnum } from '@/constants/enums';
+import { Splash } from '@/App';
 
 interface PrivateRouteProps {
   element: ReactNode;
@@ -39,11 +39,7 @@ const PrivateRoute: React.FC<PrivateRouteProps> = ({ element }) => {
   }, [token, setToken]);
 
   if (isInitializing) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <Loader2 className="size-4 animate-spin" /> Loading...
-      </div>
-    );
+    return <Splash />;
   }
 
   if (!token) {

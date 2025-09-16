@@ -87,7 +87,7 @@ export default function ExpenseDetails({
               <SheetTitle>Photos</SheetTitle>
             </SheetHeader>
             <div className="flex-1 overflow-y-auto p-6">
-              {internalData?.photos ? (
+              {internalData?.photos && internalData?.photos.length > 0 ? (
                 <ExpensePhotos photos={internalData?.photos} />
               ) : (
                 <div className="flex items-center justify-center h-full text-muted-foreground">

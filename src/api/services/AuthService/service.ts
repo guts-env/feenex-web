@@ -1,3 +1,4 @@
+import request from '@/api/request';
 import { AuthEndpoints } from '@/api/services/AuthService/config';
 import {
   type IForgotPasswordFormValues,
@@ -7,7 +8,6 @@ import {
   type IAcceptInviteFormValues,
 } from '@/forms/schema/auth';
 import { authRequest } from '@/api/services/AuthService/authRequest';
-import request from '@/api/request';
 import { type ILoginRes, type IRefreshTokenRes } from '@/types/api';
 
 export default class AuthService {

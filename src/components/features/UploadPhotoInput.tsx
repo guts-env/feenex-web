@@ -1,10 +1,15 @@
-import { useState } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { UploadIcon, EyeIcon, TrashIcon } from 'lucide-react';
 import { ErrorCode } from 'react-dropzone';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Dropzone, DropzoneContent, DropzoneEmptyState } from '@/components/ui/dropzone';
-import { useGeneratePresigned, useUploadFile } from '@/api/services/UploadService/mutation';
+import { Skeleton } from '@/components/ui/skeleton';
+import {
+  useGeneratePresigned,
+  useUploadFile,
+  useDownloadPresigned,
+} from '@/api/services/UploadService/mutation';
 import { ALLOWED_IMAGE_TYPES } from '@/constants/upload';
 import { UploadStatusEnum, UploadTypeEnum } from '@/constants/enums';
 
@@ -43,11 +48,43 @@ function UploadPhotoInput({
 }: UploadPhotoInputProps) {
   const { mutate: generatePresigned } = useGeneratePresigned();
   const { mutate: uploadFile } = useUploadFile();
+  const { mutate: downloadPresigned } = useDownloadPresigned();
 
   const [previewImage, setPreviewImage] = useState<File | string | null>(null);
+  const [keyUrls, setKeyUrls] = useState<Record<string, string>>({});
+  const [loadingKeys, setLoadingKeys] = useState<Set<string>>(new Set());
 
   const files = value.filter((item): item is UploadedFile => item instanceof File);
-  const urls = value.filter((item): item is string => typeof item === 'string');
+  const keys = useMemo(
+    () => value.filter((item): item is string => typeof item === 'string'),
+    [value],
+  );
+
+  useEffect(() => {
+    if (keys.length > 0) {
+      setLoadingKeys(new Set(keys));
+
+      downloadPresigned(
+        { keys },
+        {
+          onSuccess: (data) => {
+            setTimeout(() => {
+              const urlMap: Record<string, string> = {};
+              data.forEach((item) => {
+                urlMap[item.key] = item.url;
+              });
+              setKeyUrls(urlMap);
+              setLoadingKeys(new Set());
+            }, 300);
+          },
+          onError: (error) => {
+            setLoadingKeys(new Set());
+            onUploadError(`Failed to load images: ${error.message}`);
+          },
+        },
+      );
+    }
+  }, [keys, downloadPresigned, onUploadError]);
 
   const isDuplicateFile = (newFile: File): boolean => {
     return files.some(
@@ -158,10 +195,10 @@ function UploadPhotoInput({
     onFileNamesChange?.(updatedFiles.map((file) => file.name));
   };
 
-  const removeUrl = (index: number) => {
+  const removeKey = (index: number) => {
     if (disabled) return;
-    const updatedUrls = urls.filter((_, i) => i !== index);
-    const updatedValue = [...updatedUrls, ...files];
+    const updatedKeys = keys.filter((_, i) => i !== index);
+    const updatedValue = [...updatedKeys, ...files];
     onChange?.(files);
     onFileNamesChange?.(updatedValue.map((item) => (typeof item === 'string' ? item : item.name)));
   };
@@ -237,45 +274,66 @@ function UploadPhotoInput({
     </div>
   );
 
-  const renderUrlDropzone = (index: number, url: string) => (
-    <div
-      key={`url-${index}`}
-      className="relative min-w-[130px] min-h-[130px] aspect-square flex-shrink-0 group"
-    >
-      <div className="w-full h-full border-2 border-dashed border-muted-foreground/25 rounded-lg overflow-hidden">
-        <img src={url} alt={`Uploaded image ${index + 1}`} className="w-full h-full object-cover" />
-      </div>
+  const renderUrlDropzone = (index: number, key: string) => {
+    const url = keyUrls[key];
+    const isLoading = loadingKeys.has(key);
 
-      {!disabled && (
-        <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center gap-2">
-          <Button
-            type="button"
-            variant="ghost"
-            size="icon"
-            className="h-8 w-8"
-            onClick={(e) => {
-              e.stopPropagation();
-              openPreview(url);
-            }}
-          >
-            <EyeIcon className="h-4 w-4" />
-          </Button>
-          <Button
-            type="button"
-            variant="ghost"
-            size="icon"
-            className="h-8 w-8 dark:hover:bg-destructive/50 dark:hover:text-destructive-foreground"
-            onClick={(e) => {
-              e.stopPropagation();
-              removeUrl(index);
-            }}
-          >
-            <TrashIcon className="h-4 w-4" />
-          </Button>
+    return (
+      <div
+        key={`key-${index}`}
+        className="relative min-w-[130px] min-h-[130px] aspect-square flex-shrink-0 group"
+      >
+        <div
+          className={`${className} border-dashed aspect-square w-[130px] h-[130px] p-0 rounded-md`}
+        >
+          <div className="w-full h-full relative">
+            {isLoading ? (
+              <Skeleton className="w-full h-full rounded-md" />
+            ) : url ? (
+              <img
+                src={url}
+                alt={`Uploaded image ${index + 1}`}
+                className="w-full h-full object-cover rounded-md"
+              />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center bg-muted rounded-md">
+                <div className="text-muted-foreground text-xs">Loading...</div>
+              </div>
+            )}
+          </div>
         </div>
-      )}
-    </div>
-  );
+
+        {!disabled && url && (
+          <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center gap-2 rounded-md">
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8"
+              onClick={(e) => {
+                e.stopPropagation();
+                openPreview(url);
+              }}
+            >
+              <EyeIcon className="h-4 w-4" />
+            </Button>
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8 dark:hover:bg-destructive/50 dark:hover:text-destructive-foreground"
+              onClick={(e) => {
+                e.stopPropagation();
+                removeKey(index);
+              }}
+            >
+              <TrashIcon className="h-4 w-4" />
+            </Button>
+          </div>
+        )}
+      </div>
+    );
+  };
 
   const renderEmptyDropzone = (index: number) => (
     <div
@@ -310,14 +368,14 @@ function UploadPhotoInput({
     </div>
   );
 
-  const totalItems = files.length + urls.length;
+  const totalItems = files.length + keys.length;
   const dropzonesToShow = Math.min(totalItems + 1, maxFiles);
 
   return (
     <div className="space-y-2">
       <div className="flex flex-wrap gap-3">
         {files.map((file, index) => renderFileDropzone(index, file))}
-        {urls.map((url, index) => renderUrlDropzone(index, url))}
+        {keys.map((key, index) => renderUrlDropzone(index, key))}
         {totalItems < maxFiles && (
           <div className="flex flex-wrap gap-3">
             {Array.from({ length: dropzonesToShow - totalItems }, (_, index) =>

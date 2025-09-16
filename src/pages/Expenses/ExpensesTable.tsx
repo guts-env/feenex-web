@@ -22,6 +22,7 @@ import ExpenseStatusBadge from '@/pages/Expenses/ExpenseStatusBadge';
 import ExpenseDetails from '@/pages/Expenses/ExpenseDetails';
 import DeleteExpense from '@/pages/Expenses/DeleteExpense';
 import AddExpense from '@/pages/Expenses/AddExpense';
+import EditExpense from '@/pages/Expenses/EditExpense';
 import { useExpenseSocket } from '@/hooks/useExpenseSocket';
 import { ExpenseStatusEnum } from '@/constants/enums';
 import { type IExpenseRes } from '@/types/api';
@@ -109,6 +110,7 @@ function ExpensesTable() {
   const [search, setSearch] = useState('');
   /* Modals and Sheets */
   const [selectedExpense, setSelectedExpense] = useState<IExpenseRes | undefined>(undefined);
+  const [editExpense, setEditExpense] = useState<IExpenseRes | undefined>(undefined);
   const [deleteExpenseId, setDeleteExpenseId] = useState<string | undefined>(undefined);
   const [addExpenseModalOpen, setAddExpenseModalOpen] = useState(false);
   const [multipleAutoExpensesFormOpen, setMultipleAutoExpensesFormOpen] = useState(false);
@@ -126,12 +128,16 @@ function ExpensesTable() {
       limit: pagination.pageSize,
       search,
     }),
-    queryFn: () =>
-      ExpenseQuery.list({
+    queryFn: async () => {
+      const result = await ExpenseQuery.list({
         offset: pagination.pageIndex * pagination.pageSize,
         limit: pagination.pageSize,
         search,
-      }),
+      });
+
+      await new Promise((resolve) => setTimeout(resolve, 300));
+      return result;
+    },
   });
 
   const { mutate: deleteExpense } = useDeleteExpense();
@@ -211,7 +217,7 @@ function ExpensesTable() {
             {status !== ExpenseStatusEnum.VERIFIED && (
               <DropdownMenuItem onClick={() => handleVerify(id)}>Verify</DropdownMenuItem>
             )}
-            <DropdownMenuItem>Edit</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setEditExpense(row.original)}>Edit</DropdownMenuItem>
             <DropdownMenuItem onClick={() => setDeleteExpenseId(id)}>Delete</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -279,6 +285,12 @@ function ExpensesTable() {
         open={addExpenseModalOpen}
         onOpenChange={setAddExpenseModalOpen}
         onExpenseAdded={invalidateExpenseList}
+      />
+      <EditExpense
+        expense={editExpense}
+        open={!!editExpense}
+        onOpenChange={(open) => !open && setEditExpense(undefined)}
+        onExpenseUpdated={invalidateExpenseList}
       />
       <MultipleAutoExpensesForm
         open={multipleAutoExpensesFormOpen}

@@ -1,17 +1,37 @@
-import { Suspense } from 'react';
+import { lazy, Suspense } from 'react';
 import { BrowserRouter as Router } from 'react-router-dom';
 import { QueryClientProvider } from '@tanstack/react-query';
 import queryClient from '@/api/queryClient';
-import AppRoutes from '@/components/routes/AppRoutes';
 import { ThemeProvider } from '@/components/theme/theme-provider';
 
-const App = () => {
+const delayedSplash = () => {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve(true);
+    }, 1200);
+  });
+};
 
+const AppRoutes = lazy(async () => {
+  await delayedSplash();
+  return import('@/components/routes/AppRoutes');
+});
+
+export const Splash = () => {
   return (
-    <ThemeProvider defaultTheme='system' storageKey='WEB_THEME'>
+    <div className="flex items-center justify-center min-h-screen">
+      <img src="/logo.webp" alt="Logo" className="size-12" />
+      <p className="ml-2 text-3xl font-medium text-primary dark:text-white">Feenex</p>
+    </div>
+  );
+};
+
+const App = () => {
+  return (
+    <ThemeProvider defaultTheme="system" storageKey="WEB_THEME">
       <QueryClientProvider client={queryClient}>
         <Router>
-          <Suspense fallback={<p>Replace with splash</p>}>
+          <Suspense fallback={<Splash />}>
             <AppRoutes />
           </Suspense>
         </Router>

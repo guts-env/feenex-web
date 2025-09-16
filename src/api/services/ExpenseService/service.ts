@@ -33,6 +33,17 @@ export default class ExpenseService {
     });
   };
 
+  public static readonly update = async (
+    id: string,
+    data: IAddManualExpenseFormValues,
+  ): Promise<void> => {
+    return request({
+      url: ExpenseEndpoints.update(id),
+      method: 'PUT',
+      data,
+    });
+  };
+
   public static readonly verify = async (id: string): Promise<void> => {
     return request({
       url: ExpenseEndpoints.verify(id),

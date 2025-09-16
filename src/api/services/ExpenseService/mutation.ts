@@ -21,6 +21,14 @@ export const useCreateAutoExpense = () => {
   });
 };
 
+export const useUpdateExpense = () => {
+  return useMutation({
+    mutationFn: ({ id, data }: { id: string; data: IAddManualExpenseFormValues }): Promise<void> => {
+      return ExpenseService.update(id, data);
+    },
+  });
+};
+
 export const useVerifyExpense = () => {
   return useMutation({
     mutationFn: (id: string): Promise<void> => {

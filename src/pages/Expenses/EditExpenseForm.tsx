@@ -1,0 +1,336 @@
+import { useState, useEffect, forwardRef, useImperativeHandle } from 'react';
+import { toast } from 'sonner';
+import startCase from 'lodash/startCase';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form';
+import { useEditExpenseForm } from '@/forms/hooks/useExpenseForm';
+import CategoriesSelectInput from '@/components/features/CategoriesSelectInput';
+import ExpenseStatusSelectInput from '@/pages/Expenses/ExpenseStatusSelectInput';
+import { DatePickerInput } from '@/components/features/DatePickerInput';
+import UploadPhotoInput, { type UploadedFile } from '@/components/features/UploadPhotoInput';
+import ExpenseItemsInput, {
+  type ExpenseItem,
+  type ExpenseItemError,
+} from '@/pages/Expenses/ExpenseItemsInput';
+import ExpenseOtherDetailsInput, {
+  type ExpenseOtherDetail,
+  type ExpenseOtherDetailError,
+} from '@/pages/Expenses/ExpenseOtherDetailsInput';
+import { useUpdateExpense } from '@/api/services/ExpenseService/mutation';
+import { UploadStatusEnum, UploadTypeEnum } from '@/constants/enums';
+import { type IAddManualExpenseFormValues } from '@/forms/schema/expenses';
+import type { IExpenseRes } from '@/types/api';
+
+export interface IEditExpenseFormRef {
+  isDirty: () => boolean;
+  reset: () => void;
+}
+
+export interface IEditExpenseFormProps {
+  onSubmit: () => void;
+  onCancel: () => void;
+  expense: IExpenseRes;
+}
+
+const EditExpenseForm = forwardRef<IEditExpenseFormRef, IEditExpenseFormProps>(
+  ({ onSubmit, onCancel, expense }, ref) => {
+    const form = useEditExpenseForm({
+      merchantName: expense.merchantName,
+      amount: expense.amount,
+      date: expense.date,
+      status: expense.status,
+      categoryId: expense.category?.id || '',
+      photos: expense.photos || [],
+      items: expense.items || [],
+      otherDetails: expense.otherDetails?.map((detail) => ({
+        key: startCase(detail.key.replace(/_/g, ' ')),
+        value: detail.value,
+      })),
+    });
+
+    const [photos, setPhotos] = useState<UploadedFile[] | string[]>([]);
+    const [items, setItems] = useState<ExpenseItem[]>([]);
+
+    const { mutate: updateExpense, isPending } = useUpdateExpense();
+
+    const resetForm = () => {
+      form.reset();
+      setPhotos([]);
+      setItems([]);
+    };
+
+    useEffect(() => {
+      if (expense) {
+        form.reset({
+          merchantName: expense.merchantName,
+          amount: expense.amount,
+          date: expense.date.split('T')[0],
+          status: expense.status,
+          categoryId: expense.category?.id || '',
+          photos: expense.photos || [],
+          items: expense.items || [],
+          otherDetails: expense.otherDetails || [],
+        });
+
+        setPhotos(expense.photos);
+        setItems(expense.items || []);
+      }
+    }, [expense, form]);
+
+    const { isDirty } = form.formState;
+    useImperativeHandle(ref, () => ({
+      isDirty: () => {
+        return isDirty;
+      },
+      reset: () => {
+        resetForm();
+      },
+    }));
+
+    const handleClose = () => {
+      onCancel();
+      setTimeout(() => {
+        resetForm();
+      }, 300);
+    };
+
+    const handleSubmit = async (data: IAddManualExpenseFormValues) => {
+      const updatedData = {
+        ...data,
+        otherDetails: data.otherDetails?.map((detail) => ({
+          key: detail.key.replace(' ', '_').toLowerCase(),
+          value: detail.value,
+        })),
+      };
+
+      updateExpense(
+        { id: expense.id, data: updatedData },
+        {
+          onSuccess: () => {
+            resetForm();
+            toast.success('Expense updated successfully');
+            onSubmit();
+          },
+          onError: (error) => {
+            toast.error('Failed to update expense', {
+              description: error.message,
+            });
+          },
+        },
+      );
+    };
+
+    const itemsTotal = items.reduce((sum, item) => sum + item.quantity * (item.price || 0), 0);
+
+    useEffect(() => {
+      if (items.length > 0) {
+        form.setValue('amount', itemsTotal);
+      }
+    }, [items, itemsTotal, form]);
+
+    const handleUploadError = (error: string) => {
+      form.setError('photos', { message: error });
+    };
+
+    const isSubmitBtnDisabled = () => {
+      const isPhotoUploading = photos.some(
+        (photo) => typeof photo === 'object' && photo.status === UploadStatusEnum.UPLOADING,
+      );
+      return isPending || isPhotoUploading;
+    };
+
+    return (
+      <div className="flex flex-col h-full min-h-0">
+        <div className="flex-1 overflow-y-auto p-6 min-h-0">
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
+              <div className="flex flex-col gap-6">
+                <div className="flex flex-col gap-1">
+                  <FormField
+                    control={form.control}
+                    name="photos"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Expense Photos</FormLabel>
+                        <FormControl>
+                          <UploadPhotoInput
+                            type={UploadTypeEnum.RECEIPTS}
+                            value={photos}
+                            onChange={(files) => {
+                              form.clearErrors('photos');
+                              field.onChange(files.map((file) => file.key));
+                              setPhotos(files);
+                            }}
+                            onUploadError={handleUploadError}
+                            maxFiles={5}
+                            maxSizeInMB={5}
+                            className="h-[100px] w-[100px] border-dashed"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
+                <div className="flex flex-col gap-1">
+                  <FormField
+                    control={form.control}
+                    name="merchantName"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Merchant Name</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Enter merchant name" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="flex flex-col gap-1 w-full">
+                    <FormField
+                      control={form.control}
+                      name="amount"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-xs text-primary">Total Amount</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="number"
+                              placeholder="0.00"
+                              min={0}
+                              step="0.01"
+                              {...field}
+                              onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                              className="[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                              disabled={items.length > 0}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                  <div className="flex flex-col gap-1 w-full">
+                    <FormField<IAddManualExpenseFormValues, 'date'>
+                      control={form.control}
+                      name="date"
+                      render={({ field }) => (
+                        <DatePickerInput<IAddManualExpenseFormValues> field={field} />
+                      )}
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="flex flex-col gap-1 w-full">
+                    <FormField
+                      control={form.control}
+                      name="status"
+                      render={({ field }) => (
+                        <div className="w-full">
+                          <ExpenseStatusSelectInput<IAddManualExpenseFormValues> field={field} />
+                        </div>
+                      )}
+                    />
+                  </div>
+                  <div className="flex flex-col gap-1 w-full">
+                    <FormField
+                      control={form.control}
+                      name="categoryId"
+                      render={({ field }) => (
+                        <div className="w-full">
+                          <CategoriesSelectInput<IAddManualExpenseFormValues> field={field} />
+                        </div>
+                      )}
+                    />
+                  </div>
+                </div>
+
+                <div className="flex flex-col gap-1">
+                  <FormField
+                    control={form.control}
+                    name="items"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormControl>
+                          <ExpenseItemsInput<IAddManualExpenseFormValues>
+                            field={field}
+                            error={
+                              Array.isArray(form.formState.errors.items)
+                                ? (form.formState.errors.items as Record<
+                                    keyof ExpenseItem,
+                                    ExpenseItemError
+                                  >[])
+                                : undefined
+                            }
+                            onItemsChange={setItems}
+                          />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
+                <div className="flex flex-col gap-1">
+                  <FormField
+                    control={form.control}
+                    name="otherDetails"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormControl>
+                          <ExpenseOtherDetailsInput<IAddManualExpenseFormValues>
+                            field={field}
+                            error={
+                              Array.isArray(form.formState.errors.otherDetails)
+                                ? (form.formState.errors.otherDetails as Record<
+                                    keyof ExpenseOtherDetail,
+                                    ExpenseOtherDetailError
+                                  >[])
+                                : undefined
+                            }
+                          />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              </div>
+            </form>
+          </Form>
+        </div>
+
+        <div className="border-t p-6 flex-shrink-0 bg-background">
+          <div className="flex gap-4">
+            <Button type="button" variant="outline" onClick={handleClose} className="flex-1">
+              Cancel
+            </Button>
+            <Button
+              type="button"
+              className="flex-1"
+              onClick={form.handleSubmit(handleSubmit)}
+              disabled={isSubmitBtnDisabled()}
+            >
+              Update Expense
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  },
+);
+
+EditExpenseForm.displayName = 'EditExpenseForm';
+
+export default EditExpenseForm;

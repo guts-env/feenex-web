@@ -14,14 +14,23 @@ export const useAddManualExpenseForm = () => {
   return useForm<IAddManualExpenseFormValues>({
     resolver: zodResolver(AddManualExpenseSchema),
     defaultValues: {
-      amount: undefined,
+      amount: 0,
       categoryId: '',
       date: new Date().toISOString().split('T')[0],
-      items: undefined,
+      items: [],
       merchantName: '',
-      otherDetails: undefined,
-      photos: undefined,
+      otherDetails: [],
+      photos: [],
       status: ExpenseStatusEnum.DRAFT,
+    },
+  });
+};
+
+export const useEditExpenseForm = (defaultValues: IAddManualExpenseFormValues) => {
+  return useForm<IAddManualExpenseFormValues>({
+    resolver: zodResolver(AddManualExpenseSchema),
+    defaultValues: {
+      ...defaultValues,
     },
   });
 };
@@ -30,7 +39,7 @@ export const useAddAutoExpenseForm = () => {
   return useForm<IAddAutoExpenseFormValues>({
     resolver: zodResolver(AddAutoExpenseSchema),
     defaultValues: {
-      photos: undefined,
+      photos: [],
     },
   });
 };
