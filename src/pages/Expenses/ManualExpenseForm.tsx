@@ -158,7 +158,6 @@ const ManualExpenseForm = forwardRef<IManualExpenseFormRef, IManualExpenseFormPr
                               step="0.01"
                               {...field}
                               onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
-                              className="[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                               disabled={items.length > 0}
                             />
                           </FormControl>

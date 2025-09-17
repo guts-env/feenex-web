@@ -29,6 +29,10 @@ import { type IExpenseRes } from '@/types/api';
 import { CompoundButton } from '@/components/ui/compound-button';
 import MultipleAutoExpensesForm from './MultipleAutoExpensesForm';
 import { usePaginationOnDelete } from '@/hooks/usePaginationOnDelete';
+import {
+  ExpensesTableFilters,
+  type ExpenseFilters,
+} from '@/components/features/ExpensesTableFilters';
 
 const columns: ColumnDef<IExpenseRes>[] = [
   // {
@@ -108,6 +112,8 @@ function ExpensesTable() {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [rowSelection, setRowSelection] = useState({});
   const [search, setSearch] = useState('');
+  const [filters, setFilters] = useState<ExpenseFilters>({});
+
   /* Modals and Sheets */
   const [selectedExpense, setSelectedExpense] = useState<IExpenseRes | undefined>(undefined);
   const [editExpense, setEditExpense] = useState<IExpenseRes | undefined>(undefined);
@@ -122,18 +128,17 @@ function ExpensesTable() {
     },
   });
 
+  const queryParams = {
+    offset: pagination.pageIndex * pagination.pageSize,
+    limit: pagination.pageSize,
+    search,
+    ...filters,
+  };
+
   const { data, refetch, isLoading, isError } = useQuery({
-    queryKey: ExpenseQueryKeys.list({
-      offset: pagination.pageIndex * pagination.pageSize,
-      limit: pagination.pageSize,
-      search,
-    }),
+    queryKey: ExpenseQueryKeys.list(queryParams),
     queryFn: async () => {
-      const result = await ExpenseQuery.list({
-        offset: pagination.pageIndex * pagination.pageSize,
-        limit: pagination.pageSize,
-        search,
-      });
+      const result = await ExpenseQuery.list(queryParams);
 
       await new Promise((resolve) => setTimeout(resolve, 300));
       return result;
@@ -150,13 +155,14 @@ function ExpensesTable() {
     setPagination({ ...pagination, pageIndex: 0 });
   }, 500);
 
+  const handleFiltersChange = (newFilters: ExpenseFilters) => {
+    setFilters(newFilters);
+    setPagination({ ...pagination, pageIndex: 0 });
+  };
+
   const invalidateExpenseList = () => {
     queryClient.invalidateQueries({
-      queryKey: ExpenseQueryKeys.list({
-        offset: pagination.pageIndex * pagination.pageSize,
-        limit: pagination.pageSize,
-        search,
-      }),
+      queryKey: ExpenseQueryKeys.list(queryParams),
     });
   };
 
@@ -256,21 +262,27 @@ function ExpensesTable() {
         onSearchChange={(search) => handleSearch(search)}
         searchValue={search}
         searchPlaceholder="Search expenses..."
+        filtersSlot={
+          <ExpensesTableFilters filters={filters} onFiltersChange={handleFiltersChange} />
+        }
         rightSlot={
-          <CompoundButton
-            onMainClick={() => setAddExpenseModalOpen(true)}
-            dropdownItems={[
-              {
-                label: 'Process Multiple Expenses',
-                onClick: () => setMultipleAutoExpensesFormOpen(true),
-              },
-            ]}
-          >
-            <Plus />
-            Add Expense
-          </CompoundButton>
+          <div className="flex gap-4">
+            <CompoundButton
+              onMainClick={() => setAddExpenseModalOpen(true)}
+              dropdownItems={[
+                {
+                  label: 'Process Multiple Expenses',
+                  onClick: () => setMultipleAutoExpensesFormOpen(true),
+                },
+              ]}
+            >
+              <Plus />
+              <span className="hidden md:block">Add Expense</span>
+            </CompoundButton>
+          </div>
         }
       />
+
       <ExpenseDetails
         expense={selectedExpense}
         open={!!selectedExpense}

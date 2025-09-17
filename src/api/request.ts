@@ -11,7 +11,7 @@ export const client = (() => {
     },
     withCredentials: true,
     paramsSerializer: {
-      indexes: null,
+      indexes: true,
     },
   })
 })()

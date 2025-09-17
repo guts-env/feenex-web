@@ -11,6 +11,12 @@ export interface ApiErrorPayload {
   };
 }
 
+export interface IBasePaginatedParams {
+  offset: number;
+  limit: number;
+  search?: string;
+}
+
 export interface IOrganizationRes {
   id: string;
   name: string;
@@ -75,10 +81,13 @@ export interface IExpenseRes {
   otherDetails?: IExpenseOtherDetailsRes[];
 }
 
-export interface IExpenseListParams {
-  offset: number;
-  limit: number;
-  search?: string;
+export interface IExpenseListParams extends IBasePaginatedParams {
+  startDate?: string;
+  endDate?: string;
+  categoryIds?: string[];
+  statuses?: ExpenseStatusEnum[];
+  minAmount?: number;
+  maxAmount?: number;
 }
 
 export interface IExpenseListRes {

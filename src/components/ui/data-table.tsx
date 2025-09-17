@@ -53,6 +53,7 @@ interface DataTableProps<TData, TValue> {
   searchPlaceholder?: string;
   rightSlot?: React.ReactNode;
   hideColumnFilter?: boolean;
+  filtersSlot?: React.ReactNode;
 }
 
 function DataTableSkeleton({
@@ -68,8 +69,9 @@ function DataTableSkeleton({
 }) {
   return (
     <div className="w-full">
-      <div className="flex flex-col gap-4 md:flex-row items-start md:items-center md:justify-between pb-4">
-        <div className="flex flex-col md:flex-row gap-4 w-full">
+      <div className="flex flex-col gap-4 pb-4 md:flex-row md:items-center md:justify-between">
+        {/* Left side: Search bar and Column filter skeletons */}
+        <div className="flex flex-col gap-4 md:flex-row md:items-center">
           {hasSearch && (
             <div className="relative w-full md:w-sm">
               <Skeleton className="h-10 w-full pl-7" />
@@ -78,6 +80,8 @@ function DataTableSkeleton({
           )}
           {hasColumnFilter && <Skeleton className="h-10 w-24" />}
         </div>
+
+        {/* Right side: Right slot skeleton */}
         {hasRightSlot && <Skeleton className="h-10 w-20" />}
       </div>
       <div className="overflow-hidden rounded-md border">
@@ -130,6 +134,7 @@ export function DataTable<TData, TValue>({
   searchPlaceholder,
   rightSlot,
   hideColumnFilter,
+  filtersSlot,
 }: DataTableProps<TData, TValue>) {
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
@@ -180,10 +185,37 @@ export function DataTable<TData, TValue>({
     );
   }
 
+  const columnFiltersSlot = hideColumnFilter ? null : (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="outline" className="w-fit">
+          Columns <ChevronDown />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="start">
+        {table
+          .getAllColumns()
+          .filter((column) => column.getCanHide())
+          .map((column) => {
+            return (
+              <DropdownMenuCheckboxItem
+                key={column.id}
+                className="capitalize"
+                checked={column.getIsVisible()}
+                onCheckedChange={(value) => column.toggleVisibility(!!value)}
+              >
+                {column.id}
+              </DropdownMenuCheckboxItem>
+            );
+          })}
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+
   return (
     <div className="w-full">
-      <div className="flex flex-col gap-4 md:flex-row items-start md:items-center md:justify-between pb-4">
-        <div className="flex flex-col md:flex-row gap-4 w-full">
+      <div className="flex flex-col-reverse md:flex-row gap-4 pb-4 md:items-center md:justify-between">
+        <div className="flex items-center gap-4">
           {onSearchChange && (
             <div className="relative w-full md:w-sm">
               <Input
@@ -195,34 +227,15 @@ export function DataTable<TData, TValue>({
               <Search className="pointer-events-none absolute top-1/2 left-2 size-4 -translate-y-1/2 opacity-50 select-none" />
             </div>
           )}
-          {!hideColumnFilter && (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" className="w-fit">
-                  Columns <ChevronDown />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="start">
-                {table
-                  .getAllColumns()
-                  .filter((column) => column.getCanHide())
-                  .map((column) => {
-                    return (
-                      <DropdownMenuCheckboxItem
-                        key={column.id}
-                        className="capitalize"
-                        checked={column.getIsVisible()}
-                        onCheckedChange={(value) => column.toggleVisibility(!!value)}
-                      >
-                        {column.id}
-                      </DropdownMenuCheckboxItem>
-                    );
-                  })}
-              </DropdownMenuContent>
-            </DropdownMenu>
-          )}
+          <div className="hidden md:block">{filtersSlot}</div>
+          <div className="hidden md:block">{columnFiltersSlot}</div>
         </div>
-        {rightSlot}
+
+        <div className="flex items-center gap-4">
+          <div className="md:hidden">{filtersSlot}</div>
+          <div className="md:hidden">{columnFiltersSlot}</div>
+          {rightSlot}
+        </div>
       </div>
       <div className="overflow-hidden rounded-md border">
         <Table>

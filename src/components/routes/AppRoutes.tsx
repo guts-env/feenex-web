@@ -9,7 +9,7 @@ const Register = lazy(() => import('@/pages/Register'));
 const AcceptInvite = lazy(() => import('@/pages/AcceptInvite'));
 const ForgotPassword = lazy(() => import('@/pages/ForgotPassword'));
 const ResetPassword = lazy(() => import('@/pages/ResetPassword'));
-// const Dashboard = lazy(() => import('@/pages/Dashboard'));
+const Dashboard = lazy(() => import('@/pages/Dashboard'));
 const Expenses = lazy(() => import('@/pages/Expenses/ExpensesTable'));
 const Organization = lazy(() => import('@/pages/Organization'));
 const Settings = lazy(() => import('@/pages/Settings'));
@@ -23,7 +23,7 @@ const AppRoutes: React.FC = () => {
       <Route path="/forgot-password" element={<PublicRoute element={<ForgotPassword />} />} />
       <Route path="/reset-password" element={<PublicRoute element={<ResetPassword />} />} />
       <Route element={<PrivateRoute element={<AppLayout />} />}>
-        <Route path="/" element={<Navigate to="/expenses" replace />} />
+        <Route path="/" element={<Dashboard />} />
         <Route path="/expenses" element={<Expenses />} />
         <Route path="/organization" element={<Organization />} />
         <Route path="/settings" element={<Settings />} />
