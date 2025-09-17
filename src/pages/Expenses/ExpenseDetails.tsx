@@ -1,6 +1,15 @@
 import { useEffect, useState } from 'react';
 import { format } from 'date-fns';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { ImageIcon } from 'lucide-react';
 import ExpenseStatusBadge from '@/pages/Expenses/ExpenseStatusBadge';
 import ExpensePhotos from '@/pages/Expenses/ExpensePhotos';
 import ExpenseItems from '@/pages/Expenses/ExpenseItems';
@@ -44,6 +53,7 @@ export default function ExpenseDetails({
   onOpenChange: (open: boolean) => void;
 }) {
   const [internalData, setinternalData] = useState<IExpenseRes | undefined>(undefined);
+  const [photosDialogOpen, setPhotosDialogOpen] = useState(false);
 
   const { mutate: getDownloadPresigned } = useDownloadPresigned();
 
@@ -71,6 +81,7 @@ export default function ExpenseDetails({
         if (!isOpen) {
           setTimeout(() => {
             setinternalData(undefined);
+            setPhotosDialogOpen(false);
           }, 500);
         }
 
@@ -82,7 +93,7 @@ export default function ExpenseDetails({
         className="w-full sm:max-w-4xl overflow-hidden p-0 flex flex-col gap-0"
       >
         <div className="flex flex-1 overflow-hidden">
-          <div className="w-1/2 flex flex-col border-r">
+          <div className="hidden md:flex w-1/2 flex-col border-r">
             <SheetHeader className="border-b p-6 flex-shrink-0">
               <SheetTitle>Photos</SheetTitle>
             </SheetHeader>
@@ -96,13 +107,40 @@ export default function ExpenseDetails({
               )}
             </div>
           </div>
-          <div className="w-1/2 flex flex-col">
+
+          <div className="w-full md:w-1/2 flex flex-col">
             <SheetHeader className="border-b p-6 flex-shrink-0">
               <SheetTitle>Expense Details</SheetTitle>
             </SheetHeader>
 
             <div className="flex-1 overflow-y-auto p-6">
               <div className="flex flex-col gap-6">
+                {internalData?.photos && internalData?.photos.length > 0 && (
+                  <div className="md:hidden">
+                    <ExpenseDetailsContent
+                      title="Photos"
+                      content={
+                        <Dialog open={photosDialogOpen} onOpenChange={setPhotosDialogOpen}>
+                          <DialogTrigger asChild>
+                            <Button variant="outline" className="w-fit">
+                              <ImageIcon className="h-4 w-4 mr-2" />
+                              View Photos ({internalData.photos.length})
+                            </Button>
+                          </DialogTrigger>
+                          <DialogContent className="max-w-4xl w-[calc(100vw-3rem)] h-[80vh]">
+                            <DialogHeader>
+                              <DialogTitle>Expense Photos</DialogTitle>
+                            </DialogHeader>
+                            <div className="flex-1 overflow-y-auto">
+                              <ExpensePhotos photos={internalData.photos} />
+                            </div>
+                          </DialogContent>
+                        </Dialog>
+                      }
+                    />
+                  </div>
+                )}
+
                 <ExpenseDetailsContent
                   title="Merchant Name"
                   content={internalData?.merchantName ?? '-'}
