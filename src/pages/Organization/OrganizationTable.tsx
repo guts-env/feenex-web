@@ -144,6 +144,7 @@ function OrganizationTable() {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value={RoleEnum.BUSINESS_ADMIN}>Business Admin</SelectItem>
+                <SelectItem value={RoleEnum.MANAGER}>Manager</SelectItem>
                 <SelectItem value={RoleEnum.MEMBER}>Member</SelectItem>
               </SelectContent>
             </Select>

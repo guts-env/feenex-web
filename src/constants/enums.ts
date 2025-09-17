@@ -16,8 +16,9 @@ export enum OrgTypeEnum {
 
 export enum RoleEnum {
   BUSINESS_ADMIN = 'business_admin',
-  PERSONAL_ADMIN = 'personal_admin',
+  MANAGER = 'manager',
   MEMBER = 'member',
+  PERSONAL_ADMIN = 'personal_admin',
 }
 
 export enum ExpenseStatusEnum {
