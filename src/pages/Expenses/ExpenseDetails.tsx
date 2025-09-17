@@ -8,8 +8,9 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
+import { Drawer, DrawerContent, DrawerTrigger } from '@/components/ui/drawer';
 import { Button } from '@/components/ui/button';
-import { ImageIcon } from 'lucide-react';
+import { ImageIcon, History } from 'lucide-react';
 import ExpenseStatusBadge from '@/pages/Expenses/ExpenseStatusBadge';
 import ExpensePhotos from '@/pages/Expenses/ExpensePhotos';
 import ExpenseItems from '@/pages/Expenses/ExpenseItems';
@@ -54,6 +55,7 @@ export default function ExpenseDetails({
 }) {
   const [internalData, setinternalData] = useState<IExpenseRes | undefined>(undefined);
   const [photosDialogOpen, setPhotosDialogOpen] = useState(false);
+  const [auditTrailDrawerOpen, setAuditTrailDrawerOpen] = useState(false);
 
   const { mutate: getDownloadPresigned } = useDownloadPresigned();
 
@@ -82,6 +84,7 @@ export default function ExpenseDetails({
           setTimeout(() => {
             setinternalData(undefined);
             setPhotosDialogOpen(false);
+            setAuditTrailDrawerOpen(false);
           }, 500);
         }
 
@@ -196,7 +199,8 @@ export default function ExpenseDetails({
             </div>
           </div>
         </div>
-        <div className="border-t p-4 flex-shrink-0">
+
+        <div className="hidden md:block border-t p-4 flex-shrink-0">
           <div className="flex flex-col gap-3">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
               <AuditTrailItem
@@ -232,6 +236,56 @@ export default function ExpenseDetails({
               )}
             </div>
           </div>
+        </div>
+
+        <div className="md:hidden border-t flex-shrink-0">
+          <Drawer open={auditTrailDrawerOpen} onOpenChange={setAuditTrailDrawerOpen}>
+            <DrawerTrigger asChild>
+              <Button variant="ghost" className="w-full justify-between p-4 h-auto font-normal">
+                <div className="flex items-center gap-2">
+                  <History className="h-4 w-4" />
+                  <span className="text-sm font-medium">View Audit Trail</span>
+                </div>
+              </Button>
+            </DrawerTrigger>
+            <DrawerContent>
+              <div className="p-4 pb-8">
+                <div className="flex flex-col gap-3">
+                  <AuditTrailItem
+                    label="Created"
+                    user={internalData?.createdBy?.firstName}
+                    date={
+                      internalData?.createdAt
+                        ? format(new Date(internalData.createdAt), 'MMM dd, yyyy hh:mm a')
+                        : undefined
+                    }
+                  />
+                  <AuditTrailItem
+                    label="Updated"
+                    user={internalData?.updatedBy?.firstName}
+                    date={
+                      internalData?.updatedAt
+                        ? format(new Date(internalData.updatedAt), 'MMM dd, yyyy hh:mm a')
+                        : undefined
+                    }
+                  />
+                  {internalData?.verifiedBy ? (
+                    <AuditTrailItem
+                      label="Verified"
+                      user={internalData?.verifiedBy?.firstName}
+                      date={
+                        internalData?.verifiedAt
+                          ? format(new Date(internalData.verifiedAt), 'MMM dd, yyyy hh:mm a')
+                          : undefined
+                      }
+                    />
+                  ) : (
+                    <AuditTrailItem label="Unverified" user="-" date="-" />
+                  )}
+                </div>
+              </div>
+            </DrawerContent>
+          </Drawer>
         </div>
       </SheetContent>
     </Sheet>
