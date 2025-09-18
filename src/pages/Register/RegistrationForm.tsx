@@ -1,19 +1,23 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { cn } from "@/lib/utils"
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
+import { cn } from '@/lib/utils';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { OrgTypeEnum } from '@/constants/enums';
-import { useRegisterForm } from '@/forms/hooks/useAuthForm'
+import { useRegisterForm } from '@/forms/hooks/useAuthForm';
 import { useRegister } from '@/api/services/AuthService/mutation';
 import { type IRegisterFormValues } from '@/forms/schema/auth';
 
-export default function RegistrationForm({
-  className,
-  ...props
-}: React.ComponentProps<"form">) {
+export default function RegistrationForm({ className, ...props }: React.ComponentProps<'form'>) {
   const form = useRegisterForm();
   const { mutate: register, isPending } = useRegister();
 
@@ -27,7 +31,9 @@ export default function RegistrationForm({
     register(data, {
       onSuccess: () => {
         form.reset();
-        setSuccess('Registration successful! A confirmation email has been sent to your email address.');
+        setSuccess(
+          'Registration successful! A confirmation email has been sent to your email address.',
+        );
       },
       onError: (error) => {
         setError(error.message);
@@ -37,12 +43,14 @@ export default function RegistrationForm({
 
   return (
     <Form {...form}>
-      <form className={cn("flex flex-col gap-6", className)} {...props} onSubmit={form.handleSubmit(onSubmit)}>
+      <form
+        className={cn('flex flex-col gap-6', className)}
+        {...props}
+        onSubmit={form.handleSubmit(onSubmit)}
+      >
         <div className="flex flex-col items-center gap-2 text-center">
           <h1 className="text-2xl font-bold">Welcome to Feenex!</h1>
-          <p className="text-muted-foreground text-sm text-balance">
-            Create your Feenex account
-          </p>
+          <p className="text-muted-foreground text-sm text-balance">Create your Feenex account</p>
         </div>
         <div className="flex flex-col gap-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -67,7 +75,7 @@ export default function RegistrationForm({
                 name="middleName"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Middle Name</FormLabel>
+                    <FormLabel>Middle Name (Optional)</FormLabel>
                     <FormControl>
                       <Input {...field} />
                     </FormControl>
@@ -169,7 +177,7 @@ export default function RegistrationForm({
                 </FormItem>
               )}
             />
-            {form.watch("orgType") === OrgTypeEnum.BUSINESS && (
+            {form.watch('orgType') === OrgTypeEnum.BUSINESS && (
               <FormField
                 control={form.control}
                 name="orgName"
@@ -193,12 +201,12 @@ export default function RegistrationForm({
           </Button>
         </div>
         <div className="text-center text-sm">
-          Already registered?{" "}
+          Already registered?{' '}
           <Link to="/login" className="underline underline-offset-4">
             Login
           </Link>
         </div>
       </form>
     </Form>
-  )
+  );
 }

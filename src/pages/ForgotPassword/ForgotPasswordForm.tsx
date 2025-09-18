@@ -1,17 +1,21 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { cn } from "@/lib/utils"
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { useForgotPasswordForm } from '@/forms/hooks/useAuthForm'
+import { cn } from '@/lib/utils';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { useForgotPasswordForm } from '@/forms/hooks/useAuthForm';
 import { useForgotPassword } from '@/api/services/AuthService/mutation';
 import { type IForgotPasswordFormValues } from '@/forms/schema/auth';
 
-export default function ForgotPasswordForm({
-  className,
-  ...props
-}: React.ComponentProps<"form">) {
+export default function ForgotPasswordForm({ className, ...props }: React.ComponentProps<'form'>) {
   const form = useForgotPasswordForm();
   const { mutate: forgotPassword, isPending } = useForgotPassword();
 
@@ -35,7 +39,11 @@ export default function ForgotPasswordForm({
 
   return (
     <Form {...form}>
-      <form className={cn("flex flex-col gap-6", className)} {...props} onSubmit={form.handleSubmit(onSubmit)}>
+      <form
+        className={cn('flex flex-col gap-6', className)}
+        {...props}
+        onSubmit={form.handleSubmit(onSubmit)}
+      >
         <div className="flex flex-col items-center gap-2 text-center">
           <h1 className="text-2xl font-bold">Forgot Password</h1>
           <p className="text-muted-foreground text-sm text-balance">
@@ -65,12 +73,12 @@ export default function ForgotPasswordForm({
           </Button>
         </div>
         <div className="text-center text-sm">
-          Remember your password?{" "}
+          Remember your password?{' '}
           <Link to="/login" className="underline underline-offset-4">
             Login
           </Link>
         </div>
       </form>
     </Form>
-  )
+  );
 }

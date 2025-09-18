@@ -1,17 +1,21 @@
 import { useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
-import { cn } from "@/lib/utils"
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { useResetPasswordForm } from '@/forms/hooks/useAuthForm'
+import { cn } from '@/lib/utils';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { useResetPasswordForm } from '@/forms/hooks/useAuthForm';
 import { useResetPassword } from '@/api/services/AuthService/mutation';
 import { type IResetPasswordFormValues } from '@/forms/schema/auth';
 
-export default function ResetPasswordForm({
-  className,
-  ...props
-}: React.ComponentProps<"form">) {
+export default function ResetPasswordForm({ className, ...props }: React.ComponentProps<'form'>) {
   const [searchParams] = useSearchParams();
 
   const form = useResetPasswordForm();
@@ -24,28 +28,35 @@ export default function ResetPasswordForm({
     setError(null);
     setSuccess(null);
 
-    resetPassword({
-      ...data,
-      resetToken: searchParams.get('prt')!,
-    }, {
-      onSuccess: () => {
-        form.reset();
-        setSuccess('Your password has been updated');
+    resetPassword(
+      {
+        ...data,
+        resetToken: searchParams.get('prt')!,
       },
-      onError: (error) => {
-        if (Array.isArray(error.message)) {
-          const errorMessages = [...new Set(error.message)];
-          setError(errorMessages.join(' '));
-        } else {
-          setError(error.message);
-        }
+      {
+        onSuccess: () => {
+          form.reset();
+          setSuccess('Your password has been updated');
+        },
+        onError: (error) => {
+          if (Array.isArray(error.message)) {
+            const errorMessages = [...new Set(error.message)];
+            setError(errorMessages.join(' '));
+          } else {
+            setError(error.message);
+          }
+        },
       },
-    });
+    );
   };
 
   return (
     <Form {...form}>
-      <form className={cn("flex flex-col gap-6", className)} {...props} onSubmit={form.handleSubmit(onSubmit)}>
+      <form
+        className={cn('flex flex-col gap-6', className)}
+        {...props}
+        onSubmit={form.handleSubmit(onSubmit)}
+      >
         <div className="flex flex-col items-center gap-2 text-center">
           <h1 className="text-2xl font-bold">Reset Password</h1>
         </div>
@@ -85,12 +96,12 @@ export default function ResetPasswordForm({
           {isPending ? 'Resetting password...' : 'Reset password'}
         </Button>
         <div className="text-center text-sm">
-          Remember your password?{" "}
+          Remember your password?{' '}
           <Link to="/login" className="underline underline-offset-4">
             Login
           </Link>
         </div>
       </form>
-    </Form >
-  )
+    </Form>
+  );
 }

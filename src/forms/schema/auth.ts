@@ -61,7 +61,9 @@ export const AcceptInviteSchema = z
       error: 'First name is required',
     }),
     middleName: z.string().optional(),
-    lastName: z.string().optional(),
+    lastName: z.string().min(1, {
+      error: 'Last name is required',
+    }),
     password: z.string().min(8, {
       error: 'Password must be at least 8 characters',
     }),

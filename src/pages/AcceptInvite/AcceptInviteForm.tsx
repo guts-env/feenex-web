@@ -1,17 +1,21 @@
 import { useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
-import { cn } from "@/lib/utils"
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { useAcceptInviteForm } from '@/forms/hooks/useAuthForm'
+import { cn } from '@/lib/utils';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { useAcceptInviteForm } from '@/forms/hooks/useAuthForm';
 import { useAcceptInvite } from '@/api/services/AuthService/mutation';
 import { type IAcceptInviteFormValues } from '@/forms/schema/auth';
 
-export default function AcceptInviteForm({
-  className,
-  ...props
-}: React.ComponentProps<"form">) {
+export default function AcceptInviteForm({ className, ...props }: React.ComponentProps<'form'>) {
   const [searchParams] = useSearchParams();
 
   const form = useAcceptInviteForm();
@@ -24,28 +28,35 @@ export default function AcceptInviteForm({
     setError(null);
     setSuccess(null);
 
-    acceptInvite({
-      inviteToken: searchParams.get('inviteToken')!,
-      ...data,
-    }, {
-      onSuccess: () => {
-        form.reset();
-        setSuccess('You have joined the organization!');
+    acceptInvite(
+      {
+        inviteToken: searchParams.get('inviteToken')!,
+        ...data,
       },
-      onError: (error) => {
-        if (Array.isArray(error.message)) {
-          const errorMessages = [...new Set(error.message)];
-          setError(errorMessages.join(' '));
-        } else {
-          setError(error.message);
-        }
+      {
+        onSuccess: () => {
+          form.reset();
+          setSuccess('You have joined the organization!');
+        },
+        onError: (error) => {
+          if (Array.isArray(error.message)) {
+            const errorMessages = [...new Set(error.message)];
+            setError(errorMessages.join(' '));
+          } else {
+            setError(error.message);
+          }
+        },
       },
-    });
+    );
   };
 
   return (
     <Form {...form}>
-      <form className={cn("flex flex-col gap-6", className)} {...props} onSubmit={form.handleSubmit(onSubmit)}>
+      <form
+        className={cn('flex flex-col gap-6', className)}
+        {...props}
+        onSubmit={form.handleSubmit(onSubmit)}
+      >
         <div className="flex flex-col items-center gap-2 text-center">
           <h1 className="text-2xl font-bold">Join Organization</h1>
           <p className="text-muted-foreground text-sm text-balance">
@@ -53,6 +64,54 @@ export default function AcceptInviteForm({
           </p>
         </div>
         <div className="flex flex-col gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid gap-3 items-start">
+              <FormField
+                control={form.control}
+                name="firstName"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>First Name</FormLabel>
+                    <FormControl>
+                      <Input {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+            <div className="grid gap-3 items-start">
+              <FormField
+                control={form.control}
+                name="middleName"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Middle Name (Optional)</FormLabel>
+                    <FormControl>
+                      <Input {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+            <div className="grid gap-3 items-start">
+              <FormField
+                control={form.control}
+                name="lastName"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Last Name</FormLabel>
+                    <FormControl>
+                      <Input {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+          </div>
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="grid gap-3 items-start">
               <FormField
@@ -84,51 +143,6 @@ export default function AcceptInviteForm({
                 )}
               />
             </div>
-            <div className="grid gap-3 items-start">
-              <FormField
-                control={form.control}
-                name="firstName"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>First Name</FormLabel>
-                    <FormControl>
-                      <Input {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-            <div className="grid gap-3 items-start">
-              <FormField
-                control={form.control}
-                name="middleName"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Middle Name</FormLabel>
-                    <FormControl>
-                      <Input {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-            <div className="grid gap-3 items-start">
-              <FormField
-                control={form.control}
-                name="lastName"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Last Name</FormLabel>
-                    <FormControl>
-                      <Input {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
           </div>
 
           {error && <p className="text-red-500 text-sm text-center">{error}</p>}
@@ -138,12 +152,12 @@ export default function AcceptInviteForm({
           </Button>
         </div>
         <div className="text-center text-sm">
-          Already registered?{" "}
+          Already registered?{' '}
           <Link to="/login" className="underline underline-offset-4">
             Login
           </Link>
         </div>
       </form>
     </Form>
-  )
+  );
 }
