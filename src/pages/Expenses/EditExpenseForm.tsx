@@ -1,6 +1,7 @@
 import { useState, useEffect, forwardRef, useImperativeHandle } from 'react';
 import { toast } from 'sonner';
 import startCase from 'lodash/startCase';
+import { format } from 'date-fns';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -72,7 +73,7 @@ const EditExpenseForm = forwardRef<IEditExpenseFormRef, IEditExpenseFormProps>(
         form.reset({
           merchantName: expense.merchantName,
           amount: expense.amount,
-          date: expense.date.split('T')[0],
+          date: format(new Date(expense.date), 'yyyy-MM-dd'),
           status: expense.status,
           categoryId: expense.category?.id || '',
           photos: expense.photos || [],
