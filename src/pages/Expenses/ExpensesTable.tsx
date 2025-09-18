@@ -34,6 +34,7 @@ import {
   ExpensesTableFilters,
   type IExpenseFilters,
 } from '@/components/features/ExpensesTableFilters';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
 const columns: ColumnDef<IExpenseRes>[] = [
   // {
@@ -64,12 +65,26 @@ const columns: ColumnDef<IExpenseRes>[] = [
     accessorKey: 'merchantName',
     cell: ({ row }) => {
       const isProcessing = row.original.processingStatus === 'processing';
+      const merchantName = row.original.merchantName;
+      const truncatedName =
+        merchantName.length > 30 ? `${merchantName.substring(0, 30)}...` : merchantName;
+      const isTruncated = merchantName.length > 30;
+
       return (
         <div className="flex items-center gap-2">
           {isProcessing && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />}
-          <span className={isProcessing ? 'text-muted-foreground' : ''}>
-            {row.original.merchantName}
-          </span>
+          {isTruncated ? (
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <span className={isProcessing ? 'text-muted-foreground' : ''}>{truncatedName}</span>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>{merchantName}</p>
+              </TooltipContent>
+            </Tooltip>
+          ) : (
+            <span className={isProcessing ? 'text-muted-foreground' : ''}>{merchantName}</span>
+          )}
         </div>
       );
     },
