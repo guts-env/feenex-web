@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import {
-  // LayoutGridIcon,
+  LayoutGridIcon,
   CommandIcon,
   ReceiptTextIcon,
   // Settings2Icon,
@@ -31,12 +31,12 @@ const data = {
     avatar: '/avatars/shadcn.jpg',
   },
   navMain: [
-    // {
-    //   title: 'Dashboard',
-    //   url: '/',
-    //   icon: LayoutGridIcon,
-    //   allowedRoles: [RoleEnum.BUSINESS_ADMIN, RoleEnum.PERSONAL_ADMIN],
-    // },
+    {
+      title: 'Dashboard',
+      url: '/',
+      icon: LayoutGridIcon,
+      allowedRoles: [RoleEnum.BUSINESS_ADMIN, RoleEnum.PERSONAL_ADMIN],
+    },
     {
       title: 'Expenses',
       url: '/expenses',

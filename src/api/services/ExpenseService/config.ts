@@ -1,10 +1,11 @@
-import type { IExpenseListParams } from '@/types/api'
+import type { IExpenseListParams, IExpensesTotal } from '@/types/api';
 
 export const ExpenseQueryKeys = {
   all: 'expense',
   list: (params: IExpenseListParams) => [...ExpenseQueryKeys.all, 'list', params],
   detail: (id: string) => [...ExpenseQueryKeys.all, 'detail', id],
-}
+  total: (params: IExpensesTotal) => [...ExpenseQueryKeys.all, 'total', params],
+};
 
 export const ExpenseEndpoints = {
   list: () => '/expenses/',
@@ -14,4 +15,5 @@ export const ExpenseEndpoints = {
   update: (id: string) => `/expenses/${id}/`,
   verify: (id: string) => `/expenses/${id}/verify/`,
   delete: (id: string) => `/expenses/${id}/`,
-}
+  total: () => '/expenses/total/',
+};

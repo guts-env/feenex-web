@@ -5,6 +5,7 @@ import debounce from 'lodash/debounce';
 import { MoreHorizontal, Plus, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
+import { useLocation } from 'react-router-dom';
 import queryClient from '@/api/queryClient';
 import { ExpenseQueryKeys } from '@/api/services/ExpenseService/config';
 import ExpenseQuery from '@/api/services/ExpenseService/query';
@@ -31,7 +32,7 @@ import MultipleAutoExpensesForm from './MultipleAutoExpensesForm';
 import { usePaginationOnDelete } from '@/hooks/usePaginationOnDelete';
 import {
   ExpensesTableFilters,
-  type ExpenseFilters,
+  type IExpenseFilters,
 } from '@/components/features/ExpensesTableFilters';
 
 const columns: ColumnDef<IExpenseRes>[] = [
@@ -174,11 +175,19 @@ const columns: ColumnDef<IExpenseRes>[] = [
 ];
 
 function ExpensesTable() {
+  const location = useLocation();
+
   /* Table State */
   const [sorting, setSorting] = useState<SortingState>([]);
   const [rowSelection, setRowSelection] = useState({});
   const [search, setSearch] = useState('');
-  const [filters, setFilters] = useState<ExpenseFilters>({});
+
+  const getInitialFilters = (): IExpenseFilters => {
+    const state = location.state as { initialFilters?: IExpenseFilters } | null;
+    return state?.initialFilters || {};
+  };
+
+  const [filters, setFilters] = useState<IExpenseFilters>(getInitialFilters());
 
   /* Modals and Sheets */
   const [selectedExpense, setSelectedExpense] = useState<IExpenseRes | undefined>(undefined);
@@ -231,7 +240,7 @@ function ExpensesTable() {
     setPagination({ ...pagination, pageIndex: 0 });
   }, 500);
 
-  const handleFiltersChange = (newFilters: ExpenseFilters) => {
+  const handleFiltersChange = (newFilters: IExpenseFilters) => {
     setFilters(newFilters);
     setPagination({ ...pagination, pageIndex: 0 });
   };

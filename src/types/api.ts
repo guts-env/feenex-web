@@ -27,6 +27,11 @@ export interface IBasePaginatedParams {
   };
 }
 
+export interface IBaseDateRangeParams {
+  startDate?: string;
+  endDate?: string;
+}
+
 export interface IOrganizationRes {
   id: string;
   name: string;
@@ -104,6 +109,17 @@ export interface IExpenseListParams extends IBasePaginatedParams {
 export interface IExpenseListRes {
   data: IExpenseRes[];
   count: number;
+}
+
+export type IExpensesTotal = IBaseDateRangeParams;
+
+export interface IExpenseTotalRes {
+  total: number;
+  count: number;
+  unverified: number;
+  verified: number;
+  receiptsProcessed: number;
+  dateRange: IBaseDateRangeParams;
 }
 
 export interface IUploadPresigned {

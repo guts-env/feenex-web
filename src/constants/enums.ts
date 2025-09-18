@@ -6,6 +6,7 @@ export enum RoutesEnum {
   RESET_PASSWORD = '/reset-password',
   DASHBOARD = '/',
   EXPENSES = '/expenses',
+  ORGANIZATION = '/organization',
   SETTINGS = '/settings',
 }
 

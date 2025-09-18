@@ -19,7 +19,7 @@ import CategoryQuery from '@/api/services/CategoryService/query';
 import { ExpenseStatusEnum } from '@/constants/enums';
 import { cn } from '@/lib/utils';
 
-export interface ExpenseFilters {
+export interface IExpenseFilters {
   startDate?: string;
   endDate?: string;
   categoryIds?: string[];
@@ -29,13 +29,13 @@ export interface ExpenseFilters {
 }
 
 interface ExpensesTableFiltersProps {
-  filters: ExpenseFilters;
-  onFiltersChange: (filters: ExpenseFilters) => void;
+  filters: IExpenseFilters;
+  onFiltersChange: (filters: IExpenseFilters) => void;
 }
 
 export function ExpensesTableFilters({ filters, onFiltersChange }: ExpensesTableFiltersProps) {
   const [open, setOpen] = useState(false);
-  const [localFilters, setLocalFilters] = useState<ExpenseFilters>(filters);
+  const [localFilters, setLocalFilters] = useState<IExpenseFilters>(filters);
 
   const { data: categories } = useQuery({
     queryKey: CategoryQueryKeys.list(),
@@ -58,12 +58,12 @@ export function ExpensesTableFilters({ filters, onFiltersChange }: ExpensesTable
   };
 
   const hasActiveFilters = Object.keys(filters).some((key) => {
-    const value = filters[key as keyof ExpenseFilters];
+    const value = filters[key as keyof IExpenseFilters];
     return Array.isArray(value) ? value.length > 0 : value !== undefined && value !== '';
   });
 
   const activeFilterCount = Object.keys(filters).filter((key) => {
-    const value = filters[key as keyof ExpenseFilters];
+    const value = filters[key as keyof IExpenseFilters];
     return Array.isArray(value) ? value.length > 0 : value !== undefined && value !== '';
   }).length;
 
