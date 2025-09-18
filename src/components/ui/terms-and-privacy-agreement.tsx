@@ -6,7 +6,7 @@ interface TermsAndPrivacyAgreementProps {
 
 export default function TermsAndPrivacyAgreement({ className }: TermsAndPrivacyAgreementProps) {
   return (
-    <p className={`text-xs text-muted-foreground text-center ${className || ''}`}>
+    <p className={`text-xs text-muted-foreground text-center text-balance ${className || ''}`}>
       By continuing, you agree to our{' '}
       <Link
         to="https://app.termly.io/policy-viewer/policy.html?policyUUID=b6563c6b-a3cd-432a-8db4-bb73240dc039"
