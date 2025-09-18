@@ -280,6 +280,7 @@ function ExpensesTable() {
     header: 'Actions',
     accessorKey: 'actions',
     enableHiding: false,
+    enableSorting: false,
     cell: ({ row }) => {
       const id = row.original.id;
       const status = row.original.status;
