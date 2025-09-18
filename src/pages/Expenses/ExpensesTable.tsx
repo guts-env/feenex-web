@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { type ColumnDef, type SortingState, type Updater } from '@tanstack/react-table';
 import debounce from 'lodash/debounce';
-import { MoreHorizontal, Plus } from 'lucide-react';
+import { MoreHorizontal, Plus, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
 import queryClient from '@/api/queryClient';
@@ -10,8 +10,8 @@ import { ExpenseQueryKeys } from '@/api/services/ExpenseService/config';
 import ExpenseQuery from '@/api/services/ExpenseService/query';
 import { useDeleteExpense, useVerifyExpense } from '@/api/services/ExpenseService/mutation';
 import { DataTable } from '@/components/ui/data-table';
-// import { Checkbox } from '@/components/ui/checkbox'
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -61,22 +61,50 @@ const columns: ColumnDef<IExpenseRes>[] = [
     id: 'Merchant Name',
     header: 'Merchant Name',
     accessorKey: 'merchantName',
+    cell: ({ row }) => {
+      const isProcessing = row.original.processingStatus === 'processing';
+      return (
+        <div className="flex items-center gap-2">
+          {isProcessing && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />}
+          <span className={isProcessing ? 'text-muted-foreground' : ''}>
+            {row.original.merchantName}
+          </span>
+        </div>
+      );
+    },
   },
   {
     id: 'Amount',
     accessorKey: 'amount',
     header: 'Amount',
-    cell: ({ row }) =>
-      Intl.NumberFormat('ph-PH', { style: 'currency', currency: 'PHP' }).format(
-        row.original.amount,
-      ),
+    cell: ({ row }) => {
+      const isProcessing = row.original.processingStatus === 'processing';
+
+      if (isProcessing) {
+        return null;
+      }
+
+      return (
+        <span>
+          {Intl.NumberFormat('ph-PH', { style: 'currency', currency: 'PHP' }).format(
+            row.original.amount,
+          )}
+        </span>
+      );
+    },
   },
   {
     id: 'Date',
     header: 'Date',
     accessorKey: 'date',
     cell: ({ row }) => {
-      return format(row.original.date, 'MMM dd, yyyy');
+      const isProcessing = row.original.processingStatus === 'processing';
+
+      if (isProcessing) {
+        return null;
+      }
+
+      return <span>{format(row.original.date, 'MMM dd, yyyy')}</span>;
     },
   },
   {
@@ -84,26 +112,62 @@ const columns: ColumnDef<IExpenseRes>[] = [
     accessorKey: 'status',
     header: 'Status',
     cell: ({ row }) => {
-      return <ExpenseStatusBadge status={row.original.status} />;
+      const isProcessing = row.original.processingStatus === 'processing';
+
+      if (isProcessing) {
+        return null;
+      }
+
+      return (
+        <div className="flex items-center gap-2">
+          <ExpenseStatusBadge status={row.original.status} />
+        </div>
+      );
     },
   },
   {
     id: 'Category',
     header: 'Category',
     accessorKey: 'category',
-    cell: ({ row }) => row.original.category?.name,
+    cell: ({ row }) => {
+      const isProcessing = row.original.processingStatus === 'processing';
+
+      if (isProcessing) {
+        return null;
+      }
+
+      return row.original.category?.name ? (
+        <Badge variant="secondary">{row.original.category.name}</Badge>
+      ) : (
+        <span className="text-muted-foreground">-</span>
+      );
+    },
   },
   {
     id: 'Created By',
     header: 'Created By',
     accessorKey: 'createdBy',
-    cell: ({ row }) => row.original.createdBy.firstName,
+    cell: ({ row }) => {
+      const isProcessing = row.original.processingStatus === 'processing';
+      return (
+        <span className={isProcessing ? 'text-muted-foreground' : ''}>
+          {row.original.createdBy.firstName}
+        </span>
+      );
+    },
   },
   {
     id: 'Verified By',
     header: 'Verified By',
     accessorKey: 'verifiedBy',
-    cell: ({ row }) => row.original.verifiedBy?.firstName,
+    cell: ({ row }) => {
+      const isProcessing = row.original.processingStatus === 'processing';
+      return (
+        <span className={isProcessing ? 'text-muted-foreground' : ''}>
+          {row.original.verifiedBy?.firstName}
+        </span>
+      );
+    },
   },
 ];
 
@@ -207,6 +271,16 @@ function ExpensesTable() {
     cell: ({ row }) => {
       const id = row.original.id;
       const status = row.original.status;
+      const isProcessing = row.original.processingStatus === 'processing';
+
+      if (isProcessing) {
+        return (
+          <Button variant="ghost" className="h-8 w-8 p-0" disabled>
+            <span className="sr-only">Open expenses actions</span>
+            <MoreHorizontal />
+          </Button>
+        );
+      }
 
       return (
         <DropdownMenu>
@@ -287,6 +361,7 @@ function ExpensesTable() {
         expense={selectedExpense}
         open={!!selectedExpense}
         onOpenChange={(open) => !open && setSelectedExpense(undefined)}
+        onExpenseVerified={invalidateExpenseList}
       />
       <DeleteExpense
         deleteExpenseId={deleteExpenseId}

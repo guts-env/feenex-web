@@ -28,6 +28,13 @@ export enum ExpenseStatusEnum {
   VERIFIED = 'verified',
 }
 
+export enum ExpenseProcessingStatusEnum {
+  PENDING = 'pending',
+  PROCESSING = 'processing',
+  COMPLETED = 'completed',
+  FAILED = 'failed',
+}
+
 export enum ExpenseTypeEnum {
   MANUAL = 'manual',
   AUTO = 'auto',

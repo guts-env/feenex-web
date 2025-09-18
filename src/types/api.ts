@@ -1,4 +1,9 @@
-import type { ExpenseStatusEnum, OrgTypeEnum, RoleEnum } from '@/constants/enums';
+import type {
+  ExpenseProcessingStatusEnum,
+  ExpenseStatusEnum,
+  OrgTypeEnum,
+  RoleEnum,
+} from '@/constants/enums';
 
 export interface ApiErrorPayload {
   code: string;
@@ -77,6 +82,7 @@ export interface IExpenseRes {
   verifiedBy: Partial<IUserRes>;
   verifiedAt: string;
   status: ExpenseStatusEnum;
+  processingStatus: ExpenseProcessingStatusEnum;
   items?: IExpenseLineItemRes[];
   otherDetails?: IExpenseOtherDetailsRes[];
 }

@@ -10,12 +10,15 @@ import {
 } from '@/components/ui/dialog';
 import { Drawer, DrawerContent, DrawerTrigger } from '@/components/ui/drawer';
 import { Button } from '@/components/ui/button';
-import { ImageIcon, History } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { ImageIcon, History, CheckCircle } from 'lucide-react';
+import { toast } from 'sonner';
 import ExpenseStatusBadge from '@/pages/Expenses/ExpenseStatusBadge';
 import ExpensePhotos from '@/pages/Expenses/ExpensePhotos';
 import ExpenseItems from '@/pages/Expenses/ExpenseItems';
 import ExpenseOtherDetails from '@/pages/Expenses/ExpenseOtherDetails';
 import { useDownloadPresigned } from '@/api/services/UploadService/mutation';
+import { useVerifyExpense } from '@/api/services/ExpenseService/mutation';
 import { ExpenseStatusEnum } from '@/constants/enums';
 import type { IExpenseRes } from '@/types/api';
 
@@ -48,16 +51,19 @@ export default function ExpenseDetails({
   expense,
   open,
   onOpenChange,
+  onExpenseVerified,
 }: {
   expense: IExpenseRes | undefined;
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  onExpenseVerified: () => void;
 }) {
   const [internalData, setinternalData] = useState<IExpenseRes | undefined>(undefined);
   const [photosDialogOpen, setPhotosDialogOpen] = useState(false);
   const [auditTrailDrawerOpen, setAuditTrailDrawerOpen] = useState(false);
 
   const { mutate: getDownloadPresigned } = useDownloadPresigned();
+  const { mutate: verifyExpense, isPending: isVerifying } = useVerifyExpense();
 
   useEffect(() => {
     if (open) {
@@ -75,6 +81,27 @@ export default function ExpenseDetails({
       }
     }
   }, [expense, open, getDownloadPresigned]);
+
+  const handleVerify = () => {
+    if (!internalData?.id) return;
+
+    verifyExpense(internalData.id, {
+      onSuccess: () => {
+        setinternalData((prev) =>
+          prev ? { ...prev, status: ExpenseStatusEnum.VERIFIED } : undefined,
+        );
+
+        onExpenseVerified?.();
+        toast.success('Expense verified! 🎉');
+        onOpenChange(false);
+      },
+      onError: (error) => {
+        toast.error('Failed to verify expense', {
+          description: error.message,
+        });
+      },
+    });
+  };
 
   return (
     <Sheet
@@ -113,7 +140,9 @@ export default function ExpenseDetails({
 
           <div className="w-full md:w-1/2 flex flex-col">
             <SheetHeader className="border-b p-6 flex-shrink-0">
-              <SheetTitle>Expense Details</SheetTitle>
+              <div className="flex items-center gap-2">
+                <SheetTitle>Expense Details</SheetTitle>
+              </div>
             </SheetHeader>
 
             <div className="flex-1 overflow-y-auto p-6">
@@ -167,19 +196,37 @@ export default function ExpenseDetails({
                   />
                 </div>
 
-                {/* Status and Category in same row */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <ExpenseDetailsContent
                     title="Status"
                     content={
-                      <ExpenseStatusBadge
-                        status={internalData?.status || ExpenseStatusEnum.DRAFT}
-                      />
+                      <div className="flex items-center gap-2">
+                        <ExpenseStatusBadge
+                          status={internalData?.status || ExpenseStatusEnum.DRAFT}
+                        />
+                        {internalData?.status !== ExpenseStatusEnum.VERIFIED && (
+                          <Button
+                            onClick={handleVerify}
+                            disabled={isVerifying}
+                            size="sm"
+                            className="gap-2 h-6 px-2 text-xs"
+                          >
+                            <CheckCircle className="h-3 w-3" />
+                            {isVerifying ? 'Verifying...' : 'Verify'}
+                          </Button>
+                        )}
+                      </div>
                     }
                   />
                   <ExpenseDetailsContent
                     title="Category"
-                    content={internalData?.category?.name ?? '-'}
+                    content={
+                      internalData?.category?.name ? (
+                        <Badge variant="secondary">{internalData.category.name}</Badge>
+                      ) : (
+                        '-'
+                      )
+                    }
                   />
                 </div>
 
