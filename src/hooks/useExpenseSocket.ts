@@ -17,24 +17,15 @@ export const useExpenseSocket = (expenses: IExpenseRes[], refetch: () => void) =
       }
     };
 
-    const handleExpenseVerified = (expense: IExpenseRes) => {
-      console.log({
-        verified: expense,
-      });
+    const handleExpenseVerified = () => {
       refetch();
     };
 
-    const handleExpenseCreated = (expense: IExpenseRes) => {
-      console.log({
-        created: expense,
-      });
+    const handleExpenseCreated = () => {
       refetch();
     };
 
-    const handleExpenseDeleted = (expense: IExpenseRes) => {
-      console.log({
-        deleted: expense,
-      });
+    const handleExpenseDeleted = () => {
       refetch();
     };
 

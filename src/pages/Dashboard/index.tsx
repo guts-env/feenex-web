@@ -34,8 +34,6 @@ function Dashboard() {
     queryFn: ExpenseQuery.getTotal,
   });
 
-  console.log(total);
-
   return (
     <div className="flex flex-col gap-4">
       {/* <WorkInProgressIndicator description="Everything here is just a placeholder for now. Actual data will be shown here soon." /> */}

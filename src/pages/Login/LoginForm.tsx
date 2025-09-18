@@ -56,7 +56,6 @@ export default function LoginForm({ className, ...props }: React.ComponentProps<
         navigate('/');
       },
       onError: (error) => {
-        console.log(error);
         setError(error.message);
       },
     });
