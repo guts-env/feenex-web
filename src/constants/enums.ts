@@ -50,3 +50,8 @@ export enum UploadStatusEnum {
   UPLOADED = 'uploaded',
   ERROR = 'error',
 }
+
+export enum SortOrderEnum {
+  ASC = 'asc',
+  DESC = 'desc',
+}

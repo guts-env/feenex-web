@@ -1,4 +1,12 @@
-import { AlertCircleIcon, ChevronDown, Search } from 'lucide-react';
+import { useState } from 'react';
+import {
+  AlertCircleIcon,
+  ChevronDown,
+  Search,
+  ArrowUpDown,
+  ArrowUp,
+  ArrowDown,
+} from 'lucide-react';
 import {
   type ColumnDef,
   flexRender,
@@ -13,8 +21,8 @@ import {
   type ColumnFiltersState,
   type SortingState,
   type OnChangeFn,
+  type Column,
 } from '@tanstack/react-table';
-
 import {
   Table,
   TableBody,
@@ -32,8 +40,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Skeleton } from '@/components/ui/skeleton';
-import { useState } from 'react';
-import { Alert, AlertDescription, AlertTitle } from './alert';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 interface DataTableProps<TData, TValue> {
   loading: boolean;
@@ -56,6 +63,49 @@ interface DataTableProps<TData, TValue> {
   filtersSlot?: React.ReactNode;
 }
 
+function SortableHeader<TData, TValue>({
+  column,
+  children,
+}: {
+  column: Column<TData, TValue>;
+  children: React.ReactNode;
+}) {
+  const canSort = column.getCanSort();
+
+  if (!canSort) {
+    return <span>{children}</span>;
+  }
+
+  const isSorted = column.getIsSorted();
+
+  const handleSort = () => {
+    if (isSorted === 'asc') {
+      column.toggleSorting(true);
+    } else if (isSorted === 'desc') {
+      column.clearSorting();
+    } else {
+      column.toggleSorting(false);
+    }
+  };
+
+  return (
+    <div className="h-auto font-medium cursor-pointer group" onClick={handleSort}>
+      <span className="flex items-center gap-2">
+        {children}
+        <span className="opacity-50 group-hover:opacity-100 transition-opacity">
+          {isSorted === 'asc' ? (
+            <ArrowUp className="h-4 w-4" />
+          ) : isSorted === 'desc' ? (
+            <ArrowDown className="h-4 w-4" />
+          ) : (
+            <ArrowUpDown className="h-4 w-4" />
+          )}
+        </span>
+      </span>
+    </div>
+  );
+}
+
 function DataTableSkeleton({
   columnLength,
   hasSearch,
@@ -70,7 +120,6 @@ function DataTableSkeleton({
   return (
     <div className="w-full">
       <div className="flex flex-col gap-4 pb-4 md:flex-row md:items-center md:justify-between">
-        {/* Left side: Search bar and Column filter skeletons */}
         <div className="flex flex-col gap-4 md:flex-row md:items-center">
           {hasSearch && (
             <div className="relative w-full md:w-sm">
@@ -81,7 +130,6 @@ function DataTableSkeleton({
           {hasColumnFilter && <Skeleton className="h-10 w-24" />}
         </div>
 
-        {/* Right side: Right slot skeleton */}
         {hasRightSlot && <Skeleton className="h-10 w-20" />}
       </div>
       <div className="overflow-hidden rounded-md border">
@@ -204,7 +252,7 @@ export function DataTable<TData, TValue>({
                 checked={column.getIsVisible()}
                 onCheckedChange={(value) => column.toggleVisibility(!!value)}
               >
-                {column.id}
+                {column.columnDef.header as React.ReactNode}
               </DropdownMenuCheckboxItem>
             );
           })}
@@ -245,9 +293,15 @@ export function DataTable<TData, TValue>({
                 {headerGroup.headers.map((header) => {
                   return (
                     <TableHead key={header.id}>
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(header.column.columnDef.header, header.getContext())}
+                      {header.isPlaceholder ? null : header.column.getCanSort() ? (
+                        <SortableHeader column={header.column}>
+                          {flexRender(header.column.columnDef.header, header.getContext())}
+                        </SortableHeader>
+                      ) : (
+                        <span className="px-3 py-2">
+                          {flexRender(header.column.columnDef.header, header.getContext())}
+                        </span>
+                      )}
                     </TableHead>
                   );
                 })}
@@ -267,19 +321,15 @@ export function DataTable<TData, TValue>({
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={columns.length} className="h-24 text-center">
+                <TableHead colSpan={columns.length} className="h-24 text-center">
                   {emptyState}
-                </TableCell>
+                </TableHead>
               </TableRow>
             )}
           </TableBody>
         </Table>
       </div>
       <div className="flex items-center justify-end space-x-2 py-4">
-        {/* <div className="text-muted-foreground flex-1 text-sm">
-          {table.getFilteredSelectedRowModel().rows.length} of{" "}
-          {table.getFilteredRowModel().rows.length} row(s) selected.
-        </div> */}
         <div className="space-x-2">
           <Button
             variant="outline"
@@ -302,3 +352,6 @@ export function DataTable<TData, TValue>({
     </div>
   );
 }
+
+// Export the SortableHeader component for use in column definitions
+export { SortableHeader };

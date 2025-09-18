@@ -3,6 +3,7 @@ import type {
   ExpenseStatusEnum,
   OrgTypeEnum,
   RoleEnum,
+  SortOrderEnum,
 } from '@/constants/enums';
 
 export interface ApiErrorPayload {
@@ -94,6 +95,10 @@ export interface IExpenseListParams extends IBasePaginatedParams {
   statuses?: ExpenseStatusEnum[];
   minAmount?: number;
   maxAmount?: number;
+  orderBy?: {
+    field: string;
+    order: SortOrderEnum;
+  };
 }
 
 export interface IExpenseListRes {

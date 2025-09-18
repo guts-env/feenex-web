@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { type ColumnDef, type SortingState, type Updater } from '@tanstack/react-table';
 import debounce from 'lodash/debounce';
@@ -24,7 +24,7 @@ import DeleteExpense from '@/pages/Expenses/DeleteExpense';
 import AddExpense from '@/pages/Expenses/AddExpense';
 import EditExpense from '@/pages/Expenses/EditExpense';
 import { useExpenseSocket } from '@/hooks/useExpenseSocket';
-import { ExpenseStatusEnum } from '@/constants/enums';
+import { ExpenseStatusEnum, SortOrderEnum } from '@/constants/enums';
 import { type IExpenseRes } from '@/types/api';
 import { CompoundButton } from '@/components/ui/compound-button';
 import MultipleAutoExpensesForm from './MultipleAutoExpensesForm';
@@ -58,7 +58,7 @@ const columns: ColumnDef<IExpenseRes>[] = [
   //   enableHiding: false,
   // },
   {
-    id: 'Merchant Name',
+    id: 'merchant_name',
     header: 'Merchant Name',
     accessorKey: 'merchantName',
     cell: ({ row }) => {
@@ -74,7 +74,7 @@ const columns: ColumnDef<IExpenseRes>[] = [
     },
   },
   {
-    id: 'Amount',
+    id: 'amount',
     accessorKey: 'amount',
     header: 'Amount',
     cell: ({ row }) => {
@@ -94,7 +94,7 @@ const columns: ColumnDef<IExpenseRes>[] = [
     },
   },
   {
-    id: 'Date',
+    id: 'date',
     header: 'Date',
     accessorKey: 'date',
     cell: ({ row }) => {
@@ -108,9 +108,10 @@ const columns: ColumnDef<IExpenseRes>[] = [
     },
   },
   {
-    id: 'Status',
+    id: 'status',
     accessorKey: 'status',
     header: 'Status',
+    enableSorting: false,
     cell: ({ row }) => {
       const isProcessing = row.original.processingStatus === 'processing';
 
@@ -126,9 +127,10 @@ const columns: ColumnDef<IExpenseRes>[] = [
     },
   },
   {
-    id: 'Category',
-    header: 'Category',
+    id: 'category',
     accessorKey: 'category',
+    header: 'Category',
+    enableSorting: false,
     cell: ({ row }) => {
       const isProcessing = row.original.processingStatus === 'processing';
 
@@ -144,9 +146,9 @@ const columns: ColumnDef<IExpenseRes>[] = [
     },
   },
   {
-    id: 'Created By',
-    header: 'Created By',
+    id: 'created_by',
     accessorKey: 'createdBy',
+    header: 'Created By',
     cell: ({ row }) => {
       const isProcessing = row.original.processingStatus === 'processing';
       return (
@@ -157,9 +159,9 @@ const columns: ColumnDef<IExpenseRes>[] = [
     },
   },
   {
-    id: 'Verified By',
-    header: 'Verified By',
+    id: 'verified_by',
     accessorKey: 'verifiedBy',
+    header: 'Verified By',
     cell: ({ row }) => {
       const isProcessing = row.original.processingStatus === 'processing';
       return (
@@ -192,12 +194,22 @@ function ExpensesTable() {
     },
   });
 
-  const queryParams = {
-    offset: pagination.pageIndex * pagination.pageSize,
-    limit: pagination.pageSize,
-    search,
-    ...filters,
-  };
+  const queryParams = useMemo(
+    () => ({
+      offset: pagination.pageIndex * pagination.pageSize,
+      limit: pagination.pageSize,
+      search,
+      ...filters,
+      orderBy:
+        sorting.length > 0
+          ? {
+              field: sorting[0].id,
+              order: sorting[0].desc ? SortOrderEnum.DESC : SortOrderEnum.ASC,
+            }
+          : undefined,
+    }),
+    [pagination, search, filters, sorting],
+  );
 
   const { data, refetch, isLoading, isError } = useQuery({
     queryKey: ExpenseQueryKeys.list(queryParams),
