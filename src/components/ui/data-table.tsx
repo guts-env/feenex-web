@@ -280,8 +280,8 @@ export function DataTable<TData, TValue>({
         </div>
 
         <div className="flex items-center gap-4">
-          <div className="md:hidden">{filtersSlot}</div>
-          <div className="md:hidden">{columnFiltersSlot}</div>
+          {filtersSlot && <div className="md:hidden">{filtersSlot}</div>}
+          {columnFiltersSlot && <div className="md:hidden">{columnFiltersSlot}</div>}
           {rightSlot}
         </div>
       </div>
