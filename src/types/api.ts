@@ -21,6 +21,10 @@ export interface IBasePaginatedParams {
   offset: number;
   limit: number;
   search?: string;
+  orderBy?: {
+    field: string;
+    order: SortOrderEnum;
+  };
 }
 
 export interface IOrganizationRes {
@@ -95,10 +99,6 @@ export interface IExpenseListParams extends IBasePaginatedParams {
   statuses?: ExpenseStatusEnum[];
   minAmount?: number;
   maxAmount?: number;
-  orderBy?: {
-    field: string;
-    order: SortOrderEnum;
-  };
 }
 
 export interface IExpenseListRes {

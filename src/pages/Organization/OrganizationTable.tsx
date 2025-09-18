@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import {
   type ColumnDef,
@@ -27,7 +27,7 @@ import InviteMember from '@/pages/Organization/InviteMember';
 import RemoveMember from '@/pages/Organization/RemoveMember';
 import { useRemoveMember, useUpdateMemberRole } from '@/api/services/OrganizationService/mutation';
 import { type IOrganizationMemberRes } from '@/types/api';
-import { RoleEnum } from '@/constants/enums';
+import { RoleEnum, SortOrderEnum } from '@/constants/enums';
 
 function OrganizationTable() {
   /* Table State */
@@ -44,18 +44,26 @@ function OrganizationTable() {
   const [removeMemberId, setRemoveMemberId] = useState<string | undefined>(undefined);
   const [editingRole, setEditingRole] = useState<RoleEnum | undefined>(undefined);
 
-  const { data, isLoading, isError } = useQuery({
-    queryKey: OrganizationQueryKeys.members({
+  const queryParams = useMemo(
+    () => ({
       offset: pagination.pageIndex * pagination.pageSize,
       limit: pagination.pageSize,
       search,
+      orderBy:
+        sorting.length > 0
+          ? {
+              field: sorting[0].id,
+              order: sorting[0].desc ? SortOrderEnum.DESC : SortOrderEnum.ASC,
+            }
+          : undefined,
     }),
+    [pagination, search, sorting],
+  );
+
+  const { data, isLoading, isError } = useQuery({
+    queryKey: OrganizationQueryKeys.members(queryParams),
     queryFn: async () => {
-      const result = await OrganizationQuery.getMembers({
-        offset: pagination.pageIndex * pagination.pageSize,
-        limit: pagination.pageSize,
-        search,
-      });
+      const result = await OrganizationQuery.getMembers(queryParams);
 
       await new Promise((resolve) => setTimeout(resolve, 300));
       return result;
@@ -72,11 +80,7 @@ function OrganizationTable() {
 
   const invalidateOrganizationMemberList = () => {
     queryClient.invalidateQueries({
-      queryKey: OrganizationQueryKeys.members({
-        offset: pagination.pageIndex * pagination.pageSize,
-        limit: pagination.pageSize,
-        search,
-      }),
+      queryKey: OrganizationQueryKeys.members(queryParams),
     });
   };
 
@@ -123,12 +127,12 @@ function OrganizationTable() {
 
   const columns: ColumnDef<IOrganizationMemberRes>[] = [
     {
-      id: 'Name',
+      id: 'first_name',
       header: 'Name',
       accessorKey: 'firstName',
     },
     {
-      id: 'Role',
+      id: 'role',
       header: 'Role',
       cell: ({ row }) => {
         const isEditing = memberToEdit === row.original.id;
@@ -156,13 +160,14 @@ function OrganizationTable() {
       },
     },
     {
-      id: 'Email',
+      id: 'email',
       header: 'Email',
       accessorKey: 'email',
     },
     {
-      id: 'Joined At',
+      id: 'created_at',
       header: 'Joined At',
+      accessorKey: 'joinedAt',
       cell: ({ row }) => format(row.original.joinedAt, 'MMM dd, yyyy'),
     },
   ];

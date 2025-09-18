@@ -298,7 +298,7 @@ export function DataTable<TData, TValue>({
                           {flexRender(header.column.columnDef.header, header.getContext())}
                         </SortableHeader>
                       ) : (
-                        <span className="px-3 py-2">
+                        <span className="py-2">
                           {flexRender(header.column.columnDef.header, header.getContext())}
                         </span>
                       )}
