@@ -41,8 +41,8 @@ function Dashboard() {
       {/* <WorkInProgressIndicator description="Everything here is just a placeholder for now. Actual data will be shown here soon." /> */}
       <div className="*:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card dark:*:data-[slot=card]:bg-card grid grid-cols-1 gap-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:shadow-xs md:grid-cols-2 xl:grid-cols-4">
         <TotalExpenseCard total={total?.total ?? 0} />
-        <UnverifiedExpenseCard total={total?.unverified ?? 0} />
         <VerifiedExpenseCard total={total?.verified ?? 0} />
+        <UnverifiedExpenseCard total={total?.unverified ?? 0} />
         <ReceiptsProcessedCard receiptsProcessed={total?.receiptsProcessed ?? 0} />
       </div>
       {/* <div className="grid grid-cols-1 lg:grid-cols-5 gap-4 items-stretch">

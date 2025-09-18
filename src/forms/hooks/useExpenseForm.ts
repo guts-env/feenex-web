@@ -17,10 +17,10 @@ export const useAddManualExpenseForm = () => {
       amount: 0,
       categoryId: '',
       date: new Date().toISOString().split('T')[0],
-      items: [],
+      items: undefined,
       merchantName: '',
-      otherDetails: [],
-      photos: [],
+      otherDetails: undefined,
+      photos: undefined,
       status: ExpenseStatusEnum.DRAFT,
     },
   });
@@ -39,7 +39,7 @@ export const useAddAutoExpenseForm = () => {
   return useForm<IAddAutoExpenseFormValues>({
     resolver: zodResolver(AddAutoExpenseSchema),
     defaultValues: {
-      photos: [],
+      photos: undefined,
     },
   });
 };
