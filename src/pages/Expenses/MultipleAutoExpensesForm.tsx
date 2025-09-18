@@ -1,6 +1,6 @@
 import { useState, forwardRef, useImperativeHandle } from 'react';
 import { toast } from 'sonner';
-import { Plus, TrashIcon } from 'lucide-react';
+import { Plus, TrashIcon, Info } from 'lucide-react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form';
@@ -20,11 +20,13 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import UploadPhotoInput, { type UploadedFile } from '@/components/features/UploadPhotoInput';
 import { useAddMultipleAutoExpensesForm } from '@/forms/hooks/useExpenseForm';
 import { useCreateAutoExpense } from '@/api/services/ExpenseService/mutation';
 import { UploadTypeEnum } from '@/constants/enums';
+import { useIsMobile } from '@/hooks/use-mobile';
 import type { IAddExpenseProps, IMultipleAutoExpensesFormRef } from '@/types/expenses';
 
 interface ExpenseRow {
@@ -35,6 +37,7 @@ interface ExpenseRow {
 export const MultipleAutoExpensesForm = forwardRef<IMultipleAutoExpensesFormRef, IAddExpenseProps>(
   ({ open, onOpenChange, onExpenseAdded }, ref) => {
     const form = useAddMultipleAutoExpensesForm();
+    const isMobile = useIsMobile();
 
     const [expenseRows, setExpenseRows] = useState<ExpenseRow[]>([
       { id: '1', photos: [] },
@@ -260,27 +263,48 @@ export const MultipleAutoExpensesForm = forwardRef<IMultipleAutoExpensesFormRef,
                       </Accordion>
 
                       {expenseRows.length < 5 && (
-                        <div className="flex justify-start mt-2">
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <span>
-                                <Button
-                                  type="button"
-                                  variant="link"
-                                  size="sm"
-                                  onClick={handleAddRow}
-                                  disabled={!canAddNewExpense()}
-                                >
-                                  <Plus className="size-4" /> Add Expense
-                                </Button>
-                              </span>
-                            </TooltipTrigger>
-                            {!canAddNewExpense() && (
-                              <TooltipContent side="left">
-                                <p>Upload photos to existing expenses first</p>
-                              </TooltipContent>
-                            )}
-                          </Tooltip>
+                        <div className="flex flex-col gap-2 mt-2">
+                          <div className="flex justify-start">
+                            <Button
+                              type="button"
+                              variant="link"
+                              size="sm"
+                              onClick={handleAddRow}
+                              disabled={!canAddNewExpense()}
+                            >
+                              <Plus className="size-4" /> Add Expense
+                            </Button>
+                          </div>
+                          {!canAddNewExpense() && (
+                            <>
+                              {isMobile ? (
+                                <Alert variant="info">
+                                  <AlertDescription className="text-xs">
+                                    Upload photos to existing expenses first
+                                  </AlertDescription>
+                                </Alert>
+                              ) : (
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <span>
+                                      <Button
+                                        type="button"
+                                        variant="link"
+                                        size="sm"
+                                        onClick={handleAddRow}
+                                        disabled={!canAddNewExpense()}
+                                      >
+                                        <Plus className="size-4" /> Add Expense
+                                      </Button>
+                                    </span>
+                                  </TooltipTrigger>
+                                  <TooltipContent side="left">
+                                    <p>Upload photos to existing expenses first</p>
+                                  </TooltipContent>
+                                </Tooltip>
+                              )}
+                            </>
+                          )}
                         </div>
                       )}
                     </div>
