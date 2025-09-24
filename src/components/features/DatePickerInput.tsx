@@ -38,7 +38,8 @@ export function DatePickerInput<T extends FieldValues>({
         <PopoverContent className="w-auto p-0" align="start">
           <Calendar
             mode="single"
-            selected={field.value}
+            selected={field.value ? new Date(field.value) : undefined}
+            defaultMonth={field.value ? new Date(field.value) : undefined}
             onSelect={(date) => {
               if (date) {
                 field.onChange(format(date, 'yyyy-MM-dd'));
@@ -49,6 +50,9 @@ export function DatePickerInput<T extends FieldValues>({
             }}
             disabled={(date) => disabled || date > new Date() || date < new Date('1900-01-01')}
             captionLayout="dropdown"
+            classNames={{
+              today: field.value ? undefined : "text-foreground bg-transparent"
+            }}
           />
         </PopoverContent>
       </Popover>

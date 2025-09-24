@@ -153,7 +153,7 @@ export function ExpensesTableFilters({ filters, onFiltersChange }: ExpensesTable
                           localFilters.startDate ? new Date(localFilters.startDate) : undefined
                         }
                         defaultMonth={
-                          localFilters.startDate ? new Date(localFilters.startDate) : new Date()
+                          localFilters.startDate ? new Date(localFilters.startDate) : undefined
                         }
                         onSelect={(date) => {
                           setLocalFilters({
@@ -162,6 +162,9 @@ export function ExpensesTableFilters({ filters, onFiltersChange }: ExpensesTable
                           });
                         }}
                         disabled={(date) => date > new Date()}
+                        classNames={{
+                          today: localFilters.startDate ? undefined : "text-foreground bg-transparent"
+                        }}
                       />
                     </PopoverContent>
                   </Popover>
@@ -188,7 +191,7 @@ export function ExpensesTableFilters({ filters, onFiltersChange }: ExpensesTable
                         mode="single"
                         selected={localFilters.endDate ? new Date(localFilters.endDate) : undefined}
                         defaultMonth={
-                          localFilters.endDate ? new Date(localFilters.endDate) : new Date()
+                          localFilters.endDate ? new Date(localFilters.endDate) : undefined
                         }
                         onSelect={(date) => {
                           setLocalFilters({
@@ -200,6 +203,9 @@ export function ExpensesTableFilters({ filters, onFiltersChange }: ExpensesTable
                           date > new Date() ||
                           !!(localFilters.startDate && date < new Date(localFilters.startDate))
                         }
+                        classNames={{
+                          today: localFilters.endDate ? undefined : "text-foreground bg-transparent"
+                        }}
                       />
                     </PopoverContent>
                   </Popover>
