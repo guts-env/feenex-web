@@ -268,7 +268,13 @@ function ExpensesTable() {
       const result = await ExpenseQuery.list(queryParams);
 
       await new Promise((resolve) => setTimeout(resolve, 300));
-      return result;
+      return {
+        count: result.count,
+        data: result.data.map((expense) => ({
+          ...expense,
+          items: undefined /* temporary to hide items */,
+        })),
+      };
     },
   });
 

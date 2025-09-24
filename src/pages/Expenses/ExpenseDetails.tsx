@@ -172,11 +172,22 @@ export default function ExpenseDetails({
                   </div>
                 )}
 
-                <ExpenseDetailsContent title="OR Number" content={internalData?.orNumber ?? '-'} />
+                <ExpenseDetailsContent
+                  title="OR Number"
+                  content={
+                    internalData?.orNumber?.length && internalData?.orNumber?.length > 0
+                      ? internalData?.orNumber
+                      : '-'
+                  }
+                />
 
                 <ExpenseDetailsContent
                   title="Merchant Name"
-                  content={internalData?.merchantName ?? '-'}
+                  content={
+                    internalData?.merchantName?.length && internalData?.merchantName?.length > 0
+                      ? internalData?.merchantName
+                      : '-'
+                  }
                 />
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
