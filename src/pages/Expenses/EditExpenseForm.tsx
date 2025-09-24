@@ -1,7 +1,6 @@
-import { useState, useEffect, forwardRef, useImperativeHandle } from 'react';
+import { useState, useEffect, forwardRef, useImperativeHandle, useCallback } from 'react';
 import { toast } from 'sonner';
-import startCase from 'lodash/startCase';
-import { format } from 'date-fns';
+import { format, parseISO } from 'date-fns';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -21,14 +20,11 @@ import ExpenseItemsInput, {
   type ExpenseItem,
   type ExpenseItemError,
 } from '@/pages/Expenses/ExpenseItemsInput';
-import ExpenseOtherDetailsInput, {
-  type ExpenseOtherDetail,
-  type ExpenseOtherDetailError,
-} from '@/pages/Expenses/ExpenseOtherDetailsInput';
 import { useUpdateExpense } from '@/api/services/ExpenseService/mutation';
 import { UploadStatusEnum, UploadTypeEnum } from '@/constants/enums';
 import { type IAddManualExpenseFormValues } from '@/forms/schema/expenses';
 import type { IExpenseRes } from '@/types/api';
+import { Checkbox } from '@/components/ui/checkbox';
 
 export interface IEditExpenseFormRef {
   isDirty: () => boolean;
@@ -43,18 +39,29 @@ export interface IEditExpenseFormProps {
 
 const EditExpenseForm = forwardRef<IEditExpenseFormRef, IEditExpenseFormProps>(
   ({ onSubmit, onCancel, expense }, ref) => {
+    const convertApiDateToFormDate = (dateString: string): string => {
+      try {
+        return format(parseISO(dateString), 'yyyy-MM-dd');
+      } catch (error) {
+        console.error('Error parsing date:', dateString, error);
+        return dateString;
+      }
+    };
+
+    console.log(expense);
+
     const form = useEditExpenseForm({
+      orNumber: expense.orNumber || '',
+      vat: expense.vat || 0,
+      isVat: expense.isVat || false,
       merchantName: expense.merchantName,
       amount: expense.amount,
-      date: expense.date,
+      invoiceDate: convertApiDateToFormDate(expense.invoiceDate),
+      paymentDate: convertApiDateToFormDate(expense.paymentDate),
       status: expense.status,
       categoryId: expense.category?.id || '',
       photos: expense.photos || [],
       items: expense.items || [],
-      otherDetails: expense.otherDetails?.map((detail) => ({
-        key: startCase(detail.key.replace(/_/g, ' ')),
-        value: detail.value,
-      })),
     });
 
     const [photos, setPhotos] = useState<UploadedFile[] | string[]>([]);
@@ -73,15 +80,18 @@ const EditExpenseForm = forwardRef<IEditExpenseFormRef, IEditExpenseFormProps>(
         form.reset({
           merchantName: expense.merchantName,
           amount: expense.amount,
-          date: format(new Date(expense.date), 'yyyy-MM-dd'),
+          invoiceDate: convertApiDateToFormDate(expense.invoiceDate),
+          paymentDate: convertApiDateToFormDate(expense.paymentDate),
           status: expense.status,
           categoryId: expense.category?.id || '',
           photos: expense.photos || [],
           items: expense.items || [],
-          otherDetails: expense.otherDetails || [],
+          orNumber: expense.orNumber,
+          vat: expense.vat,
+          isVat: expense.isVat,
         });
 
-        setPhotos(expense.photos);
+        setPhotos(expense.photos || []);
         setItems(expense.items || []);
       }
     }, [expense, form]);
@@ -106,10 +116,9 @@ const EditExpenseForm = forwardRef<IEditExpenseFormRef, IEditExpenseFormProps>(
     const handleSubmit = async (data: IAddManualExpenseFormValues) => {
       const updatedData = {
         ...data,
-        otherDetails: data.otherDetails?.map((detail) => ({
-          key: detail.key.replace(' ', '_').toLowerCase(),
-          value: detail.value,
-        })),
+        orNumber: data.orNumber,
+        vat: data.vat,
+        isVat: data.isVat,
       };
 
       updateExpense(
@@ -137,9 +146,24 @@ const EditExpenseForm = forwardRef<IEditExpenseFormRef, IEditExpenseFormProps>(
       }
     }, [items, itemsTotal, form]);
 
-    const handleUploadError = (error: string) => {
-      form.setError('photos', { message: error });
-    };
+    const handleUploadError = useCallback(
+      (error: string) => {
+        form.setError('photos', { message: error });
+      },
+      [form],
+    );
+
+    const handlePhotosChange = useCallback(
+      (files: UploadedFile[]) => {
+        form.clearErrors('photos');
+        form.setValue(
+          'photos',
+          files.map((file) => file.key as string),
+        );
+        setPhotos(files);
+      },
+      [form],
+    );
 
     const isSubmitBtnDisabled = () => {
       const isPhotoUploading = photos.some(
@@ -158,18 +182,14 @@ const EditExpenseForm = forwardRef<IEditExpenseFormRef, IEditExpenseFormProps>(
                   <FormField
                     control={form.control}
                     name="photos"
-                    render={({ field }) => (
+                    render={() => (
                       <FormItem>
                         <FormLabel>Expense Photos</FormLabel>
                         <FormControl>
                           <UploadPhotoInput
                             type={UploadTypeEnum.RECEIPTS}
                             value={photos}
-                            onChange={(files) => {
-                              form.clearErrors('photos');
-                              field.onChange(files.map((file) => file.key));
-                              setPhotos(files);
-                            }}
+                            onChange={handlePhotosChange}
                             onUploadError={handleUploadError}
                             maxFiles={5}
                             maxSizeInMB={5}
@@ -185,12 +205,12 @@ const EditExpenseForm = forwardRef<IEditExpenseFormRef, IEditExpenseFormProps>(
                 <div className="flex flex-col gap-1">
                   <FormField
                     control={form.control}
-                    name="merchantName"
+                    name="orNumber"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Merchant Name</FormLabel>
+                        <FormLabel>OR Number</FormLabel>
                         <FormControl>
-                          <Input placeholder="Enter merchant name" {...field} />
+                          <Input placeholder="Enter OR number" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -223,12 +243,75 @@ const EditExpenseForm = forwardRef<IEditExpenseFormRef, IEditExpenseFormProps>(
                       )}
                     />
                   </div>
-                  <div className="flex flex-col gap-1 w-full">
-                    <FormField<IAddManualExpenseFormValues, 'date'>
+                  <div className="flex flex-col gap-3 w-full">
+                    <FormField
                       control={form.control}
-                      name="date"
+                      name="vat"
                       render={({ field }) => (
-                        <DatePickerInput<IAddManualExpenseFormValues> field={field} />
+                        <FormItem>
+                          <FormLabel className="text-xs text-primary">VAT</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="number"
+                              placeholder="0.00"
+                              min={0}
+                              step="0.01"
+                              {...field}
+                              onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                              className="[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                              disabled={!form.watch('isVat')}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="isVat"
+                      render={({ field }) => (
+                        <FormItem className="flex flex-row items-center">
+                          <FormControl>
+                            <Checkbox
+                              checked={!!field.value}
+                              onCheckedChange={(checked) => {
+                                field.onChange(checked);
+                                if (!checked) {
+                                  form.setValue('vat', 0);
+                                }
+                              }}
+                              id="isVat"
+                            />
+                          </FormControl>
+                          <FormLabel htmlFor="isVat" className="mb-0 cursor-pointer text-xs">
+                            Is Vatable?
+                          </FormLabel>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                  <div className="flex flex-col gap-1 w-full">
+                    <FormField<IAddManualExpenseFormValues, 'invoiceDate'>
+                      control={form.control}
+                      name="invoiceDate"
+                      render={({ field }) => (
+                        <DatePickerInput<IAddManualExpenseFormValues>
+                          field={field}
+                          label="Invoice Date"
+                        />
+                      )}
+                    />
+                  </div>
+                  <div className="flex flex-col gap-1 w-full">
+                    <FormField
+                      control={form.control}
+                      name="paymentDate"
+                      render={({ field }) => (
+                        <DatePickerInput<IAddManualExpenseFormValues>
+                          field={field}
+                          label="Payment Date"
+                        />
                       )}
                     />
                   </div>
@@ -277,30 +360,6 @@ const EditExpenseForm = forwardRef<IEditExpenseFormRef, IEditExpenseFormProps>(
                                 : undefined
                             }
                             onItemsChange={setItems}
-                          />
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
-                </div>
-
-                <div className="flex flex-col gap-1">
-                  <FormField
-                    control={form.control}
-                    name="otherDetails"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormControl>
-                          <ExpenseOtherDetailsInput<IAddManualExpenseFormValues>
-                            field={field}
-                            error={
-                              Array.isArray(form.formState.errors.otherDetails)
-                                ? (form.formState.errors.otherDetails as Record<
-                                    keyof ExpenseOtherDetail,
-                                    ExpenseOtherDetailError
-                                  >[])
-                                : undefined
-                            }
                           />
                         </FormControl>
                       </FormItem>

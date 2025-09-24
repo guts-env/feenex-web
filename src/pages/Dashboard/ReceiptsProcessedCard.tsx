@@ -14,7 +14,7 @@ function ReceiptsProcessedCard({ receiptsProcessed }: { receiptsProcessed: numbe
     <Card className="@container/card">
       <CardHeader>
         <CardDescription>Receipts Processed</CardDescription>
-        <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
+        <CardTitle className="text-2xl font-medium tabular-nums @[250px]/card:text-3xl">
           {receiptsProcessed}
         </CardTitle>
         {/* <CardAction>

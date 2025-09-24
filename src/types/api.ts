@@ -77,10 +77,14 @@ export interface IExpenseOtherDetailsRes {
 
 export interface IExpenseRes {
   id: string;
+  orNumber?: string;
   merchantName: string;
   photos: string[];
   amount: number;
-  date: string;
+  isVat?: boolean;
+  vat?: number;
+  invoiceDate: string;
+  paymentDate: string;
   category: {
     id: string;
     name: string;
@@ -98,6 +102,10 @@ export interface IExpenseRes {
 }
 
 export interface IExpenseListParams extends IBasePaginatedParams {
+  invoiceStartDate?: string;
+  invoiceEndDate?: string;
+  paymentStartDate?: string;
+  paymentEndDate?: string;
   startDate?: string;
   endDate?: string;
   categoryIds?: string[];

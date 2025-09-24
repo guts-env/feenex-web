@@ -19,14 +19,11 @@ import ExpenseItemsInput, {
   type ExpenseItem,
   type ExpenseItemError,
 } from '@/pages/Expenses/ExpenseItemsInput';
-import ExpenseOtherDetailsInput, {
-  type ExpenseOtherDetail,
-  type ExpenseOtherDetailError,
-} from '@/pages/Expenses/ExpenseOtherDetailsInput';
 import { useCreateManualExpense } from '@/api/services/ExpenseService/mutation';
 import { UploadStatusEnum, UploadTypeEnum } from '@/constants/enums';
 import { type IAddManualExpenseFormValues } from '@/forms/schema/expenses';
 import type { IManualExpenseFormRef, IManualExpenseFormProps } from '@/types/expenses';
+import { Checkbox } from '@/components/ui/checkbox';
 
 const ManualExpenseForm = forwardRef<IManualExpenseFormRef, IManualExpenseFormProps>(
   ({ onSubmit, onCancel }, ref) => {
@@ -129,6 +126,22 @@ const ManualExpenseForm = forwardRef<IManualExpenseFormRef, IManualExpenseFormPr
                 <div className="flex flex-col gap-1">
                   <FormField
                     control={form.control}
+                    name="orNumber"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>OR Number</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Enter OR number" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
+                <div className="flex flex-col gap-1">
+                  <FormField
+                    control={form.control}
                     name="merchantName"
                     render={({ field }) => (
                       <FormItem>
@@ -158,6 +171,7 @@ const ManualExpenseForm = forwardRef<IManualExpenseFormRef, IManualExpenseFormPr
                               step="0.01"
                               {...field}
                               onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                              className="[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                               disabled={items.length > 0}
                             />
                           </FormControl>
@@ -166,12 +180,75 @@ const ManualExpenseForm = forwardRef<IManualExpenseFormRef, IManualExpenseFormPr
                       )}
                     />
                   </div>
-                  <div className="flex flex-col gap-1 w-full">
-                    <FormField<IAddManualExpenseFormValues, 'date'>
+                  <div className="flex flex-col gap-3 w-full">
+                    <FormField
                       control={form.control}
-                      name="date"
+                      name="vat"
                       render={({ field }) => (
-                        <DatePickerInput<IAddManualExpenseFormValues> field={field} />
+                        <FormItem>
+                          <FormLabel className="text-xs text-primary">VAT</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="number"
+                              placeholder="0.00"
+                              min={0}
+                              step="0.01"
+                              {...field}
+                              onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                              className="[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                              disabled={!form.watch('isVat')}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="isVat"
+                      render={({ field }) => (
+                        <FormItem className="flex flex-row items-center">
+                          <FormControl>
+                            <Checkbox
+                              checked={!!field.value}
+                              onCheckedChange={(checked) => {
+                                field.onChange(checked);
+                                if (!checked) {
+                                  form.setValue('vat', 0);
+                                }
+                              }}
+                              id="isVat"
+                            />
+                          </FormControl>
+                          <FormLabel htmlFor="isVat" className="mb-0 cursor-pointer text-xs">
+                            Is Vatable?
+                          </FormLabel>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                  <div className="flex flex-col gap-1 w-full">
+                    <FormField<IAddManualExpenseFormValues, 'invoiceDate'>
+                      control={form.control}
+                      name="invoiceDate"
+                      render={({ field }) => (
+                        <DatePickerInput<IAddManualExpenseFormValues>
+                          field={field}
+                          label="Invoice Date"
+                        />
+                      )}
+                    />
+                  </div>
+                  <div className="flex flex-col gap-1 w-full">
+                    <FormField
+                      control={form.control}
+                      name="paymentDate"
+                      render={({ field }) => (
+                        <DatePickerInput<IAddManualExpenseFormValues>
+                          field={field}
+                          label="Payment Date"
+                        />
                       )}
                     />
                   </div>
@@ -220,30 +297,6 @@ const ManualExpenseForm = forwardRef<IManualExpenseFormRef, IManualExpenseFormPr
                                 : undefined
                             }
                             onItemsChange={setItems}
-                          />
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
-                </div>
-
-                <div className="flex flex-col gap-1">
-                  <FormField
-                    control={form.control}
-                    name="otherDetails"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormControl>
-                          <ExpenseOtherDetailsInput<IAddManualExpenseFormValues>
-                            field={field}
-                            error={
-                              Array.isArray(form.formState.errors.otherDetails)
-                                ? (form.formState.errors.otherDetails as Record<
-                                    keyof ExpenseOtherDetail,
-                                    ExpenseOtherDetailError
-                                  >[])
-                                : undefined
-                            }
                           />
                         </FormControl>
                       </FormItem>

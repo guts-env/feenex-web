@@ -16,7 +16,6 @@ import { toast } from 'sonner';
 import ExpenseStatusBadge from '@/pages/Expenses/ExpenseStatusBadge';
 import ExpensePhotos from '@/pages/Expenses/ExpensePhotos';
 import ExpenseItems from '@/pages/Expenses/ExpenseItems';
-import ExpenseOtherDetails from '@/pages/Expenses/ExpenseOtherDetails';
 import { useDownloadPresigned } from '@/api/services/UploadService/mutation';
 import { useVerifyExpense } from '@/api/services/ExpenseService/mutation';
 import { ExpenseStatusEnum } from '@/constants/enums';
@@ -187,10 +186,32 @@ export default function ExpenseDetails({
                     }).format(internalData?.amount ?? 0)}
                   />
                   <ExpenseDetailsContent
-                    title="Date"
+                    title="VAT"
                     content={
-                      internalData?.date
-                        ? format(new Date(internalData?.date), 'MMM dd, yyyy')
+                      internalData?.isVat
+                        ? Intl.NumberFormat('ph-PH', {
+                            style: 'currency',
+                            currency: 'PHP',
+                          }).format(internalData?.vat ?? 0)
+                        : 'Non-VAT'
+                    }
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <ExpenseDetailsContent
+                    title="Invoice Date"
+                    content={
+                      internalData?.invoiceDate
+                        ? format(new Date(internalData?.invoiceDate), 'MMM dd, yyyy')
+                        : '-'
+                    }
+                  />
+                  <ExpenseDetailsContent
+                    title="Payment Date"
+                    content={
+                      internalData?.paymentDate
+                        ? format(new Date(internalData?.paymentDate), 'MMM dd, yyyy')
                         : '-'
                     }
                   />
@@ -234,12 +255,6 @@ export default function ExpenseDetails({
                   <ExpenseDetailsContent
                     title="Items"
                     content={<ExpenseItems items={internalData?.items} />}
-                  />
-                )}
-                {internalData?.otherDetails && internalData?.otherDetails.length > 0 && (
-                  <ExpenseDetailsContent
-                    title="Other Details"
-                    content={<ExpenseOtherDetails otherDetails={internalData?.otherDetails} />}
                   />
                 )}
               </div>

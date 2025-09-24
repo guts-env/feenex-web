@@ -16,12 +16,15 @@ export const useAddManualExpenseForm = () => {
     defaultValues: {
       amount: 0,
       categoryId: '',
-      date: new Date().toISOString().split('T')[0],
+      invoiceDate: new Date().toISOString().split('T')[0],
+      paymentDate: new Date().toISOString().split('T')[0],
       items: undefined,
       merchantName: '',
-      otherDetails: undefined,
       photos: undefined,
       status: ExpenseStatusEnum.DRAFT,
+      orNumber: '',
+      vat: undefined,
+      isVat: false,
     },
   });
 };

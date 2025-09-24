@@ -14,7 +14,7 @@ function TotalExpenseCard({ total }: { total: number }) {
     <Card className="@container/card">
       <CardHeader>
         <CardDescription>Total Expenses</CardDescription>
-        <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
+        <CardTitle className="text-2xl font-medium tabular-nums @[250px]/card:text-3xl">
           {Intl.NumberFormat('en-PH', { style: 'currency', currency: 'PHP' }).format(total)}
         </CardTitle>
         {/* <CardAction>

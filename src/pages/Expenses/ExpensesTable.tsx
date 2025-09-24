@@ -60,6 +60,11 @@ const columns: ColumnDef<IExpenseRes>[] = [
   //   enableHiding: false,
   // },
   {
+    id: 'or_number',
+    header: 'OR Number',
+    accessorKey: 'orNumber',
+  },
+  {
     id: 'merchant_name',
     header: 'Merchant Name',
     accessorKey: 'merchantName',
@@ -110,9 +115,9 @@ const columns: ColumnDef<IExpenseRes>[] = [
     },
   },
   {
-    id: 'date',
-    header: 'Date',
-    accessorKey: 'date',
+    id: 'vat',
+    accessorKey: 'vat',
+    header: 'VAT',
     cell: ({ row }) => {
       const isProcessing = row.original.processingStatus === 'processing';
 
@@ -120,7 +125,13 @@ const columns: ColumnDef<IExpenseRes>[] = [
         return null;
       }
 
-      return <span>{format(row.original.date, 'MMM dd, yyyy')}</span>;
+      return (
+        <span>
+          {Intl.NumberFormat('ph-PH', { style: 'currency', currency: 'PHP' }).format(
+            row.original.vat ?? 0,
+          )}
+        </span>
+      );
     },
   },
   {
@@ -162,29 +173,45 @@ const columns: ColumnDef<IExpenseRes>[] = [
     },
   },
   {
-    id: 'created_by',
-    accessorKey: 'createdBy',
-    header: 'Created By',
+    id: 'invoice_date',
+    header: 'Invoice Date',
+    accessorKey: 'invoiceDate',
     cell: ({ row }) => {
       const isProcessing = row.original.processingStatus === 'processing';
-      return (
-        <span className={isProcessing ? 'text-muted-foreground' : ''}>
-          {row.original.createdBy.firstName}
-        </span>
-      );
+
+      if (isProcessing) {
+        return null;
+      }
+
+      return <span>{format(row.original.invoiceDate, 'MMM dd, yyyy')}</span>;
     },
   },
   {
-    id: 'verified_by',
-    accessorKey: 'verifiedBy',
-    header: 'Verified By',
+    id: 'payment_date',
+    header: 'Payment Date',
+    accessorKey: 'paymentDate',
     cell: ({ row }) => {
       const isProcessing = row.original.processingStatus === 'processing';
-      return (
-        <span className={isProcessing ? 'text-muted-foreground' : ''}>
-          {row.original.verifiedBy?.firstName}
-        </span>
-      );
+
+      if (isProcessing) {
+        return null;
+      }
+
+      return <span>{format(row.original.paymentDate, 'MMM dd, yyyy')}</span>;
+    },
+  },
+  {
+    id: 'created_at',
+    header: 'Created At',
+    accessorKey: 'createdAt',
+    cell: ({ row }) => {
+      const isProcessing = row.original.processingStatus === 'processing';
+
+      if (isProcessing) {
+        return null;
+      }
+
+      return <span>{format(row.original.createdAt, 'MMM dd, yyyy')}</span>;
     },
   },
 ];

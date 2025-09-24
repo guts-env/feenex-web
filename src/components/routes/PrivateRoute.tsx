@@ -31,7 +31,9 @@ const PrivateRoute: React.FC<PrivateRouteProps> = ({ element }) => {
       } catch {
         /* empty */
       } finally {
-        setIsInitializing(false);
+        setTimeout(() => {
+          setIsInitializing(false);
+        }, 300);
       }
     };
 
