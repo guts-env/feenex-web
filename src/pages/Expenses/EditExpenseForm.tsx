@@ -73,9 +73,9 @@ const EditExpenseForm = forwardRef<IEditExpenseFormRef, IEditExpenseFormProps>(
           categoryId: expense.category?.id || '',
           photos: expense.photos || [],
           items: expense.items || [],
-          orNumber: expense.orNumber,
-          vat: expense.vat,
-          isVat: expense.isVat,
+          orNumber: expense.orNumber || '',
+          vat: expense.vat || 0,
+          isVat: expense.isVat || false,
         });
 
         setPhotos(expense.photos || []);
