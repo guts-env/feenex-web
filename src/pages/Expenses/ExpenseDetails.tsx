@@ -172,6 +172,8 @@ export default function ExpenseDetails({
                   </div>
                 )}
 
+                <ExpenseDetailsContent title="OR Number" content={internalData?.orNumber ?? '-'} />
+
                 <ExpenseDetailsContent
                   title="Merchant Name"
                   content={internalData?.merchantName ?? '-'}
