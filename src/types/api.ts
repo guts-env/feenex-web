@@ -2,8 +2,10 @@ import type {
   ExpenseProcessingStatusEnum,
   ExpenseStatusEnum,
   OrgTypeEnum,
+  RecurringFrequencyEnum,
   RoleEnum,
   SortOrderEnum,
+  SubscriptionStatusEnum,
 } from '@/constants/enums';
 
 export interface ApiErrorPayload {
@@ -192,4 +194,45 @@ export interface IOrganizationMemberRes extends IUserRes {
 export interface IOrganizationMembersListRes {
   data: IOrganizationMemberRes[];
   count: number;
+}
+
+export interface ISubscriptionRes {
+  id: string;
+  category: ICategoryRes;
+  merchantName: string;
+  amount: number;
+  currency: string;
+  description?: string;
+  frequency: RecurringFrequencyEnum;
+  startDate: string;
+  endDate?: string | null;
+  billingDate: string;
+  status: SubscriptionStatusEnum;
+  isVat?: boolean | null;
+  vat?: number | null;
+  createdBy: IUserRes;
+  updatedBy: IUserRes;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ISubscriptionListRes {
+  data: ISubscriptionRes[];
+  count: number;
+}
+
+export interface ISubscriptionListParams extends IBasePaginatedParams {
+  categoryIds?: string[];
+  statuses?: SubscriptionStatusEnum[];
+  frequency?: RecurringFrequencyEnum;
+  isVat?: boolean;
+}
+
+export type ISubscriptionStatsParams = IBaseDateRangeParams;
+
+export interface ISubscriptionStats {
+  totalActive: number;
+  totalMonthlyAmount: number;
+  totalYearlyAmount: number;
+  upcomingBillings: number;
 }

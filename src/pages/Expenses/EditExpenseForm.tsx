@@ -23,19 +23,8 @@ import ExpenseItemsInput, {
 import { useUpdateExpense } from '@/api/services/ExpenseService/mutation';
 import { UploadStatusEnum, UploadTypeEnum } from '@/constants/enums';
 import { type IAddManualExpenseFormValues } from '@/forms/schema/expenses';
-import type { IExpenseRes } from '@/types/api';
+import type { IEditExpenseFormRef, IEditExpenseFormProps } from '@/types/expenses';
 import { Checkbox } from '@/components/ui/checkbox';
-
-export interface IEditExpenseFormRef {
-  isDirty: () => boolean;
-  reset: () => void;
-}
-
-export interface IEditExpenseFormProps {
-  onSubmit: () => void;
-  onCancel: () => void;
-  expense: IExpenseRes;
-}
 
 const EditExpenseForm = forwardRef<IEditExpenseFormRef, IEditExpenseFormProps>(
   ({ onSubmit, onCancel, expense }, ref) => {
@@ -47,8 +36,6 @@ const EditExpenseForm = forwardRef<IEditExpenseFormRef, IEditExpenseFormProps>(
         return dateString;
       }
     };
-
-    console.log(expense);
 
     const form = useEditExpenseForm({
       orNumber: expense.orNumber || '',
@@ -323,9 +310,7 @@ const EditExpenseForm = forwardRef<IEditExpenseFormRef, IEditExpenseFormProps>(
                       control={form.control}
                       name="status"
                       render={({ field }) => (
-                        <div className="w-full">
-                          <ExpenseStatusSelectInput<IAddManualExpenseFormValues> field={field} />
-                        </div>
+                        <ExpenseStatusSelectInput<IAddManualExpenseFormValues> field={field} />
                       )}
                     />
                   </div>
@@ -334,9 +319,7 @@ const EditExpenseForm = forwardRef<IEditExpenseFormRef, IEditExpenseFormProps>(
                       control={form.control}
                       name="categoryId"
                       render={({ field }) => (
-                        <div className="w-full">
-                          <CategoriesSelectInput<IAddManualExpenseFormValues> field={field} />
-                        </div>
+                        <CategoriesSelectInput<IAddManualExpenseFormValues> field={field} />
                       )}
                     />
                   </div>

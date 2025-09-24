@@ -1,7 +1,8 @@
-import { useState, useEffect, forwardRef, useImperativeHandle } from 'react';
+import { forwardRef, useImperativeHandle } from 'react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Checkbox } from '@/components/ui/checkbox';
 import {
   Form,
   FormControl,
@@ -10,34 +11,41 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
-import { useAddManualExpenseForm } from '@/forms/hooks/useExpenseForm';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { useEditSubscriptionForm } from '@/forms/hooks/useSubscriptionForm';
 import CategoriesSelectInput from '@/components/features/CategoriesSelectInput';
-import ExpenseStatusSelectInput from '@/pages/Expenses/ExpenseStatusSelectInput';
 import { DatePickerInput } from '@/components/features/DatePickerInput';
-import UploadPhotoInput, { type UploadedFile } from '@/components/features/UploadPhotoInput';
-import ExpenseItemsInput, {
-  type ExpenseItem,
-  type ExpenseItemError,
-} from '@/pages/Expenses/ExpenseItemsInput';
-import { useCreateManualExpense } from '@/api/services/ExpenseService/mutation';
-import { UploadStatusEnum, UploadTypeEnum } from '@/constants/enums';
-import { type IAddManualExpenseFormValues } from '@/forms/schema/expenses';
-import type { IManualExpenseFormRef, IManualExpenseFormProps } from '@/types/expenses';
-import { Checkbox } from '@/components/ui/checkbox';
+import { useUpdateSubscription } from '@/api/services/SubscriptionService/mutation';
+import { RecurringFrequencyEnum, SubscriptionStatusEnum } from '@/constants/enums';
+import type { IUpdateSubscriptionFormValues } from '@/forms/schema/subscriptions';
+import type { ISubscriptionFormRef } from '@/pages/Subscriptions/AddSubscription';
+import type { IEditSubscriptionFormProps } from '@/types/subscriptions';
+import capitalize from 'lodash/capitalize';
 
-const ManualExpenseForm = forwardRef<IManualExpenseFormRef, IManualExpenseFormProps>(
-  ({ onSubmit, onCancel }, ref) => {
-    const form = useAddManualExpenseForm();
+const EditSubscriptionForm = forwardRef<ISubscriptionFormRef, IEditSubscriptionFormProps>(
+  ({ subscription, onSubmit, onCancel }, ref) => {
+    const form = useEditSubscriptionForm({
+      merchantName: subscription.merchantName,
+      amount: subscription.amount,
+      vat: subscription.vat || 0,
+      isVat: subscription.isVat || false,
+      startDate: subscription.startDate,
+      endDate: subscription.endDate || undefined,
+      frequency: subscription.frequency,
+      status: subscription.status,
+      categoryId: subscription.category.id,
+    });
 
-    const [photos, setPhotos] = useState<UploadedFile[]>([]);
-    const [items, setItems] = useState<ExpenseItem[]>([]);
-
-    const { mutate: createExpense, isPending } = useCreateManualExpense();
+    const { mutate: updateSubscription, isPending } = useUpdateSubscription();
 
     const resetForm = () => {
       form.reset();
-      setPhotos([]);
-      setItems([]);
     };
 
     const { isDirty } = form.formState;
@@ -57,36 +65,24 @@ const ManualExpenseForm = forwardRef<IManualExpenseFormRef, IManualExpenseFormPr
       }, 300);
     };
 
-    const handleSubmit = async (data: IAddManualExpenseFormValues) => {
-      createExpense(data, {
-        onSuccess: () => {
-          resetForm();
-          toast.success('Expense created successfully');
-          onSubmit(data);
+    const handleSubmit = async (data: IUpdateSubscriptionFormValues) => {
+      if (!subscription.id) return;
+
+      updateSubscription(
+        { id: subscription.id, data },
+        {
+          onSuccess: () => {
+            resetForm();
+            toast.success('Subscription updated successfully');
+            onSubmit(data);
+          },
+          onError: (error) => {
+            toast.error('Failed to update subscription', {
+              description: error.message,
+            });
+          },
         },
-        onError: (error) => {
-          toast.error('Failed to create expense', {
-            description: error.message,
-          });
-        },
-      });
-    };
-
-    const itemsTotal = items.reduce((sum, item) => sum + item.quantity * (item.price || 0), 0);
-
-    useEffect(() => {
-      if (items.length > 0) {
-        form.setValue('amount', itemsTotal);
-      }
-    }, [items, itemsTotal, form]);
-
-    const handleUploadError = (error: string) => {
-      form.setError('photos', { message: error });
-    };
-
-    const isSubmitBtnDisabled = () => {
-      const isPhotoUploading = photos.some((photo) => photo.status === UploadStatusEnum.UPLOADING);
-      return isPending || isPhotoUploading;
+      );
     };
 
     return (
@@ -98,56 +94,12 @@ const ManualExpenseForm = forwardRef<IManualExpenseFormRef, IManualExpenseFormPr
                 <div className="flex flex-col gap-1">
                   <FormField
                     control={form.control}
-                    name="photos"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Expense Photos</FormLabel>
-                        <FormControl>
-                          <UploadPhotoInput
-                            type={UploadTypeEnum.RECEIPTS}
-                            value={photos}
-                            onChange={(files) => {
-                              form.clearErrors('photos');
-                              field.onChange(files.map((file) => file.key));
-                              setPhotos(files);
-                            }}
-                            onUploadError={handleUploadError}
-                            maxFiles={5}
-                            maxSizeInMB={5}
-                            className="h-[100px] w-[100px] border-dashed"
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-
-                <div className="flex flex-col gap-1">
-                  <FormField
-                    control={form.control}
-                    name="orNumber"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>OR Number</FormLabel>
-                        <FormControl>
-                          <Input placeholder="Enter OR number" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-
-                <div className="flex flex-col gap-1">
-                  <FormField
-                    control={form.control}
                     name="merchantName"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Merchant Name</FormLabel>
+                        <FormLabel>Subscription Name</FormLabel>
                         <FormControl>
-                          <Input placeholder="Enter merchant name" {...field} />
+                          <Input placeholder="Enter subscription name" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -162,7 +114,7 @@ const ManualExpenseForm = forwardRef<IManualExpenseFormRef, IManualExpenseFormPr
                       name="amount"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-xs text-primary">Total Amount</FormLabel>
+                          <FormLabel className="text-xs text-primary">Amount</FormLabel>
                           <FormControl>
                             <Input
                               type="number"
@@ -172,7 +124,6 @@ const ManualExpenseForm = forwardRef<IManualExpenseFormRef, IManualExpenseFormPr
                               {...field}
                               onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
                               className="[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                              disabled={items.length > 0}
                             />
                           </FormControl>
                           <FormMessage />
@@ -220,7 +171,7 @@ const ManualExpenseForm = forwardRef<IManualExpenseFormRef, IManualExpenseFormPr
                               id="isVat"
                             />
                           </FormControl>
-                          <FormLabel htmlFor="isVat" className="mb-0 cursor-pointer text-xs">
+                          <FormLabel htmlFor="isVat" className="mb-0 cursor-pointer text-xs ml-2">
                             Is Vatable?
                           </FormLabel>
                           <FormMessage />
@@ -229,13 +180,14 @@ const ManualExpenseForm = forwardRef<IManualExpenseFormRef, IManualExpenseFormPr
                     />
                   </div>
                   <div className="flex flex-col gap-1 w-full">
-                    <FormField<IAddManualExpenseFormValues, 'invoiceDate'>
+                    <FormField
                       control={form.control}
-                      name="invoiceDate"
+                      name="startDate"
                       render={({ field }) => (
-                        <DatePickerInput<IAddManualExpenseFormValues>
+                        <DatePickerInput<IUpdateSubscriptionFormValues>
                           field={field}
-                          label="Invoice Date"
+                          label="Start Date"
+                          placeholder="Start date"
                         />
                       )}
                     />
@@ -243,11 +195,12 @@ const ManualExpenseForm = forwardRef<IManualExpenseFormRef, IManualExpenseFormPr
                   <div className="flex flex-col gap-1 w-full">
                     <FormField
                       control={form.control}
-                      name="paymentDate"
+                      name="endDate"
                       render={({ field }) => (
-                        <DatePickerInput<IAddManualExpenseFormValues>
+                        <DatePickerInput<IUpdateSubscriptionFormValues>
                           field={field}
-                          label="Payment Date"
+                          label="End Date"
+                          placeholder="End date"
                         />
                       )}
                     />
@@ -258,46 +211,67 @@ const ManualExpenseForm = forwardRef<IManualExpenseFormRef, IManualExpenseFormPr
                   <div className="flex flex-col gap-1 w-full">
                     <FormField
                       control={form.control}
-                      name="status"
+                      name="frequency"
                       render={({ field }) => (
-                        <ExpenseStatusSelectInput<IAddManualExpenseFormValues> field={field} />
+                        <FormItem>
+                          <FormLabel>Frequency</FormLabel>
+                          <Select onValueChange={field.onChange} defaultValue={field.value}>
+                            <FormControl>
+                              <SelectTrigger className="w-full">
+                                <SelectValue placeholder="Select frequency" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              {Object.values(RecurringFrequencyEnum).map((frequency) => (
+                                <SelectItem key={frequency} value={frequency}>
+                                  {capitalize(frequency)}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
                       )}
                     />
                   </div>
                   <div className="flex flex-col gap-1 w-full">
                     <FormField
                       control={form.control}
-                      name="categoryId"
+                      name="status"
                       render={({ field }) => (
-                        <CategoriesSelectInput<IAddManualExpenseFormValues> field={field} />
+                        <FormItem>
+                          <FormLabel>Status</FormLabel>
+                          <Select onValueChange={field.onChange} defaultValue={field.value}>
+                            <FormControl>
+                              <SelectTrigger className="w-full">
+                                <SelectValue placeholder="Select status" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              {Object.values(SubscriptionStatusEnum).map((status) => (
+                                <SelectItem key={status} value={status}>
+                                  {capitalize(status)}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
                       )}
                     />
                   </div>
                 </div>
 
-                <div className="flex flex-col gap-1">
-                  <FormField
-                    control={form.control}
-                    name="items"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormControl>
-                          <ExpenseItemsInput<IAddManualExpenseFormValues>
-                            field={field}
-                            error={
-                              Array.isArray(form.formState.errors.items)
-                                ? (form.formState.errors.items as Record<
-                                    keyof ExpenseItem,
-                                    ExpenseItemError
-                                  >[])
-                                : undefined
-                            }
-                            onItemsChange={setItems}
-                          />
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="flex flex-col gap-1 w-full">
+                    <FormField
+                      control={form.control}
+                      name="categoryId"
+                      render={({ field }) => (
+                        <CategoriesSelectInput<IUpdateSubscriptionFormValues> field={field} />
+                      )}
+                    />
+                  </div>
                 </div>
               </div>
             </form>
@@ -313,9 +287,9 @@ const ManualExpenseForm = forwardRef<IManualExpenseFormRef, IManualExpenseFormPr
               type="button"
               className="flex-1"
               onClick={form.handleSubmit(handleSubmit)}
-              disabled={isSubmitBtnDisabled()}
+              disabled={isPending}
             >
-              Create Expense
+              Update Subscription
             </Button>
           </div>
         </div>
@@ -324,6 +298,6 @@ const ManualExpenseForm = forwardRef<IManualExpenseFormRef, IManualExpenseFormPr
   },
 );
 
-ManualExpenseForm.displayName = 'ManualExpenseForm';
+EditSubscriptionForm.displayName = 'EditSubscriptionForm';
 
-export default ManualExpenseForm;
+export default EditSubscriptionForm;

@@ -17,6 +17,17 @@ export interface IEditExpenseProps {
   onExpenseUpdated: () => void;
 }
 
+export interface IEditExpenseFormRef {
+  isDirty: () => boolean;
+  reset: () => void;
+}
+
+export interface IEditExpenseFormProps {
+  onSubmit: () => void;
+  onCancel: () => void;
+  expense: IExpenseRes;
+}
+
 export interface IBaseExpenseFormProps {
   onCancel: () => void;
 }

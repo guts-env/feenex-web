@@ -10,7 +10,8 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import EditExpenseForm, { type IEditExpenseFormRef } from '@/pages/Expenses/EditExpenseForm';
+import EditExpenseForm from '@/pages/Expenses/EditExpenseForm';
+import type { IEditExpenseFormRef } from '@/types/expenses';
 import type { IEditExpenseProps } from '@/types/expenses';
 
 function EditExpense({ expense, open, onOpenChange, onExpenseUpdated }: IEditExpenseProps) {
@@ -99,8 +100,7 @@ function EditExpense({ expense, open, onOpenChange, onExpenseUpdated }: IEditExp
           <AlertDialogHeader>
             <AlertDialogTitle>Unsaved Changes</AlertDialogTitle>
             <AlertDialogDescription>
-              You have unsaved changes. Are you sure you want to close? Your changes will be
-              lost.
+              You have unsaved changes. Are you sure you want to close? Your changes will be lost.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

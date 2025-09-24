@@ -5,6 +5,7 @@ import {
   ReceiptTextIcon,
   // Settings2Icon,
   Building2Icon,
+  BanknoteArrowDownIcon,
 } from 'lucide-react';
 import { useShallow } from 'zustand/react/shallow';
 import capitalize from 'lodash/capitalize';
@@ -41,6 +42,12 @@ const data = {
       title: 'Expenses',
       url: '/expenses',
       icon: ReceiptTextIcon,
+    },
+    {
+      title: 'Subscriptions',
+      url: '/subscriptions',
+      icon: BanknoteArrowDownIcon,
+      allowedRoles: [RoleEnum.BUSINESS_ADMIN, RoleEnum.PERSONAL_ADMIN],
     },
     {
       title: 'Organization',

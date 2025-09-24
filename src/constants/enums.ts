@@ -6,6 +6,7 @@ export enum RoutesEnum {
   RESET_PASSWORD = '/reset-password',
   DASHBOARD = '/',
   EXPENSES = '/expenses',
+  SUBSCRIPTIONS = '/subscriptions',
   ORGANIZATION = '/organization',
   SETTINGS = '/settings',
 }
@@ -55,4 +56,17 @@ export enum UploadStatusEnum {
 export enum SortOrderEnum {
   ASC = 'asc',
   DESC = 'desc',
+}
+
+export enum SubscriptionStatusEnum {
+  ACTIVE = 'active',
+  SUSPENDED = 'suspended',
+  CANCELLED = 'cancelled',
+}
+
+export enum RecurringFrequencyEnum {
+  DAILY = 'daily',
+  WEEKLY = 'weekly',
+  MONTHLY = 'monthly',
+  YEARLY = 'yearly',
 }

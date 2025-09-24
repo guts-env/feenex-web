@@ -4,6 +4,7 @@ import PublicRoute from '@/components/routes/PublicRoutes';
 import PrivateRoute from '@/components/routes/PrivateRoute';
 import AppLayout from '@/components/layout/AppLayout';
 import { RoutesEnum } from '@/constants/enums';
+import Subscriptions from '@/pages/Subscriptions';
 
 const Login = lazy(() => import('@/pages/Login'));
 const Register = lazy(() => import('@/pages/Register'));
@@ -32,6 +33,7 @@ const AppRoutes: React.FC = () => {
       <Route element={<PrivateRoute element={<AppLayout />} />}>
         <Route path={RoutesEnum.DASHBOARD} element={<Dashboard />} />
         <Route path={RoutesEnum.EXPENSES} element={<Expenses />} />
+        <Route path={RoutesEnum.SUBSCRIPTIONS} element={<Subscriptions />} />
         <Route path={RoutesEnum.ORGANIZATION} element={<Organization />} />
         <Route path={RoutesEnum.SETTINGS} element={<Settings />} />
         <Route path="*" element={<Navigate to={RoutesEnum.EXPENSES} replace />} />
