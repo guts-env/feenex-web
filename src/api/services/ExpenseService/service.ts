@@ -4,7 +4,12 @@ import {
   type IAddAutoExpenseFormValues,
   type IAddManualExpenseFormValues,
 } from '@/forms/schema/expenses';
-import { type IExpenseListParams, type IExpenseListRes, type IExpenseTotalRes } from '@/types/api';
+import {
+  type IExpenseListParams,
+  type IExpenseListRes,
+  type IExpensesTotal,
+  type IExpenseTotalRes,
+} from '@/types/api';
 
 export default class ExpenseService {
   public static readonly list = async (params: IExpenseListParams): Promise<IExpenseListRes> => {
@@ -15,10 +20,11 @@ export default class ExpenseService {
     });
   };
 
-  public static readonly getTotal = async (): Promise<IExpenseTotalRes> => {
+  public static readonly getTotal = async (params?: IExpensesTotal): Promise<IExpenseTotalRes> => {
     return request({
       url: ExpenseEndpoints.total(),
       method: 'GET',
+      params,
     });
   };
 

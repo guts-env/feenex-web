@@ -1,3 +1,4 @@
+import { startOfMonth, endOfMonth } from 'date-fns';
 import TotalExpenseCard from '@/pages/Dashboard/TotalExpenseCard';
 import VerifiedExpenseCard from '@/pages/Dashboard/VerifiedExpenseCard';
 import ReceiptsProcessedCard from '@/pages/Dashboard/ReceiptsProcessedCard';
@@ -29,9 +30,14 @@ export function WorkInProgressIndicator({
 }
 
 function Dashboard() {
+  const params = {
+    startDate: startOfMonth(new Date()).toISOString(),
+    endDate: endOfMonth(new Date()).toISOString(),
+  };
+
   const { data: total } = useQuery({
-    queryKey: ExpenseQueryKeys.total({}),
-    queryFn: ExpenseQuery.getTotal,
+    queryKey: ExpenseQueryKeys.total(params),
+    queryFn: () => ExpenseQuery.getTotal(params),
   });
 
   return (
