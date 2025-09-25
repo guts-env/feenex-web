@@ -236,3 +236,38 @@ export interface ISubscriptionStats {
   totalYearlyAmount: number;
   upcomingBillings: number;
 }
+
+export interface IAccountPlanOrgPlanRes {
+  plan: {
+    id: string;
+    plan_type: string;
+    limits: {
+      team_member_limit: number;
+      subscription_limit: number;
+      manual_receipt_limit: number;
+      auto_receipt_limit: number;
+    };
+  };
+  usage: {
+    members: {
+      current: number;
+      limit: number;
+      remaining: number;
+    };
+    subscriptions: {
+      current: number;
+      limit: number;
+      remaining: number;
+    };
+    manual_expenses: {
+      current: number;
+      limit: number;
+      remaining: number;
+    };
+    auto_expenses: {
+      current: number;
+      limit: number;
+      remaining: number;
+    };
+  };
+}

@@ -3,7 +3,7 @@ import {
   LayoutGridIcon,
   CommandIcon,
   ReceiptTextIcon,
-  // Settings2Icon,
+  Settings2Icon,
   Building2Icon,
   BanknoteArrowDownIcon,
 } from 'lucide-react';
@@ -55,12 +55,12 @@ const data = {
       icon: Building2Icon,
       allowedRoles: [RoleEnum.BUSINESS_ADMIN],
     },
-    // {
-    //   title: 'Settings',
-    //   url: '/settings',
-    //   icon: Settings2Icon,
-    //   allowedRoles: [RoleEnum.BUSINESS_ADMIN, RoleEnum.PERSONAL_ADMIN],
-    // },
+    {
+      title: 'Settings',
+      url: '/settings',
+      icon: Settings2Icon,
+      allowedRoles: [RoleEnum.BUSINESS_ADMIN, RoleEnum.PERSONAL_ADMIN],
+    },
   ],
   navSecondary: [
     // {
