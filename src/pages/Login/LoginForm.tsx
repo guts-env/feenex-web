@@ -12,6 +12,7 @@ import {
 } from '@/components/ui/form';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { PasswordInput } from '@/components/ui/password-input';
 import { useLoginForm } from '@/forms/hooks/useAuthForm';
 import { useLogin } from '@/api/services/AuthService/mutation';
 import { useUserStore } from '@/stores/useUserStore';
@@ -104,7 +105,7 @@ export default function LoginForm({ className, ...props }: React.ComponentProps<
                     </Link>
                   </div>
                   <FormControl>
-                    <Input type="password" {...field} />
+                    <PasswordInput {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

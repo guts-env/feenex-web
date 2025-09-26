@@ -11,6 +11,7 @@ import {
 } from '@/components/ui/form';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { PasswordInput } from '@/components/ui/password-input';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { OrgTypeEnum } from '@/constants/enums';
 import { useRegisterForm } from '@/forms/hooks/useAuthForm';
@@ -31,15 +32,28 @@ export default function RegistrationForm({ className, ...props }: React.Componen
     register(data, {
       onSuccess: () => {
         form.reset();
-        setSuccess(
-          'Registration successful! A confirmation email has been sent to your email address.',
-        );
+        setSuccess('Registration successful! A welcome email has been sent to your email address.');
       },
       onError: (error) => {
         setError(error.message);
       },
     });
   };
+
+  if (success) {
+    return (
+      <div className="flex flex-col items-center gap-6">
+        <h1 className="text-2xl font-bold">Welcome to Feenex!</h1>
+        <p className="text-green-500 text-sm text-center text-balance">{success}</p>
+        <p className="text-sm">
+          Go to{' '}
+          <Link to="/login" className="underline underline-offset-4">
+            Login
+          </Link>
+        </p>
+      </div>
+    );
+  }
 
   return (
     <Form {...form}>
@@ -122,7 +136,7 @@ export default function RegistrationForm({ className, ...props }: React.Componen
                   <FormItem>
                     <FormLabel>Password</FormLabel>
                     <FormControl>
-                      <Input type="password" {...field} />
+                      <PasswordInput {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -137,7 +151,7 @@ export default function RegistrationForm({ className, ...props }: React.Componen
                   <FormItem>
                     <FormLabel>Confirm Password</FormLabel>
                     <FormControl>
-                      <Input type="password" {...field} />
+                      <PasswordInput {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -195,7 +209,6 @@ export default function RegistrationForm({ className, ...props }: React.Componen
           </div>
 
           {error && <p className="text-red-500 text-sm text-center">{error}</p>}
-          {success && <p className="text-green-500 text-sm text-center">{success}</p>}
           <Button type="submit" className="w-1/2 mx-auto" disabled={isPending}>
             {isPending ? 'Signing up...' : 'Sign up'}
           </Button>

@@ -11,6 +11,7 @@ import {
 } from '@/components/ui/form';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { PasswordInput } from '@/components/ui/password-input';
 import { useResetPasswordForm } from '@/forms/hooks/useAuthForm';
 import { useResetPassword } from '@/api/services/AuthService/mutation';
 import { type IResetPasswordFormValues } from '@/forms/schema/auth';
@@ -68,7 +69,7 @@ export default function ResetPasswordForm({ className, ...props }: React.Compone
               <FormItem>
                 <FormLabel>New Password</FormLabel>
                 <FormControl>
-                  <Input type="password" {...field} />
+                  <PasswordInput {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -83,7 +84,7 @@ export default function ResetPasswordForm({ className, ...props }: React.Compone
               <FormItem>
                 <FormLabel>Confirm Password</FormLabel>
                 <FormControl>
-                  <Input type="password" {...field} />
+                  <PasswordInput {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>

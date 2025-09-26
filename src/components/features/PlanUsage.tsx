@@ -2,6 +2,9 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { type IAccountPlanOrgPlanRes } from '@/types/api';
 import { cn } from '@/lib/utils';
+import { useUserStore } from '@/stores/useUserStore';
+import { useShallow } from 'zustand/react/shallow';
+import { RoleEnum } from '@/constants/enums';
 
 interface PlanUsageProps {
   data: IAccountPlanOrgPlanRes;
@@ -77,6 +80,8 @@ function UsageItem({ label, current, limit, remaining }: UsageItemProps) {
 }
 
 export function PlanUsage({ data }: PlanUsageProps) {
+  const { user } = useUserStore(useShallow((state) => ({ user: state.user })));
+
   const formatPlanType = (planType: string) => {
     if (!planType || typeof planType !== 'string') {
       return 'Unknown Plan';
@@ -125,13 +130,15 @@ export function PlanUsage({ data }: PlanUsageProps) {
           type="subscriptions"
         />
 
-        <UsageItem
-          label="Team Members"
-          current={data.usage.members.current}
-          limit={data.usage.members.limit}
-          remaining={data.usage.members.remaining}
-          type="members"
-        />
+        {user?.role?.name === RoleEnum.BUSINESS_ADMIN && (
+          <UsageItem
+            label="Team Members"
+            current={data.usage.members.current}
+            limit={data.usage.members.limit}
+            remaining={data.usage.members.remaining}
+            type="members"
+          />
+        )}
       </CardContent>
     </Card>
   );
