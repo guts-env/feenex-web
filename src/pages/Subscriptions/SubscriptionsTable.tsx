@@ -118,14 +118,6 @@ const columns: ColumnDef<ISubscriptionRes>[] = [
       return <span>{format(new Date(row.original.startDate), 'MMM dd, yyyy')}</span>;
     },
   },
-  {
-    id: 'created_at',
-    header: 'Created At',
-    accessorKey: 'createdAt',
-    cell: ({ row }) => {
-      return <span>{format(new Date(row.original.createdAt), 'MMM dd, yyyy')}</span>;
-    },
-  },
 ];
 
 function SubscriptionsTable() {
