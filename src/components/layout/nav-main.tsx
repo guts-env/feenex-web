@@ -45,7 +45,10 @@ export function NavMain({
           <Collapsible key={item.title} asChild defaultOpen={isActive(item.url)}>
             <SidebarMenuItem>
               <SidebarMenuButton asChild tooltip={item.title} isActive={isActive(item.url)}>
-                <Link to={item.url}>
+                <Link
+                  to={item.url}
+                  data-tour={`${item.title.toLowerCase()}-nav`}
+                >
                   <item.icon />
                   <span>{item.title}</span>
                 </Link>

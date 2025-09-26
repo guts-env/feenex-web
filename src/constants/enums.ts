@@ -10,6 +10,7 @@ export enum RoutesEnum {
   ORGANIZATION = '/organization',
   SETTINGS = '/settings',
   SUPPORT = '/support',
+  HELP_CENTER = '/help-center',
 }
 
 export enum OrgTypeEnum {

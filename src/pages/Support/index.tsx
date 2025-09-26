@@ -3,7 +3,7 @@ import SupportForm from '@/pages/Support/SupportForm';
 
 export default function Support() {
   return (
-    <div className="container mx-auto pt-6">
+    <div className="container mx-auto md:pt-6">
       <div className="max-w-2xl mx-auto">
         <div className="mb-6">
           <h1 className="text-2xl font-semibold mb-2 flex items-baseline gap-2">

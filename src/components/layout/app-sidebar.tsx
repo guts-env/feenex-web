@@ -70,11 +70,12 @@ const data = {
       url: '/support',
       icon: SendIcon,
     },
-    {
-      title: 'Help Center',
-      url: '/help-center',
-      icon: HelpCircleIcon,
-    },
+    // DISABLED FOR PRODUCTION
+    // {
+    //   title: 'Help Center',
+    //   url: '/help-center',
+    //   icon: HelpCircleIcon,
+    // },
   ],
   projects: [
     // {
@@ -98,7 +99,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   );
 
   return (
-    <Sidebar className="top-(--header-height) h-[calc(100svh-var(--header-height))]!" {...props}>
+    <Sidebar
+      data-tour="sidebar"
+      className="top-(--header-height) h-[calc(100svh-var(--header-height))]!"
+      {...props}
+    >
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>

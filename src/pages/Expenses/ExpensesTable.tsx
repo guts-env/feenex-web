@@ -35,6 +35,8 @@ import {
   type IExpenseFilters,
 } from '@/components/features/ExpensesTableFilters';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { useOnboarding } from '@/components/help-center/OnboardingProvider';
+import { OnboardingBanner } from '@/components/help-center/OnboardingBanner';
 
 const columns: ColumnDef<IExpenseRes>[] = [
   // {
@@ -218,6 +220,7 @@ const columns: ColumnDef<IExpenseRes>[] = [
 
 function ExpensesTable() {
   const location = useLocation();
+  const { isTourCompleted, startTour } = useOnboarding();
 
   /* Table State */
   const [sorting, setSorting] = useState<SortingState>([]);
@@ -384,13 +387,22 @@ function ExpensesTable() {
       <Button variant="link" onClick={() => setAddExpenseModalOpen(true)} className="mt-4">
         <Plus className="size-4" />
         Add Expense
-      </Button>{' '}
+      </Button>
     </div>
   );
 
   return (
     <>
+      {/* Onboarding banner for expense creation - DISABLED FOR PRODUCTION */}
+      {/* <OnboardingBanner
+        tourId="expense-creation"
+        title="New to expenses?"
+        description="Learn how to create and manage your expenses with our quick tour."
+        showOnCondition={!data?.data || data.data.length === 0}
+      /> */}
+
       <DataTable<IExpenseRes, unknown>
+        data-tour="expense-list"
         loading={isLoading}
         error={isError ? 'Failed to fetch expenses' : ''}
         emptyState={emptyState}
@@ -412,6 +424,7 @@ function ExpensesTable() {
         rightSlot={
           <div className="flex gap-4">
             <CompoundButton
+              data-tour="new-expense-btn"
               onMainClick={() => setAddExpenseModalOpen(true)}
               dropdownItems={[
                 {

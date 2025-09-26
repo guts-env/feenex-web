@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback, useEffect } from 'react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
@@ -14,6 +14,7 @@ import {
 import ManualExpenseForm from '@/pages/Expenses/ManualExpenseForm';
 import AutoExpenseForm from '@/pages/Expenses/AutoExpenseForm';
 import { ExpenseTypeEnum } from '@/constants/enums';
+import { useOnboarding } from '@/components/help-center/OnboardingProvider';
 import type {
   IManualExpenseFormRef,
   IAutoExpenseFormRef,
@@ -32,6 +33,8 @@ function AddExpense({ open, onOpenChange, onExpenseAdded }: IAddExpenseProps) {
   const manualFormRef = useRef<IManualExpenseFormRef>(null);
   const autoFormRef = useRef<IAutoExpenseFormRef>(null);
 
+  const { startTour, isTourCompleted } = useOnboarding();
+
   const getCurrentFormRef = useCallback(() => {
     return activeTab === ExpenseTypeEnum.AUTO ? autoFormRef : manualFormRef;
   }, [activeTab]);
@@ -40,6 +43,19 @@ function AddExpense({ open, onOpenChange, onExpenseAdded }: IAddExpenseProps) {
     const currentFormRef = getCurrentFormRef();
     return currentFormRef.current?.isDirty() || false;
   }, [getCurrentFormRef]);
+
+  // Trigger expense creation tour when dialog opens for first time
+  // DISABLED FOR PRODUCTION
+  // useEffect(() => {
+  //   if (open && !isTourCompleted('expense-creation')) {
+  //     // Small delay to ensure dialog is fully rendered
+  //     const timer = setTimeout(() => {
+  //       startTour('expense-creation');
+  //     }, 500);
+
+  //     return () => clearTimeout(timer);
+  //   }
+  // }, [open, isTourCompleted, startTour]);
 
   const shouldShowDirtyWarning = () => {
     return isFormDirty() && !isSubmitting;
@@ -152,7 +168,7 @@ function AddExpense({ open, onOpenChange, onExpenseAdded }: IAddExpenseProps) {
                 onValueChange={(value: string) => handleTabChange(value as ExpenseTypeEnum)}
                 className="w-full"
               >
-                <TabsList className="grid w-full grid-cols-2">
+                <TabsList data-tour="expense-type-selector" className="grid w-full grid-cols-2">
                   <TabsTrigger value={ExpenseTypeEnum.AUTO}>Auto</TabsTrigger>
                   <TabsTrigger value={ExpenseTypeEnum.MANUAL}>Manual</TabsTrigger>
                 </TabsList>
