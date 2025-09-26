@@ -15,6 +15,7 @@ const Dashboard = lazy(() => import('@/pages/Dashboard'));
 const Expenses = lazy(() => import('@/pages/Expenses/ExpensesTable'));
 const Organization = lazy(() => import('@/pages/Organization'));
 const Settings = lazy(() => import('@/pages/Settings'));
+const Support = lazy(() => import('@/pages/Support'));
 
 const AppRoutes: React.FC = () => {
   return (
@@ -36,6 +37,7 @@ const AppRoutes: React.FC = () => {
         <Route path={RoutesEnum.SUBSCRIPTIONS} element={<Subscriptions />} />
         <Route path={RoutesEnum.ORGANIZATION} element={<Organization />} />
         <Route path={RoutesEnum.SETTINGS} element={<Settings />} />
+        <Route path={RoutesEnum.SUPPORT} element={<Support />} />
         <Route path="*" element={<Navigate to={RoutesEnum.EXPENSES} replace />} />
       </Route>
     </RouterRoutes>

@@ -9,6 +9,7 @@ export enum RoutesEnum {
   SUBSCRIPTIONS = '/subscriptions',
   ORGANIZATION = '/organization',
   SETTINGS = '/settings',
+  SUPPORT = '/support',
 }
 
 export enum OrgTypeEnum {

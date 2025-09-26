@@ -6,6 +6,8 @@ import {
   Settings2Icon,
   Building2Icon,
   BanknoteArrowDownIcon,
+  SendIcon,
+  HelpCircleIcon,
 } from 'lucide-react';
 import { useShallow } from 'zustand/react/shallow';
 import capitalize from 'lodash/capitalize';
@@ -63,16 +65,16 @@ const data = {
     },
   ],
   navSecondary: [
-    // {
-    //   title: "Support",
-    //   url: "#",
-    //   icon: LifeBuoy,
-    // },
-    // {
-    //   title: "Feedback",
-    //   url: "#",
-    //   icon: Send,
-    // },
+    {
+      title: 'Support',
+      url: '/support',
+      icon: SendIcon,
+    },
+    {
+      title: 'Help Center',
+      url: '/help-center',
+      icon: HelpCircleIcon,
+    },
   ],
   projects: [
     // {
