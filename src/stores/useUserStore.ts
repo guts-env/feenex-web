@@ -18,7 +18,10 @@ export const useUserStore = create<UserStore>()(
       token: null,
       setToken: (token) => set({ token }),
       setUser: (user) => set({ user }),
-      logout: () => set({ user: null, token: null }),
+      logout: () => {
+        set({ user: null, token: null });
+        window.location.href = '/login';
+      },
     }),
     {
       name: USER_STORE,
