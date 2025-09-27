@@ -223,7 +223,7 @@ function OrganizationTable() {
   });
 
   const emptyState = (
-    <div className="flex flex-col items-center justify-center h-full py-8">
+    <div className="flex flex-col items-center justify-center h-full py-8 text-center">
       <p className="text-lg text-muted-foreground pb-1">No organization members found.</p>
       <p className="text-sm text-muted-foreground">
         Click "Invite Member" to start inviting members or check the filters

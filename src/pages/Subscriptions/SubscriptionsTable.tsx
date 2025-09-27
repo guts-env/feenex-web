@@ -254,7 +254,7 @@ function SubscriptionsTable() {
   });
 
   const emptyState = (
-    <div className="flex flex-col items-center justify-center h-full py-8">
+    <div className="flex flex-col items-center justify-center h-full py-8 text-center">
       <p className="text-lg text-muted-foreground pb-1">No subscriptions found.</p>
       <p className="text-sm text-muted-foreground">
         Click "Add Subscription" to start managing your subscriptions
