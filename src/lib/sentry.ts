@@ -5,14 +5,11 @@ export function initSentry() {
     Sentry.init({
       dsn: import.meta.env.VITE_SENTRY_DSN,
       environment: import.meta.env.MODE,
-      integrations: [
-        Sentry.browserTracingIntegration(),
-        Sentry.replayIntegration(),
-      ],
+      integrations: [Sentry.browserTracingIntegration(), Sentry.replayIntegration()],
       tracesSampleRate: import.meta.env.PROD ? 0.1 : 1.0,
       replaysSessionSampleRate: import.meta.env.PROD ? 0.01 : 1.0,
       replaysOnErrorSampleRate: 1.0,
-      debug: import.meta.env.DEV,
+      debug: false,
       beforeSend(event) {
         if (event.exception) {
           const error = event.exception.values?.[0];
@@ -24,10 +21,6 @@ export function initSentry() {
         return event;
       },
     });
-
-    if (import.meta.env.DEV) {
-      console.log('🔍 Sentry initialized for development testing');
-    }
   }
 }
 
