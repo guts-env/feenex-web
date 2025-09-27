@@ -33,7 +33,7 @@ const PrivateRoute: React.FC<PrivateRouteProps> = ({ element }) => {
       } finally {
         setTimeout(() => {
           setIsInitializing(false);
-        }, 300);
+        }, 500);
       }
     };
 
