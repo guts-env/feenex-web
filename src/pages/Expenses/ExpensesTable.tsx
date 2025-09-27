@@ -63,26 +63,6 @@ const columns: ColumnDef<IExpenseRes>[] = [
   //   enableHiding: false,
   // },
   {
-    id: 'or_number',
-    header: 'OR Number',
-    accessorKey: 'orNumber',
-    cell: ({ row }) => {
-      const isProcessing = row.original.processingStatus === 'processing';
-      return (
-        <span>
-          {isProcessing ? (
-            <div className="flex items-center gap-2">
-              <Loader2 className="size-4 animate-spin text-muted-foreground" />
-              <span className="text-muted-foreground">Processing...</span>
-            </div>
-          ) : (
-            row.original.orNumber
-          )}
-        </span>
-      );
-    },
-  },
-  {
     id: 'merchant_name',
     header: 'Merchant Name',
     accessorKey: 'merchantName',
@@ -109,6 +89,26 @@ const columns: ColumnDef<IExpenseRes>[] = [
             <span className={isProcessing ? 'text-muted-foreground' : ''}>{merchantName}</span>
           )}
         </div>
+      );
+    },
+  },
+  {
+    id: 'or_number',
+    header: 'OR Number',
+    accessorKey: 'orNumber',
+    cell: ({ row }) => {
+      const isProcessing = row.original.processingStatus === 'processing';
+      return (
+        <span>
+          {isProcessing ? (
+            <div className="flex items-center gap-2">
+              <Loader2 className="size-4 animate-spin text-muted-foreground" />
+              <span className="text-muted-foreground">Processing...</span>
+            </div>
+          ) : (
+            row.original.orNumber
+          )}
+        </span>
       );
     },
   },
