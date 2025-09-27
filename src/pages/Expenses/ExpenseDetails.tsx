@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { format } from 'date-fns';
+import { useShallow } from 'zustand/react/shallow';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import {
   Dialog,
@@ -18,8 +19,9 @@ import ExpensePhotos from '@/pages/Expenses/ExpensePhotos';
 import ExpenseItems from '@/pages/Expenses/ExpenseItems';
 import { useDownloadPresigned } from '@/api/services/UploadService/mutation';
 import { useVerifyExpense } from '@/api/services/ExpenseService/mutation';
-import { ExpenseStatusEnum } from '@/constants/enums';
+import { ExpenseStatusEnum, RoleEnum } from '@/constants/enums';
 import type { IExpenseRes } from '@/types/api';
+import { useUserStore } from '@/stores/useUserStore';
 
 function ExpenseDetailsContent({
   title,
@@ -61,8 +63,15 @@ export default function ExpenseDetails({
   const [photosDialogOpen, setPhotosDialogOpen] = useState(false);
   const [auditTrailDrawerOpen, setAuditTrailDrawerOpen] = useState(false);
 
+  const { user } = useUserStore(useShallow((state) => ({ user: state.user })));
   const { mutate: getDownloadPresigned } = useDownloadPresigned();
   const { mutate: verifyExpense, isPending: isVerifying } = useVerifyExpense();
+
+  const userRole = user?.role.name;
+  const isAdmin = userRole === RoleEnum.BUSINESS_ADMIN || userRole === RoleEnum.PERSONAL_ADMIN;
+  const isManager = userRole === RoleEnum.MANAGER;
+
+  const canVerify = isAdmin || isManager;
 
   useEffect(() => {
     if (open) {
@@ -238,7 +247,7 @@ export default function ExpenseDetails({
                         <ExpenseStatusBadge
                           status={internalData?.status || ExpenseStatusEnum.DRAFT}
                         />
-                        {internalData?.status !== ExpenseStatusEnum.VERIFIED && (
+                        {canVerify && internalData?.status !== ExpenseStatusEnum.VERIFIED && (
                           <Button
                             onClick={handleVerify}
                             disabled={isVerifying}

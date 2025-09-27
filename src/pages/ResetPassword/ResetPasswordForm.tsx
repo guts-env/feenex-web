@@ -10,7 +10,6 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { PasswordInput } from '@/components/ui/password-input';
 import { useResetPasswordForm } from '@/forms/hooks/useAuthForm';
 import { useResetPassword } from '@/api/services/AuthService/mutation';
@@ -37,7 +36,7 @@ export default function ResetPasswordForm({ className, ...props }: React.Compone
       {
         onSuccess: () => {
           form.reset();
-          setSuccess('Your password has been updated');
+          setSuccess('Your password has been updated.');
         },
         onError: (error) => {
           if (Array.isArray(error.message)) {
@@ -50,6 +49,21 @@ export default function ResetPasswordForm({ className, ...props }: React.Compone
       },
     );
   };
+
+  if (success) {
+    return (
+      <div className="flex flex-col items-center gap-6">
+        <h1 className="text-2xl font-bold">Success!</h1>
+        <p className="text-green-500 text-sm text-center text-balance">{success}</p>
+        <p className="text-sm">
+          Go to{' '}
+          <Link to="/login" className="underline underline-offset-4">
+            Login
+          </Link>
+        </p>
+      </div>
+    );
+  }
 
   return (
     <Form {...form}>

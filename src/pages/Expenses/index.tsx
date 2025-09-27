@@ -1,11 +1,11 @@
-import ExpensesTable from '@/pages/Expenses/ExpensesTable'
+import ExpensesTable from '@/pages/Expenses/ExpensesTable';
 
 function Expenses() {
   return (
     <div>
       <ExpensesTable />
     </div>
-  )
+  );
 }
 
-export default Expenses
+export default Expenses;

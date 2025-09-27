@@ -1,43 +1,13 @@
 import { useState } from 'react';
-import {
-  Search,
-  ChevronRight,
-  Book,
-  FileText,
-  Building2,
-  CreditCard,
-  Settings,
-  Users,
-  HelpCircle,
-  ArrowLeft,
-} from 'lucide-react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Link, useNavigate } from 'react-router-dom';
+import { Search } from 'lucide-react';
 import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ExpenseGuides } from './ExpenseGuides';
-import { OrganizationGuides } from './OrganizationGuides';
-import { SubscriptionGuides } from './SubscriptionGuides';
-import { GettingStartedGuide } from './GettingStartedGuide';
-import { OnboardingTestPanel } from './OnboardingTestPanel';
-import { OnboardingChecklist } from './OnboardingChecklist';
-import { Link } from 'react-router-dom';
-import { ArticleCard } from './ArticleCard';
+import { ArticleCard } from '@/components/features/ArticleCard';
 
 interface HelpCategory {
   id: string;
   title: string;
   description: string;
-  icon: React.ElementType;
-  articles: number;
   featured?: boolean;
 }
 
@@ -53,48 +23,15 @@ interface HelpArticle {
 
 const categories: HelpCategory[] = [
   {
-    id: 'getting-started',
-    title: 'Getting Started',
-    description: 'Learn the basics of Feenex and get up and running quickly',
-    icon: Book,
-    articles: 5,
-    featured: true,
-  },
-  {
     id: 'expenses',
     title: 'Expenses',
     description: 'Create, manage, and verify expenses with ease',
-    icon: FileText,
-    articles: 12,
     featured: true,
   },
   {
     id: 'organization',
     title: 'Teams & Organization',
     description: 'Manage your organization, invite members, and set permissions',
-    icon: Building2,
-    articles: 8,
-  },
-  {
-    id: 'subscriptions',
-    title: 'Subscriptions',
-    description: 'Track and manage your recurring subscriptions',
-    icon: CreditCard,
-    articles: 6,
-  },
-  // {
-  //   id: 'settings',
-  //   title: 'Settings & Profile',
-  //   description: 'Configure your account and preferences',
-  //   icon: Settings,
-  //   articles: 4,
-  // },
-  {
-    id: 'roles',
-    title: 'Roles & Permissions',
-    description: 'Understanding user roles and what each role can do',
-    icon: Users,
-    articles: 3,
   },
 ];
 
@@ -135,9 +72,7 @@ const popularArticles: HelpArticle[] = [
 
 export default function HelpCenter() {
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const [selectedArticle, setSelectedArticle] = useState<string | null>(null);
-  const [selectedGuideId, setSelectedGuideId] = useState<string | null>(null);
+  const navigate = useNavigate();
 
   const filteredArticles = popularArticles.filter(
     (article) =>
@@ -145,38 +80,9 @@ export default function HelpCenter() {
       article.description.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
-  if (selectedArticle) {
-    return (
-      <div className="flex flex-col items-start">
-        <Button
-          variant="link"
-          onClick={() => {
-            setSelectedArticle(null);
-            setSelectedGuideId(null);
-          }}
-          className="mb-4"
-        >
-          <ArrowLeft className="size-4" />
-          Back to Help Center
-        </Button>
-
-        {selectedArticle === 'expenses' && <ExpenseGuides initialGuideId={selectedGuideId} />}
-        {selectedArticle === 'organization' && (
-          <OrganizationGuides initialGuideId={selectedGuideId} />
-        )}
-        {selectedArticle === 'subscriptions' && <SubscriptionGuides />}
-        {selectedArticle === 'getting-started' && <GettingStartedGuide />}
-        {!['expenses', 'organization', 'subscriptions', 'getting-started'].includes(
-          selectedArticle,
-        ) && (
-          <div className="text-center py-12">
-            <h3 className="text-lg font-semibold mb-2">Guide Content Coming Soon</h3>
-            <p className="text-muted-foreground">This guide is currently being developed.</p>
-          </div>
-        )}
-      </div>
-    );
-  }
+  const filteredPopularArticles = filteredArticles.filter((a) => a.popular);
+  const hasSearchQuery = searchQuery.trim().length > 0;
+  const hasResults = filteredPopularArticles.length > 0;
 
   return (
     <div className="container mx-auto">
@@ -202,21 +108,26 @@ export default function HelpCenter() {
       <div className="mb-4">
         <h2 className="text-lg font-semibold mb-3">Frequently Asked Questions</h2>
         <div className="overflow-x-auto">
-          <div className="flex gap-4 md:grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {filteredArticles
-              .filter((a) => a.popular)
-              .map((article) => (
+          {hasSearchQuery && !hasResults ? (
+            <div className="text-left py-2">
+              <p className="text-muted-foreground">
+                No results found for "{searchQuery}". Try a different search term.
+              </p>
+            </div>
+          ) : (
+            <div className="flex gap-4 md:grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              {filteredPopularArticles.map((article) => (
                 <ArticleCard
                   key={article.id}
                   title={article.title}
                   description={article.description}
                   onClick={() => {
-                    setSelectedArticle(article.category);
-                    setSelectedGuideId(article.id);
+                    navigate(`/help-center/${article.category}/${article.id}`);
                   }}
                 />
               ))}
-          </div>
+            </div>
+          )}
         </div>
       </div>
 
@@ -231,8 +142,7 @@ export default function HelpCenter() {
                 title={category.title}
                 description={category.description}
                 onClick={() => {
-                  setSelectedArticle(category.id);
-                  setSelectedGuideId(null);
+                  navigate(`/help-center/${category.id}`);
                 }}
               />
             ))}
@@ -247,10 +157,6 @@ export default function HelpCenter() {
           Contact Support
         </Link>
       </h2>
-
-      {/* <OnboardingChecklist />
-
-      <OnboardingTestPanel /> */}
     </div>
   );
 }

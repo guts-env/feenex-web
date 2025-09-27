@@ -5,11 +5,9 @@ import {
   CardHeader,
   CardDescription,
   CardTitle,
-  // CardAction,
   CardFooter,
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-// import { Badge } from '@/components/ui/badge';
 import { TrendingUpIcon } from 'lucide-react';
 
 function VerifiedExpenseCard({ total }: { total: number }) {

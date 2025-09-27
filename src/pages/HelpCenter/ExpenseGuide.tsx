@@ -1,25 +1,8 @@
-import { useState, useRef, useEffect } from 'react';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { AlertCircle, LightbulbIcon } from 'lucide-react';
+import { useParams, useNavigate, Link } from 'react-router-dom';
+import { GuideLayout } from '@/components/features/GuideLayout';
+import { GuideContent } from '@/components/features/GuideContent';
 
-interface GuideStep {
-  id: number;
-  title: string;
-  description: string;
-  image?: string;
-  tips?: string[];
-  warning?: string;
-  info?: string;
-}
-
-interface ExpenseGuide {
-  id: string;
-  title: string;
-  description: string;
-  steps: GuideStep[];
-}
-
-const expenseGuides: ExpenseGuide[] = [
+const expenseGuides = [
   {
     id: 'auto-expense',
     title: 'Creating an Auto Expense',
@@ -76,8 +59,15 @@ const expenseGuides: ExpenseGuide[] = [
       {
         id: 7,
         title: 'Review Expense',
-        description:
-          'Review the expense and make any necessary adjustments (see Editing an Expense).',
+        description: (
+          <p>
+            Review the expense and make any necessary adjustments (see{' '}
+            <Link to="/help-center/expenses/edit-expense" className="underline">
+              Editing an Expense
+            </Link>
+            ).
+          </p>
+        ),
         image: '/help/review-expense.webp',
       },
       {
@@ -181,8 +171,15 @@ const expenseGuides: ExpenseGuide[] = [
       {
         id: 6,
         title: 'Review Expense',
-        description:
-          'Review the expense and make any necessary adjustments (see Editing an Expense).',
+        description: (
+          <p>
+            Review the expense and make any necessary adjustments (see{' '}
+            <Link to="/help-center/expenses/edit-expense" className="underline">
+              Editing an Expense
+            </Link>
+            ).
+          </p>
+        ),
         image: '/help/review-multiple-expense.webp',
       },
       {
@@ -363,130 +360,33 @@ const expenseGuides: ExpenseGuide[] = [
   },
 ];
 
-interface ExpenseGuidesProps {
-  initialGuideId?: string | null;
-}
+export default function ExpenseGuide() {
+  const { guideId } = useParams<{ guideId: string }>();
+  const navigate = useNavigate();
 
-export function ExpenseGuides({ initialGuideId }: ExpenseGuidesProps) {
-  const getInitialGuide = (guideId?: string | null) => {
-    if (guideId) {
-      const foundGuide = expenseGuides.find((guide) => guide.id === guideId);
-      if (foundGuide) return foundGuide;
-    }
-    return expenseGuides[0];
+  // Find the current guide or default to first
+  const currentGuide = guideId
+    ? expenseGuides.find((g) => g.id === guideId) || expenseGuides[0]
+    : expenseGuides[0];
+
+  const handleGuideSelect = (selectedGuideId: string) => {
+    navigate(`/help-center/expenses/${selectedGuideId}`);
   };
 
-  const [selectedGuide, setSelectedGuide] = useState<ExpenseGuide>(() =>
-    getInitialGuide(initialGuideId),
-  );
-  const contentRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const newGuide = getInitialGuide(initialGuideId);
-    setSelectedGuide(newGuide);
-    contentRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
-  }, [initialGuideId]);
+  const guideList = expenseGuides.map((g) => ({
+    id: g.id,
+    title: g.title,
+  }));
 
   return (
-    <div className="w-full space-y-6">
-      {/* Header */}
-      <div className="mb-6">
-        <h2 className="text-2xl font-bold mb-2">Expense Management Guides</h2>
-        <p className="text-muted-foreground text-md">
-          Learn how to create, manage, and process expenses in Feenex
-        </p>
-      </div>
-
-      <div className="flex gap-8 h-[calc(100vh-200px)] w-full">
-        {/* Sidebar Navigation */}
-        <div className="w-64 flex-shrink-0">
-          <nav className="overflow-y-auto h-full pr-2 pl-4">
-            <div className="space-y-1 border-l-2 border-l-primary pl-4">
-              {expenseGuides.map((guide) => {
-                const isSelected = selectedGuide.id === guide.id;
-
-                return (
-                  <button
-                    key={guide.id}
-                    onClick={() => {
-                      setSelectedGuide(guide);
-                      contentRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
-                    }}
-                    className={`w-full text-left px-3 py-2 rounded-lg transition-all text-sm ${
-                      isSelected ? 'text-primary bg-primary/5' : 'hover:bg-muted text-foreground'
-                    }`}
-                  >
-                    {guide.title}
-                  </button>
-                );
-              })}
-            </div>
-          </nav>
-        </div>
-
-        {/* Main Content */}
-        <div className="flex-1 min-w-0 overflow-y-auto h-full" ref={contentRef}>
-          <div className="space-y-6 pb-8">
-            {/* Guide Header */}
-            <div className="mb-4 py-4 border-l-3 border-l-primary pl-4 bg-primary/5 rounded-br-lg rounded-tr-lg">
-              <h3 className="text-xl font-semibold mb-2">{selectedGuide.title}</h3>
-              <p className="text-muted-foreground">{selectedGuide.description}</p>
-            </div>
-
-            {/* Article Content */}
-            <div className="space-y-8">
-              {selectedGuide.steps.map((step, index) => (
-                <div key={step.id} className="space-y-4">
-                  <div>
-                    <h4 className="font-semibold text-lg mb-2">
-                      {index + 1}. {step.title}
-                    </h4>
-                    <p className="text-muted-foreground text-sm">{step.description}</p>
-                  </div>
-
-                  {/* Image Placeholder */}
-                  {step.image && (
-                    <img src={step.image} alt={step.title} className="rounded-lg border-1" />
-                  )}
-
-                  {/* Tips */}
-                  {step.tips && step.tips.length > 0 && (
-                    <Alert>
-                      <AlertDescription>
-                        <ul className="mt-1 ml-4 list-disc space-y-1">
-                          {step.tips.map((tip, tipIndex) => (
-                            <li key={tipIndex} className="text-sm">
-                              {tip}
-                            </li>
-                          ))}
-                        </ul>
-                      </AlertDescription>
-                    </Alert>
-                  )}
-
-                  {/* Warning */}
-                  {step.warning && (
-                    <Alert variant="destructive">
-                      <AlertCircle className="h-4 w-4" />
-                      <AlertDescription>
-                        <strong>Warning:</strong> {step.warning}
-                      </AlertDescription>
-                    </Alert>
-                  )}
-
-                  {/* Info */}
-                  {step.info && (
-                    <Alert variant="info">
-                      <LightbulbIcon className="size-12" />
-                      <AlertDescription>{step.info}</AlertDescription>
-                    </Alert>
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+    <GuideLayout
+      title="Expense Management Guides"
+      description="Learn how to create, manage, and process expenses in Feenex"
+      guides={guideList}
+      selectedGuideId={currentGuide.id}
+      onGuideSelect={handleGuideSelect}
+    >
+      <GuideContent guide={currentGuide} />
+    </GuideLayout>
   );
 }

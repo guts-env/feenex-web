@@ -61,6 +61,8 @@ interface DataTableProps<TData, TValue> {
   rightSlot?: React.ReactNode;
   hideColumnFilter?: boolean;
   filtersSlot?: React.ReactNode;
+  mobileContent?: React.ReactNode;
+  mobileSkeleton?: React.ReactNode;
 }
 
 function SortableHeader<TData, TValue>({
@@ -119,18 +121,20 @@ function DataTableSkeleton({
 }) {
   return (
     <div className="w-full">
-      <div className="flex flex-col gap-4 pb-4 md:flex-row md:items-center md:justify-between">
-        <div className="flex flex-col gap-4 md:flex-row md:items-center">
+      <div className="flex flex-col-reverse md:flex-row gap-4 pb-4 md:items-center md:justify-between">
+        <div className="flex items-center gap-4">
           {hasSearch && (
             <div className="relative w-full md:w-sm">
               <Skeleton className="h-10 w-full pl-7" />
               <Search className="pointer-events-none absolute top-1/2 left-2 size-4 -translate-y-1/2 opacity-50 select-none" />
             </div>
           )}
-          {hasColumnFilter && <Skeleton className="h-10 w-24" />}
+          <div className="hidden md:block">{hasColumnFilter && <Skeleton className="h-10 w-24" />}</div>
         </div>
 
-        {hasRightSlot && <Skeleton className="h-10 w-20" />}
+        <div className="flex items-center gap-4">
+          {hasRightSlot && <Skeleton className="h-10 w-20" />}
+        </div>
       </div>
       <div className="overflow-hidden rounded-md border">
         <Table>
@@ -183,6 +187,8 @@ export function DataTable<TData, TValue>({
   rightSlot,
   hideColumnFilter,
   filtersSlot,
+  mobileContent,
+  mobileSkeleton,
 }: DataTableProps<TData, TValue>) {
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
@@ -212,12 +218,72 @@ export function DataTable<TData, TValue>({
 
   if (loading) {
     return (
-      <DataTableSkeleton
-        columnLength={columns.length}
-        hasSearch={!!onSearchChange}
-        hasColumnFilter={!hideColumnFilter}
-        hasRightSlot={!!rightSlot}
-      />
+      <>
+        {/* Mobile skeleton loading */}
+        {mobileContent && (
+          <div className="md:hidden">
+            {/* Search and filters skeleton - matching actual layout */}
+            <div className="flex flex-col-reverse gap-2 pb-2">
+              <div className="flex items-center gap-2">
+                {onSearchChange && (
+                  <div className="relative w-full">
+                    <Skeleton className="h-8 w-full" />
+                  </div>
+                )}
+              </div>
+              <div className="flex items-center gap-2">
+                {filtersSlot && <Skeleton className="h-8 w-20" />}
+                {rightSlot && <Skeleton className="h-8 w-28" />}
+              </div>
+            </div>
+            {/* Card skeletons */}
+            <div className="h-[calc(100vh-176px)] overflow-y-auto overscroll-contain">
+              <div className="space-y-4 pt-2">
+                {mobileSkeleton || (
+                  // Default expense card skeleton
+                  Array.from({ length: 4 }).map((_, i) => (
+                    <div key={i} className="border rounded-lg p-4 bg-card">
+                      {/* Top row skeleton */}
+                      <div className="flex items-center justify-between mb-3">
+                        <div className="flex items-center gap-2">
+                          <Skeleton className="h-5 w-16" />
+                          <Skeleton className="h-5 w-20" />
+                        </div>
+                        <Skeleton className="h-5 w-5 rounded" />
+                      </div>
+                      {/* Content skeleton */}
+                      <div className="flex gap-3">
+                        <Skeleton className="w-16 h-16 flex-shrink-0 rounded-lg" />
+                        <div className="flex-1 min-w-0">
+                          <Skeleton className="h-7 w-24" />
+                          <Skeleton className="h-5 w-32 mt-1" />
+                        </div>
+                      </div>
+                      {/* Bottom skeleton */}
+                      <div className="border-t mt-3 pt-3 -mx-4">
+                        <div className="flex justify-between px-4">
+                          <Skeleton className="h-4 w-16" />
+                          <Skeleton className="h-4 w-20" />
+                        </div>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Desktop skeleton loading */}
+        <div className={mobileContent ? "hidden md:block" : ""}>
+          <DataTableSkeleton
+            columnLength={columns.length}
+            hasSearch={!!onSearchChange}
+            hasColumnFilter={!hideColumnFilter}
+            hasRightSlot={!!rightSlot}
+          />
+        </div>
+      </>
     );
   }
 
@@ -281,11 +347,11 @@ export function DataTable<TData, TValue>({
 
         <div className="flex items-center gap-4">
           {filtersSlot && <div className="md:hidden">{filtersSlot}</div>}
-          {columnFiltersSlot && <div className="md:hidden">{columnFiltersSlot}</div>}
           {rightSlot}
         </div>
       </div>
-      <div className="overflow-hidden rounded-md border">
+      {/* Desktop Table View */}
+      <div className="hidden md:block overflow-hidden rounded-md border">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
@@ -329,6 +395,16 @@ export function DataTable<TData, TValue>({
           </TableBody>
         </Table>
       </div>
+
+      {/* Mobile Card View */}
+      {mobileContent && (
+        <div className="md:hidden">
+          <div className="h-[calc(100vh-240px)] overflow-y-auto overscroll-contain">
+            {data.length > 0 ? mobileContent : emptyState}
+          </div>
+        </div>
+      )}
+
       <div className="flex items-center justify-end space-x-2 py-4">
         <div className="space-x-2">
           <Button

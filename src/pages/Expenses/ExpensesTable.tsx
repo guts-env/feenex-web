@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { type ColumnDef, type SortingState, type Updater } from '@tanstack/react-table';
+import { useShallow } from 'zustand/react/shallow';
 import debounce from 'lodash/debounce';
 import { MoreHorizontal, Plus, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
@@ -13,6 +14,7 @@ import { useDeleteExpense, useVerifyExpense } from '@/api/services/ExpenseServic
 import { DataTable } from '@/components/ui/data-table';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { useUserStore } from '@/stores/useUserStore';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -25,7 +27,7 @@ import DeleteExpense from '@/pages/Expenses/DeleteExpense';
 import AddExpense from '@/pages/Expenses/AddExpense';
 import EditExpense from '@/pages/Expenses/EditExpense';
 import { useExpenseSocket } from '@/hooks/useExpenseSocket';
-import { ExpenseStatusEnum, SortOrderEnum } from '@/constants/enums';
+import { ExpenseStatusEnum, SortOrderEnum, RoleEnum } from '@/constants/enums';
 import { type IExpenseRes } from '@/types/api';
 import { CompoundButton } from '@/components/ui/compound-button';
 import MultipleAutoExpensesForm from './MultipleAutoExpensesForm';
@@ -35,8 +37,7 @@ import {
   type IExpenseFilters,
 } from '@/components/features/ExpensesTableFilters';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
-import { useOnboarding } from '@/components/help-center/OnboardingProvider';
-// import { OnboardingBanner } from '@/components/help-center/OnboardingBanner';
+import { ExpenseCard } from '@/components/features/ExpenseCard';
 
 const columns: ColumnDef<IExpenseRes>[] = [
   // {
@@ -235,7 +236,14 @@ const columns: ColumnDef<IExpenseRes>[] = [
 
 function ExpensesTable() {
   const location = useLocation();
-  const { isTourCompleted, startTour } = useOnboarding();
+  const { user } = useUserStore(useShallow((state) => ({ user: state.user })));
+
+  const userRole = user?.role.name;
+  const isAdmin = userRole === RoleEnum.BUSINESS_ADMIN || userRole === RoleEnum.PERSONAL_ADMIN;
+  const isManager = userRole === RoleEnum.MANAGER;
+  const isMember = userRole === RoleEnum.MEMBER;
+
+  const canVerify = isAdmin || isManager;
 
   /* Table State */
   const [sorting, setSorting] = useState<SortingState>([]);
@@ -361,6 +369,8 @@ function ExpensesTable() {
       const status = row.original.status;
       const isProcessing = row.original.processingStatus === 'processing';
 
+      const canDelete = isAdmin || isManager || (isMember && status !== ExpenseStatusEnum.VERIFIED);
+
       if (isProcessing) {
         return (
           <Button variant="ghost" className="h-8 w-8 p-0" disabled>
@@ -382,11 +392,13 @@ function ExpensesTable() {
             <DropdownMenuItem onClick={() => setSelectedExpense(row.original)}>
               View
             </DropdownMenuItem>
-            {status !== ExpenseStatusEnum.VERIFIED && (
+            {canVerify && status !== ExpenseStatusEnum.VERIFIED && (
               <DropdownMenuItem onClick={() => handleVerify(id)}>Verify</DropdownMenuItem>
             )}
             <DropdownMenuItem onClick={() => setEditExpense(row.original)}>Edit</DropdownMenuItem>
-            <DropdownMenuItem onClick={() => setDeleteExpenseId(id)}>Delete</DropdownMenuItem>
+            {canDelete && (
+              <DropdownMenuItem onClick={() => setDeleteExpenseId(id)}>Delete</DropdownMenuItem>
+            )}
           </DropdownMenuContent>
         </DropdownMenu>
       );
@@ -406,18 +418,25 @@ function ExpensesTable() {
     </div>
   );
 
+
+  const mobileExpensesList = (
+    <div className="space-y-4">
+      {data?.data?.map((expense) => (
+        <ExpenseCard
+          key={expense.id}
+          expense={expense}
+          onView={() => setSelectedExpense(expense)}
+          onEdit={() => setEditExpense(expense)}
+          onDelete={() => setDeleteExpenseId(expense.id)}
+          onVerify={() => handleVerify(expense.id)}
+        />
+      ))}
+    </div>
+  );
+
   return (
     <>
-      {/* Onboarding banner for expense creation - DISABLED FOR PRODUCTION */}
-      {/* <OnboardingBanner
-        tourId="expense-creation"
-        title="New to expenses?"
-        description="Learn how to create and manage your expenses with our quick tour."
-        showOnCondition={!data?.data || data.data.length === 0}
-      /> */}
-
       <DataTable<IExpenseRes, unknown>
-        data-tour="expense-list"
         loading={isLoading}
         error={isError ? 'Failed to fetch expenses' : ''}
         emptyState={emptyState}
@@ -439,7 +458,6 @@ function ExpensesTable() {
         rightSlot={
           <div className="flex gap-4">
             <CompoundButton
-              data-tour="new-expense-btn"
               onMainClick={() => setAddExpenseModalOpen(true)}
               dropdownItems={[
                 {
@@ -449,10 +467,11 @@ function ExpensesTable() {
               ]}
             >
               <Plus />
-              <span className="hidden md:block">Add Expense</span>
+              <span className="hidden sm:block">Add Expense</span>
             </CompoundButton>
           </div>
         }
+        mobileContent={mobileExpensesList}
       />
 
       <ExpenseDetails

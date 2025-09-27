@@ -1,1 +1,1 @@
-export const USER_STORE = 'USER_STORE'
+export const USER_STORE = 'FEENEX_USER_STORE'

@@ -60,7 +60,6 @@ const SubscriptionForm = forwardRef<ISubscriptionFormRef, SubscriptionFormProps>
     };
 
     const handleSubmit = async (data: IAddSubscriptionFormValues) => {
-      console.log(data);
       createSubscription(data, {
         onSuccess: () => {
           resetForm();

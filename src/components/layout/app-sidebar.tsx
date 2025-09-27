@@ -98,11 +98,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   );
 
   return (
-    <Sidebar
-      data-tour="sidebar"
-      className="top-(--header-height) h-[calc(100svh-var(--header-height))]!"
-      {...props}
-    >
+    <Sidebar className="top-(--header-height) h-[calc(100svh-var(--header-height))]!" {...props}>
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
@@ -116,8 +112,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                   <CommandIcon className="size-4" />
                 </div>
                 <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-medium">{user?.organization.name}</span>
-                  <span className="truncate text-xs">{capitalize(user?.organization.type)}</span>
+                  <span className="truncate font-medium">{user?.organization?.name || 'No Organization'}</span>
+                  <span className="truncate text-xs">{user?.organization?.type ? capitalize(user.organization.type) : 'Unknown'}</span>
                 </div>
               </div>
             </SidebarMenuButton>

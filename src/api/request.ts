@@ -54,10 +54,9 @@ const request = async (options: AxiosRequestConfig) => {
         useUserStore.getState().setToken(accessToken.accessToken);
         return request(options);
       } catch {
-        alert('Refresh token failed');
-        // AuthService.logout();
-        // useUserStore.getState().logout();
-        // window.location.href = '/login';
+        AuthService.logout();
+        useUserStore.getState().logout();
+        window.location.href = '/login';
       }
     }
 

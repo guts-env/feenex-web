@@ -28,6 +28,8 @@ import RemoveMember from '@/pages/Organization/RemoveMember';
 import { useRemoveMember, useUpdateMemberRole } from '@/api/services/OrganizationService/mutation';
 import { type IOrganizationMemberRes } from '@/types/api';
 import { RoleEnum, SortOrderEnum } from '@/constants/enums';
+import { OrganizationCard } from '@/components/features/OrganizationCard';
+import { OrganizationCardSkeleton } from '@/components/features/OrganizationCardSkeleton';
 
 function OrganizationTable() {
   /* Table State */
@@ -233,6 +235,26 @@ function OrganizationTable() {
     </div>
   );
 
+  const mobileOrganizationsList = (
+    <div className="space-y-4">
+      {data?.data?.map((member) => (
+        <OrganizationCard
+          key={member.id}
+          member={member}
+          onEdit={() => {
+            setMemberToEdit(member.id);
+            setEditingRole(member.role.name);
+          }}
+          isEditing={memberToEdit === member.id}
+          editingRole={editingRole}
+          onRoleChange={setEditingRole}
+          onCommitEdit={() => handleCommitEdit(member.id)}
+          onCancelEdit={handleCancelEdit}
+        />
+      ))}
+    </div>
+  );
+
   return (
     <>
       <DataTable<IOrganizationMemberRes, unknown>
@@ -257,6 +279,8 @@ function OrganizationTable() {
             Invite Member
           </Button>
         }
+        mobileContent={mobileOrganizationsList}
+        mobileSkeleton={<OrganizationCardSkeleton />}
         hideColumnFilter
       />
       <InviteMember open={inviteMemberModalOpen} onClose={() => setInviteMemberModalOpen(false)} />

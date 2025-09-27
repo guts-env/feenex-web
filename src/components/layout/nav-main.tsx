@@ -1,12 +1,8 @@
-"use client"
+'use client';
 
-import { ChevronRight, type LucideIcon } from "lucide-react"
+import { ChevronRight, type LucideIcon } from 'lucide-react';
 
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible"
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import {
   SidebarGroup,
   // SidebarGroupLabel,
@@ -17,25 +13,25 @@ import {
   SidebarMenuSub,
   SidebarMenuSubButton,
   SidebarMenuSubItem,
-} from "@/components/ui/sidebar"
-import { Link, useLocation } from 'react-router-dom'
+} from '@/components/ui/sidebar';
+import { Link, useLocation } from 'react-router-dom';
 
 export function NavMain({
   items,
 }: {
   items: {
-    title: string
-    url: string
-    icon: LucideIcon
+    title: string;
+    url: string;
+    icon: LucideIcon;
     items?: {
-      title: string
-      url: string
-    }[]
-  }[]
+      title: string;
+      url: string;
+    }[];
+  }[];
 }) {
-  const { pathname } = useLocation()
+  const { pathname } = useLocation();
 
-  const isActive = (url: string) => pathname === url
+  const isActive = (url: string) => pathname === url;
 
   return (
     <SidebarGroup>
@@ -45,10 +41,7 @@ export function NavMain({
           <Collapsible key={item.title} asChild defaultOpen={isActive(item.url)}>
             <SidebarMenuItem>
               <SidebarMenuButton asChild tooltip={item.title} isActive={isActive(item.url)}>
-                <Link
-                  to={item.url}
-                  data-tour={`${item.title.toLowerCase()}-nav`}
-                >
+                <Link to={item.url}>
                   <item.icon />
                   <span>{item.title}</span>
                 </Link>
@@ -81,5 +74,5 @@ export function NavMain({
         ))}
       </SidebarMenu>
     </SidebarGroup>
-  )
+  );
 }

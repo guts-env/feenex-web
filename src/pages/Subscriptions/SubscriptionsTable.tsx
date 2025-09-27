@@ -32,6 +32,8 @@ import {
 import AddSubscription from '@/pages/Subscriptions/AddSubscription';
 import EditSubscription from '@/pages/Subscriptions/EditSubscription';
 import SubscriptionDetails from '@/pages/Subscriptions/ViewSubscription';
+import { SubscriptionCard } from '@/components/features/SubscriptionCard';
+import { SubscriptionCardSkeleton } from '@/components/features/SubscriptionCardSkeleton';
 
 const columns: ColumnDef<ISubscriptionRes>[] = [
   {
@@ -264,6 +266,20 @@ function SubscriptionsTable() {
     </div>
   );
 
+  const mobileSubscriptionsList = (
+    <div className="space-y-4">
+      {data?.data?.map((subscription) => (
+        <SubscriptionCard
+          key={subscription.id}
+          subscription={subscription}
+          onView={() => setSelectedSubscription(subscription)}
+          onEdit={() => setEditSubscription(subscription)}
+          onDelete={() => setDeleteSubscriptionId(subscription.id)}
+        />
+      ))}
+    </div>
+  );
+
   return (
     <>
       <DataTable<ISubscriptionRes, unknown>
@@ -293,6 +309,8 @@ function SubscriptionsTable() {
             </Button>
           </div>
         }
+        mobileContent={mobileSubscriptionsList}
+        mobileSkeleton={<SubscriptionCardSkeleton />}
       />
 
       <DeleteDialog

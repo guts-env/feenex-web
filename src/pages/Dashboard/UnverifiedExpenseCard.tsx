@@ -6,11 +6,9 @@ import {
   CardHeader,
   CardDescription,
   CardTitle,
-  // CardAction,
   CardFooter,
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-// import { Badge } from '@/components/ui/badge';
 
 function UnverifiedExpenseCard({ total }: { total: number }) {
   const navigate = useNavigate();

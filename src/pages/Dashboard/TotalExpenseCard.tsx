@@ -3,10 +3,8 @@ import {
   CardHeader,
   CardDescription,
   CardTitle,
-  // CardAction,
   CardFooter,
 } from '@/components/ui/card';
-// import { Badge } from '@/components/ui/badge';
 import { TrendingUpIcon } from 'lucide-react';
 
 function TotalExpenseCard({ total }: { total: number }) {

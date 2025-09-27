@@ -74,11 +74,7 @@ const AutoExpenseForm = forwardRef<IAutoExpenseFormRef, IAutoExpenseFormProps>(
       <div className="flex flex-col h-full min-h-0">
         <div className="flex-1 overflow-y-auto p-6 min-h-0">
           <Form {...form}>
-            <form
-              data-tour="expense-form"
-              onSubmit={form.handleSubmit(handleSubmit)}
-              className="space-y-6"
-            >
+            <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
               <div className="flex flex-col gap-6">
                 <div className="flex flex-col gap-1">
                   <FormField
@@ -89,7 +85,6 @@ const AutoExpenseForm = forwardRef<IAutoExpenseFormRef, IAutoExpenseFormProps>(
                         <FormLabel>Expense Photos</FormLabel>
                         <FormControl>
                           <UploadPhotoInput
-                            data-tour="receipt-upload"
                             type={UploadTypeEnum.RECEIPTS}
                             value={photos}
                             onChange={(files) => {
@@ -119,7 +114,6 @@ const AutoExpenseForm = forwardRef<IAutoExpenseFormRef, IAutoExpenseFormProps>(
               Cancel
             </Button>
             <Button
-              data-tour="save-expense-btn"
               type="button"
               className="flex-1"
               onClick={form.handleSubmit(handleSubmit)}
