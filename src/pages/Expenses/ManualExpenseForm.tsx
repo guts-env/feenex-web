@@ -1,4 +1,5 @@
-import { useState, useEffect, forwardRef, useImperativeHandle } from 'react';
+// import { useState, useEffect, forwardRef, useImperativeHandle } from 'react';
+import { useState, forwardRef, useImperativeHandle } from 'react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -15,10 +16,10 @@ import CategoriesSelectInput from '@/components/features/CategoriesSelectInput';
 import ExpenseStatusSelectInput from '@/pages/Expenses/ExpenseStatusSelectInput';
 import { DatePickerInput } from '@/components/features/DatePickerInput';
 import UploadPhotoInput, { type UploadedFile } from '@/components/features/UploadPhotoInput';
-import ExpenseItemsInput, {
-  type ExpenseItem,
-  type ExpenseItemError,
-} from '@/pages/Expenses/ExpenseItemsInput';
+// import ExpenseItemsInput, {
+//   type ExpenseItem,
+//   type ExpenseItemError,
+// } from '@/pages/Expenses/ExpenseItemsInput';
 import { useCreateManualExpense } from '@/api/services/ExpenseService/mutation';
 import { UploadStatusEnum, UploadTypeEnum } from '@/constants/enums';
 import { type IAddManualExpenseFormValues } from '@/forms/schema/expenses';
@@ -30,14 +31,14 @@ const ManualExpenseForm = forwardRef<IManualExpenseFormRef, IManualExpenseFormPr
     const form = useAddManualExpenseForm();
 
     const [photos, setPhotos] = useState<UploadedFile[]>([]);
-    const [items, setItems] = useState<ExpenseItem[]>([]);
+    // const [items, setItems] = useState<ExpenseItem[]>([]);
 
     const { mutate: createExpense, isPending } = useCreateManualExpense();
 
     const resetForm = () => {
       form.reset();
       setPhotos([]);
-      setItems([]);
+      // setItems([]);
     };
 
     const { isDirty } = form.formState;
@@ -72,13 +73,13 @@ const ManualExpenseForm = forwardRef<IManualExpenseFormRef, IManualExpenseFormPr
       });
     };
 
-    const itemsTotal = items.reduce((sum, item) => sum + item.quantity * (item.price || 0), 0);
+    // const itemsTotal = items.reduce((sum, item) => sum + item.quantity * (item.price || 0), 0);
 
-    useEffect(() => {
-      if (items.length > 0) {
-        form.setValue('amount', itemsTotal);
-      }
-    }, [items, itemsTotal, form]);
+    // useEffect(() => {
+    //   if (items.length > 0) {
+    //     form.setValue('amount', itemsTotal);
+    //   }
+    // }, [items, itemsTotal, form]);
 
     const handleUploadError = (error: string) => {
       form.setError('photos', { message: error });
@@ -172,7 +173,7 @@ const ManualExpenseForm = forwardRef<IManualExpenseFormRef, IManualExpenseFormPr
                               {...field}
                               onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
                               className="[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                              disabled={items.length > 0}
+                              // disabled={items.length > 0}
                             />
                           </FormControl>
                           <FormMessage />
@@ -275,7 +276,7 @@ const ManualExpenseForm = forwardRef<IManualExpenseFormRef, IManualExpenseFormPr
                   </div>
                 </div>
 
-                <div className="flex flex-col gap-1">
+                {/* <div className="flex flex-col gap-1">
                   <FormField
                     control={form.control}
                     name="items"
@@ -298,7 +299,7 @@ const ManualExpenseForm = forwardRef<IManualExpenseFormRef, IManualExpenseFormPr
                       </FormItem>
                     )}
                   />
-                </div>
+                </div> */}
               </div>
             </form>
           </Form>

@@ -36,7 +36,7 @@ import {
 } from '@/components/features/ExpensesTableFilters';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { useOnboarding } from '@/components/help-center/OnboardingProvider';
-import { OnboardingBanner } from '@/components/help-center/OnboardingBanner';
+// import { OnboardingBanner } from '@/components/help-center/OnboardingBanner';
 
 const columns: ColumnDef<IExpenseRes>[] = [
   // {
@@ -65,6 +65,21 @@ const columns: ColumnDef<IExpenseRes>[] = [
     id: 'or_number',
     header: 'OR Number',
     accessorKey: 'orNumber',
+    cell: ({ row }) => {
+      const isProcessing = row.original.processingStatus === 'processing';
+      return (
+        <span>
+          {isProcessing ? (
+            <div className="flex items-center gap-2">
+              <Loader2 className="size-4 animate-spin text-muted-foreground" />
+              <span className="text-muted-foreground">Processing...</span>
+            </div>
+          ) : (
+            row.original.orNumber
+          )}
+        </span>
+      );
+    },
   },
   {
     id: 'merchant_name',
@@ -79,7 +94,7 @@ const columns: ColumnDef<IExpenseRes>[] = [
 
       return (
         <div className="flex items-center gap-2">
-          {isProcessing && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />}
+          {isProcessing && <Loader2 className="size-4 animate-spin text-muted-foreground" />}
           {isTruncated ? (
             <Tooltip>
               <TooltipTrigger asChild>

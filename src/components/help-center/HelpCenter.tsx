@@ -15,7 +15,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ExpenseGuides } from './ExpenseGuides';
 import { OrganizationGuides } from './OrganizationGuides';
@@ -142,19 +148,27 @@ export default function HelpCenter() {
   if (selectedArticle) {
     return (
       <div className="flex flex-col items-start">
-        <Button variant="link" onClick={() => {
-          setSelectedArticle(null);
-          setSelectedGuideId(null);
-        }} className="mb-4" size="xs">
+        <Button
+          variant="link"
+          onClick={() => {
+            setSelectedArticle(null);
+            setSelectedGuideId(null);
+          }}
+          className="mb-4"
+        >
           <ArrowLeft className="size-4" />
           Back to Help Center
         </Button>
 
         {selectedArticle === 'expenses' && <ExpenseGuides initialGuideId={selectedGuideId} />}
-        {selectedArticle === 'organization' && <OrganizationGuides initialGuideId={selectedGuideId} />}
+        {selectedArticle === 'organization' && (
+          <OrganizationGuides initialGuideId={selectedGuideId} />
+        )}
         {selectedArticle === 'subscriptions' && <SubscriptionGuides />}
         {selectedArticle === 'getting-started' && <GettingStartedGuide />}
-        {!['expenses', 'organization', 'subscriptions', 'getting-started'].includes(selectedArticle) && (
+        {!['expenses', 'organization', 'subscriptions', 'getting-started'].includes(
+          selectedArticle,
+        ) && (
           <div className="text-center py-12">
             <h3 className="text-lg font-semibold mb-2">Guide Content Coming Soon</h3>
             <p className="text-muted-foreground">This guide is currently being developed.</p>
@@ -165,80 +179,78 @@ export default function HelpCenter() {
   }
 
   return (
-      <div className="container mx-auto">
-        <div className="mb-4">
-          <h1 className="text-2xl font-semibold mb-1">Help Center</h1>
-          <p className="text-muted-foreground text-sm">
-            Find answers and learn how to make the most of Feenex
-          </p>
-        </div>
+    <div className="container mx-auto">
+      <div className="mb-4">
+        <h1 className="text-2xl font-semibold mb-1">Help Center</h1>
+        <p className="text-muted-foreground text-sm">
+          Find answers and learn how to make the most of Feenex
+        </p>
+      </div>
 
-        <div className="relative mb-8">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-          <Input
-            type="text"
-            placeholder="Search for help articles..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-10 pr-4 h-10 text-sm w-full md:w-1/2"
-          />
-        </div>
+      <div className="relative mb-8">
+        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+        <Input
+          type="text"
+          placeholder="Search for help articles..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="pl-10 pr-4 h-10 text-sm w-full md:w-1/2"
+        />
+      </div>
 
-        {/* FAQ Section */}
-        <div className="mb-4">
-          <h2 className="text-lg font-semibold mb-3">Frequently Asked Questions</h2>
-          <div className="overflow-x-auto">
-            <div className="flex gap-4 md:grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-              {filteredArticles
-                .filter((a) => a.popular)
-                .map((article) => (
-                  <ArticleCard
-                    key={article.id}
-                    title={article.title}
-                    description={article.description}
-                    onClick={() => {
-                      setSelectedArticle(article.category);
-                      setSelectedGuideId(article.id);
-                    }}
-                  />
-                ))}
-            </div>
-          </div>
-        </div>
-
-        {/* Categories Section */}
-        <div className="mb-8">
-          <h2 className="text-lg font-semibold mb-3">Categories</h2>
-          <div className="overflow-x-auto">
-            <div className="flex gap-4 md:grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-              {categories.map((category) => (
+      {/* FAQ Section */}
+      <div className="mb-4">
+        <h2 className="text-lg font-semibold mb-3">Frequently Asked Questions</h2>
+        <div className="overflow-x-auto">
+          <div className="flex gap-4 md:grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            {filteredArticles
+              .filter((a) => a.popular)
+              .map((article) => (
                 <ArticleCard
-                  key={category.id}
-                  title={category.title}
-                  description={category.description}
+                  key={article.id}
+                  title={article.title}
+                  description={article.description}
                   onClick={() => {
-                    setSelectedArticle(category.id);
-                    setSelectedGuideId(null);
+                    setSelectedArticle(article.category);
+                    setSelectedGuideId(article.id);
                   }}
                 />
               ))}
-            </div>
           </div>
         </div>
-
-        {/* Still Need Help Section */}
-        <h2 className="text-md mb-3">
-          <span className="font-semibold">Still need help?</span>{' '}
-          <Link to="/support" className="text-primary hover:underline">
-            Contact Support
-          </Link>
-        </h2>
-
-        {/* Onboarding Checklist */}
-        <OnboardingChecklist />
-
-        {/* Onboarding Test Panel */}
-        <OnboardingTestPanel />
       </div>
+
+      {/* Categories Section */}
+      <div className="mb-8">
+        <h2 className="text-lg font-semibold mb-3">Categories</h2>
+        <div className="overflow-x-auto">
+          <div className="flex gap-4 md:grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            {categories.map((category) => (
+              <ArticleCard
+                key={category.id}
+                title={category.title}
+                description={category.description}
+                onClick={() => {
+                  setSelectedArticle(category.id);
+                  setSelectedGuideId(null);
+                }}
+              />
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Still Need Help Section */}
+      <h2 className="text-md mb-3">
+        <span className="font-semibold">Still need help?</span>{' '}
+        <Link to="/support" className="text-primary hover:underline">
+          Contact Support
+        </Link>
+      </h2>
+
+      {/* <OnboardingChecklist />
+
+      <OnboardingTestPanel /> */}
+    </div>
   );
 }

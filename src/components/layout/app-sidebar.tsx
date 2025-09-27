@@ -70,12 +70,11 @@ const data = {
       url: '/support',
       icon: SendIcon,
     },
-    // DISABLED FOR PRODUCTION
-    // {
-    //   title: 'Help Center',
-    //   url: '/help-center',
-    //   icon: HelpCircleIcon,
-    // },
+    {
+      title: 'Help Center',
+      url: '/help-center',
+      icon: HelpCircleIcon,
+    },
   ],
   projects: [
     // {

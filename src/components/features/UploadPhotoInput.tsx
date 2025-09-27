@@ -176,7 +176,7 @@ function UploadPhotoInput({
     if (error.cause === ErrorCode.FileTooLarge) {
       errorMessage = `File size exceeds ${maxSizeInMB}MB limit`;
     } else if (error.cause === ErrorCode.TooManyFiles) {
-      errorMessage = `Maximum ${maxFiles} files allowed`;
+      errorMessage = `Only 1 file per dropzone is allowed`;
     } else if (error.cause === ErrorCode.FileInvalidType) {
       errorMessage = 'Invalid file type. Only images or PDFs are allowed';
     } else if (error.cause === CustomErrorCode.FileAlreadyExists) {

@@ -1,6 +1,11 @@
-import axios, { AxiosError, type AxiosRequestConfig, type AxiosResponse, type InternalAxiosRequestConfig } from 'axios'
-import { useUserStore } from '@/stores/useUserStore'
-import AuthService from './services/AuthService/service'
+import axios, {
+  AxiosError,
+  type AxiosRequestConfig,
+  type AxiosResponse,
+  type InternalAxiosRequestConfig,
+} from 'axios';
+import { useUserStore } from '@/stores/useUserStore';
+import AuthService from './services/AuthService/service';
 
 export const client = (() => {
   return axios.create({
@@ -13,45 +18,46 @@ export const client = (() => {
     paramsSerializer: {
       indexes: true,
     },
-  })
-})()
+  });
+})();
 
 client.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
-    const accessToken = useUserStore.getState().token
-    const user = useUserStore.getState().user
+    const accessToken = useUserStore.getState().token;
+    const user = useUserStore.getState().user;
 
     if (accessToken) {
-      config.headers.Authorization = `Bearer ${accessToken}`
+      config.headers.Authorization = `Bearer ${accessToken}`;
     }
 
     if (user) {
-      config.headers['x-organization-id'] = user.organization.id
+      config.headers['x-organization-id'] = user.organization.id;
     }
 
-    return config
+    return config;
   },
   (error: AxiosError) => {
-    return Promise.reject(error)
+    return Promise.reject(error);
   },
-)
+);
 
 const request = async (options: AxiosRequestConfig) => {
   const onSuccess = (response: AxiosResponse) => {
-    const { data } = response
-    return data
-  }
+    const { data } = response;
+    return data;
+  };
 
   const onError = async function (error: AxiosError<{ message?: string }>): Promise<unknown> {
     if (error.status === 401) {
       try {
-        const accessToken = await AuthService.refreshAccessToken()
-        useUserStore.getState().setToken(accessToken.accessToken)
-        return request(options)
+        const accessToken = await AuthService.refreshAccessToken();
+        useUserStore.getState().setToken(accessToken.accessToken);
+        return request(options);
       } catch {
-        AuthService.logout()
-        useUserStore.getState().logout()
-        window.location.href = '/login'
+        alert('Refresh token failed');
+        // AuthService.logout();
+        // useUserStore.getState().logout();
+        // window.location.href = '/login';
       }
     }
 
@@ -60,10 +66,10 @@ const request = async (options: AxiosRequestConfig) => {
       status: error.status,
       code: error.code,
       response: error.response,
-    })
-  }
+    });
+  };
 
-  return client(options).then(onSuccess).catch(onError)
-}
+  return client(options).then(onSuccess).catch(onError);
+};
 
-export default request
+export default request;

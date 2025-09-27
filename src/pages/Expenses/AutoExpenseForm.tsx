@@ -74,7 +74,11 @@ const AutoExpenseForm = forwardRef<IAutoExpenseFormRef, IAutoExpenseFormProps>(
       <div className="flex flex-col h-full min-h-0">
         <div className="flex-1 overflow-y-auto p-6 min-h-0">
           <Form {...form}>
-            <form data-tour="expense-form" onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
+            <form
+              data-tour="expense-form"
+              onSubmit={form.handleSubmit(handleSubmit)}
+              className="space-y-6"
+            >
               <div className="flex flex-col gap-6">
                 <div className="flex flex-col gap-1">
                   <FormField

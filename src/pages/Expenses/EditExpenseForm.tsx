@@ -16,10 +16,10 @@ import CategoriesSelectInput from '@/components/features/CategoriesSelectInput';
 import ExpenseStatusSelectInput from '@/pages/Expenses/ExpenseStatusSelectInput';
 import { DatePickerInput } from '@/components/features/DatePickerInput';
 import UploadPhotoInput, { type UploadedFile } from '@/components/features/UploadPhotoInput';
-import ExpenseItemsInput, {
-  type ExpenseItem,
-  type ExpenseItemError,
-} from '@/pages/Expenses/ExpenseItemsInput';
+// import ExpenseItemsInput, {
+//   type ExpenseItem,
+//   type ExpenseItemError,
+// } from '@/pages/Expenses/ExpenseItemsInput';
 import { useUpdateExpense } from '@/api/services/ExpenseService/mutation';
 import { UploadStatusEnum, UploadTypeEnum } from '@/constants/enums';
 import { type IAddManualExpenseFormValues } from '@/forms/schema/expenses';
@@ -52,14 +52,14 @@ const EditExpenseForm = forwardRef<IEditExpenseFormRef, IEditExpenseFormProps>(
     });
 
     const [photos, setPhotos] = useState<UploadedFile[] | string[]>([]);
-    const [items, setItems] = useState<ExpenseItem[]>([]);
+    // const [items, setItems] = useState<ExpenseItem[]>([]);
 
     const { mutate: updateExpense, isPending } = useUpdateExpense();
 
     const resetForm = () => {
       form.reset();
       setPhotos([]);
-      setItems([]);
+      // setItems([]);
     };
 
     useEffect(() => {
@@ -79,7 +79,7 @@ const EditExpenseForm = forwardRef<IEditExpenseFormRef, IEditExpenseFormProps>(
         });
 
         setPhotos(expense.photos || []);
-        setItems(expense.items || []);
+        // setItems(expense.items || []);
       }
     }, [expense, form]);
 
@@ -125,13 +125,13 @@ const EditExpenseForm = forwardRef<IEditExpenseFormRef, IEditExpenseFormProps>(
       );
     };
 
-    const itemsTotal = items.reduce((sum, item) => sum + item.quantity * (item.price || 0), 0);
+    // const itemsTotal = items.reduce((sum, item) => sum + item.quantity * (item.price || 0), 0);
 
-    useEffect(() => {
-      if (items.length > 0) {
-        form.setValue('amount', itemsTotal);
-      }
-    }, [items, itemsTotal, form]);
+    // useEffect(() => {
+    //   if (items.length > 0) {
+    //     form.setValue('amount', itemsTotal);
+    //   }
+    // }, [items, itemsTotal, form]);
 
     const handleUploadError = useCallback(
       (error: string) => {
@@ -205,6 +205,22 @@ const EditExpenseForm = forwardRef<IEditExpenseFormRef, IEditExpenseFormProps>(
                   />
                 </div>
 
+                <div className="flex flex-col gap-1">
+                  <FormField
+                    control={form.control}
+                    name="merchantName"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Merchant Name</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Enter merchant name" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="flex flex-col gap-1 w-full">
                     <FormField
@@ -222,7 +238,7 @@ const EditExpenseForm = forwardRef<IEditExpenseFormRef, IEditExpenseFormProps>(
                               {...field}
                               onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
                               className="[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                              disabled={items.length > 0}
+                              // disabled={items.length > 0}
                             />
                           </FormControl>
                           <FormMessage />
@@ -325,7 +341,7 @@ const EditExpenseForm = forwardRef<IEditExpenseFormRef, IEditExpenseFormProps>(
                   </div>
                 </div>
 
-                <div className="flex flex-col gap-1">
+                {/* <div className="flex flex-col gap-1">
                   <FormField
                     control={form.control}
                     name="items"
@@ -348,7 +364,7 @@ const EditExpenseForm = forwardRef<IEditExpenseFormRef, IEditExpenseFormProps>(
                       </FormItem>
                     )}
                   />
-                </div>
+                </div> */}
               </div>
             </form>
           </Form>

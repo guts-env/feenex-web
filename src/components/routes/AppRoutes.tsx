@@ -16,8 +16,7 @@ const Expenses = lazy(() => import('@/pages/Expenses/ExpensesTable'));
 const Organization = lazy(() => import('@/pages/Organization'));
 const Settings = lazy(() => import('@/pages/Settings'));
 const Support = lazy(() => import('@/pages/Support'));
-// DISABLED FOR PRODUCTION
-// const HelpCenter = lazy(() => import('@/components/help-center/HelpCenter'));
+const HelpCenter = lazy(() => import('@/components/help-center/HelpCenter'));
 
 const AppRoutes: React.FC = () => {
   return (
@@ -40,8 +39,7 @@ const AppRoutes: React.FC = () => {
         <Route path={RoutesEnum.ORGANIZATION} element={<Organization />} />
         <Route path={RoutesEnum.SETTINGS} element={<Settings />} />
         <Route path={RoutesEnum.SUPPORT} element={<Support />} />
-        {/* DISABLED FOR PRODUCTION */}
-        {/* <Route path={RoutesEnum.HELP_CENTER} element={<HelpCenter />} /> */}
+        <Route path={RoutesEnum.HELP_CENTER} element={<HelpCenter />} />
         <Route path="*" element={<Navigate to={RoutesEnum.EXPENSES} replace />} />
       </Route>
     </RouterRoutes>

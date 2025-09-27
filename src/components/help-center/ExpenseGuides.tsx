@@ -1,170 +1,133 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
+import { useState, useRef, useEffect } from 'react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import {
-  Upload,
-  Plus,
-  FileText,
-  CheckCircle,
-  Edit,
-  Trash2,
-  Eye,
-  Camera,
-  DollarSign,
-  Calendar,
-  Tag,
-  Building,
-  FileImage,
-  AlertCircle,
-  ListFilter,
-  Search,
-  Download,
-  ArrowLeft,
-} from 'lucide-react';
+import { AlertCircle, LightbulbIcon } from 'lucide-react';
 
 interface GuideStep {
   id: number;
   title: string;
   description: string;
-  imageSlot?: string;
+  image?: string;
   tips?: string[];
   warning?: string;
+  info?: string;
 }
 
 interface ExpenseGuide {
   id: string;
   title: string;
   description: string;
-  icon: React.ElementType;
   steps: GuideStep[];
-  difficulty: 'Beginner' | 'Intermediate' | 'Advanced';
 }
 
 const expenseGuides: ExpenseGuide[] = [
   {
     id: 'auto-expense',
     title: 'Creating an Auto Expense',
-    description: 'Upload receipts and let AI process them automatically',
-    icon: Upload,
-    difficulty: 'Beginner',
+    description: 'Upload receipts and let Feenex process them automatically',
     steps: [
       {
         id: 1,
         title: 'Navigate to Expenses',
         description: 'Click on "Expenses" in the sidebar navigation to access the expenses page.',
-        imageSlot: '/help/expenses-nav.png',
-        tips: [
-          'The Expenses menu is available to all users',
-          'You can also use the keyboard shortcut Ctrl+E',
-        ],
+        image: '/help/expenses-nav.webp',
       },
       {
         id: 2,
-        title: 'Click "New Expense" Button',
+        title: 'Click "Add Expense" Button',
         description:
-          'Find and click the "New Expense" button in the top right corner of the expenses page.',
-        imageSlot: '/help/new-expense-button.png',
+          'Find and click the "Add Expense" button in the top right corner of the expenses page.',
+        image: '/help/add-expense-button.webp',
       },
       {
         id: 3,
-        title: 'Select "Auto Expense"',
-        description:
-          'Choose the "Auto Expense" option to let AI process your receipts automatically.',
-        imageSlot: '/help/auto-expense-option.png',
+        title: 'Select "Auto"',
+        description: 'Choose the "Auto" option to let Feenex process your receipts automatically.',
+        image: '/help/auto-expense-option.webp',
         tips: ['Auto Expense works best with clear, readable receipts'],
       },
       {
         id: 4,
         title: 'Upload Receipt Images',
         description:
-          'Drag and drop receipt images or click to browse and select files from your device.',
-        imageSlot: '/help/upload-receipts.png',
+          'Drag and drop receipt imags or click to browse and select an image from your device.',
+        image: '/help/upload-receipts.webp',
         tips: [
-          'You can upload multiple receipts at once',
-          'Supported formats: JPG, PNG, PDF',
-          'Maximum file size: 10MB per image',
+          'Maximum of 5 images per expense',
+          'Supported formats: JPG, PNG, PDF, WEBP, HEIC, HEIF',
+          'Maximum file size: 5MB per image',
         ],
-        warning: 'Ensure receipts are clear and not blurry for best AI processing results',
+        info: 'Ensure receipts are clear and not blurry for best processing results',
       },
       {
         id: 5,
-        title: 'Review AI-Extracted Data',
+        title: 'Click "Process Expense" Button',
         description:
-          'Check the automatically extracted information including merchant, amount, date, and items.',
-        imageSlot: '/help/review-extracted.png',
-        tips: [
-          'You can edit any incorrectly extracted information',
-          'Add categories to help organize expenses',
-        ],
+          'After uploading the receipts, click the "Process Expense" button to let Feenex process the receipts.',
+        image: '/help/process-expense-button.webp',
       },
       {
         id: 6,
-        title: 'Save the Expense',
-        description: 'Once reviewed, click "Save Expense" to add it to your expense list.',
-        imageSlot: '/help/save-expense.png',
-        warning: 'Expenses are initially saved as "Pending" and need verification',
+        title: 'Expense Processing',
+        description:
+          'After clicking the "Process Expense" button, the receipts will be processed in the background.',
+        image: '/help/expense-processing.webp',
+        info: 'Expenses are initially saved as "Pending" and needs verification.',
+      },
+      {
+        id: 7,
+        title: 'Review Expense',
+        description:
+          'Review the expense and make any necessary adjustments (see Editing an Expense).',
+        image: '/help/review-expense.webp',
+      },
+      {
+        id: 8,
+        title: 'Verify Expense',
+        description: 'Quickly verify the expense by clicking the "Verify" button.',
+        image: '/help/verify-expense-button.webp',
       },
     ],
   },
   {
     id: 'manual-expense',
     title: 'Creating a Manual Expense',
-    description: "Manually enter expense details when you don't have a receipt",
-    icon: Plus,
-    difficulty: 'Beginner',
+    description: 'Manually enter and save expense details',
     steps: [
       {
         id: 1,
         title: 'Navigate to Expenses',
-        description: 'Click on "Expenses" in the sidebar navigation.',
-        imageSlot: '/help/expenses-nav.png',
+        description: 'Click on "Expenses" in the sidebar navigation to access the expenses page.',
+        image: '/help/expenses-nav.webp',
       },
       {
         id: 2,
-        title: 'Click "New Expense"',
-        description: 'Click the "New Expense" button in the top right corner.',
-        imageSlot: '/help/new-expense-button.png',
+        title: 'Click "Add Expense" Button',
+        description:
+          'Find and click the "Add Expense" button in the top right corner of the expenses page.',
+        image: '/help/add-expense-button.webp',
       },
       {
         id: 3,
-        title: 'Select "Manual Entry"',
-        description: 'Choose "Manual Entry" to input expense details yourself.',
-        imageSlot: '/help/manual-entry-option.png',
-      },
-      {
-        id: 4,
-        title: 'Fill in Expense Details',
-        description: 'Enter merchant name, amount, date, and category for your expense.',
-        imageSlot: '/help/manual-expense-form.png',
-        tips: [
-          'Merchant name is required',
-          'Select the appropriate category for better organization',
-          'Add a description for future reference',
-        ],
+        title: 'Select "Manual"',
+        description: 'Choose "Manual" and input all the required details for your expense.',
+        image: '/help/manual-entry-option.webp',
       },
       {
         id: 5,
-        title: 'Add Line Items (Optional)',
-        description: 'Break down your expense into individual items if needed.',
-        imageSlot: '/help/add-line-items.png',
+        title: 'Attach Receipt (Optional)',
+        description: 'You can still attach a receipt image even for manual entries.',
+        image: '/help/attach-receipt-manual.webp',
         tips: [
-          'Useful for itemizing business meals or supplies',
-          'Each item can have its own category',
+          'Maximum of 5 images per expense',
+          'Supported formats: JPG, PNG, PDF, WEBP, HEIC, HEIF',
+          'Maximum file size: 5MB per image',
         ],
       },
       {
         id: 6,
-        title: 'Attach Receipt (Optional)',
-        description: 'You can still attach a receipt image even for manual entries.',
-        imageSlot: '/help/attach-receipt-manual.png',
-      },
-      {
-        id: 7,
         title: 'Save the Expense',
-        description: 'Review your entries and click "Save Expense" to complete.',
-        imageSlot: '/help/save-manual-expense.png',
+        description: 'Review the details and click "Create Expense" to save the expense.',
+        image: '/help/save-manual-expense.webp',
       },
     ],
   },
@@ -172,51 +135,61 @@ const expenseGuides: ExpenseGuide[] = [
     id: 'multiple-auto',
     title: 'Processing Multiple Auto Expenses',
     description: 'Efficiently handle multiple receipts at once',
-    icon: FileImage,
-    difficulty: 'Intermediate',
     steps: [
       {
         id: 1,
-        title: 'Prepare Your Receipts',
-        description: 'Gather all receipts you want to process. Ensure they are clear and readable.',
-        imageSlot: '/help/prepare-receipts.png',
-        tips: [
-          'Organize receipts by date or category beforehand',
-          'Check image quality before uploading',
-        ],
+        title: 'Navigate to Expenses',
+        description: 'Click on "Expenses" in the sidebar navigation to access the expenses page.',
+        image: '/help/expenses-nav.webp',
       },
       {
         id: 2,
-        title: 'Bulk Upload',
-        description: 'Select multiple receipt files at once or drag them all into the upload area.',
-        imageSlot: '/help/bulk-upload.png',
-        tips: [
-          'You can upload up to 20 receipts at once',
-          'Each receipt will create a separate expense',
-        ],
+        title: 'Click "Process Multiple Expenses" Button',
+        description:
+          'Click the arrow beside the "Add Expense" button to show the "Process Multiple Expenses" button.',
+        image: '/help/process-multiple-expenses-button.webp',
       },
       {
         id: 3,
-        title: 'Monitor Processing',
+        title: 'Upload Receipt Images',
         description:
-          'Watch the progress as AI processes each receipt. Processing happens in parallel.',
-        imageSlot: '/help/processing-progress.png',
-        warning: 'Large batches may take a few minutes to process completely',
+          'Drag and drop receipt imags or click to browse and select an image from your device for each expense.',
+        image: '/help/multiple-expenses-upload.webp',
+        tips: [
+          'You can add up to 5 expenses at once',
+          'Each collapsible will create a separate expense',
+          'Maximum of 5 images per expense',
+          'Supported formats: JPG, PNG, PDF, WEBP, HEIC, HEIF',
+          'Maximum file size: 5MB per image',
+        ],
+        info: 'Add images for existing expenses first before adding new expenses.',
       },
       {
         id: 4,
-        title: 'Review Each Expense',
-        description:
-          'Review and edit each processed expense. Use the navigation arrows to move between them.',
-        imageSlot: '/help/review-multiple.png',
-        tips: ['Check for duplicate expenses', 'Verify amounts and dates are correct'],
+        title: 'Process Multiple Expenses',
+        description: 'Click the "Process All Expenses" button to process all the expenses.',
+        image: '/help/process-all-expenses-button.webp',
       },
       {
         id: 5,
-        title: 'Batch Actions',
+        title: 'Multiple Expense Processing',
         description:
-          'Select multiple expenses to perform batch actions like categorization or deletion.',
-        imageSlot: '/help/batch-actions.png',
+          'Feenex will process all the expenses in the background. Processing happens in parallel.',
+        image: '/help/multiple-processing-progress.webp',
+        info: 'Large batches may take up to a few minutes to process completely depending on the complexity of the receipts.',
+      },
+      {
+        id: 6,
+        title: 'Review Expense',
+        description:
+          'Review the expense and make any necessary adjustments (see Editing an Expense).',
+        image: '/help/review-multiple-expense.webp',
+      },
+      {
+        id: 7,
+        title: 'Verify Expense',
+        description: 'Quickly verify the expense by clicking the "Verify" button.',
+        image: '/help/verify-expense-button.webp',
       },
     ],
   },
@@ -224,25 +197,20 @@ const expenseGuides: ExpenseGuide[] = [
     id: 'expense-list',
     title: 'Understanding the Expense List',
     description: 'Navigate and manage your expenses effectively',
-    icon: ListFilter,
-    difficulty: 'Beginner',
     steps: [
       {
         id: 1,
         title: 'Expense List Overview',
         description: 'The expense list shows all your expenses with key information at a glance.',
-        imageSlot: '/help/expense-list-overview.png',
-        tips: [
-          'Expenses are sorted by date by default',
-          'Status badges show expense verification state',
-        ],
+        image: '/help/expense-list.webp',
+        info: 'Expenses are sorted by date created by default',
       },
       {
         id: 2,
         title: 'Understanding Status Badges',
         description:
           'Each expense has a status: Draft (gray), Pending (yellow), Verified (green), or Rejected (red).',
-        imageSlot: '/help/status-badges.png',
+        image: '/help/list-status-badges.webp',
         tips: [
           'Draft: Incomplete expense entry',
           'Pending: Awaiting verification',
@@ -255,104 +223,93 @@ const expenseGuides: ExpenseGuide[] = [
         title: 'Using Filters',
         description:
           'Filter expenses by date range, category, amount, or status to find what you need.',
-        imageSlot: '/help/expense-filters.png',
-        tips: ['Combine multiple filters for precise results', 'Save frequently used filters'],
+        image: '/help/expense-filters.webp',
+        info: 'Combine multiple filters for precise results.',
       },
       {
         id: 4,
-        title: 'Search Functionality',
-        description: 'Use the search bar to find expenses by merchant name or description.',
-        imageSlot: '/help/expense-search.png',
+        title: 'Column Visibility',
+        description: 'Toggle the visibility of columns to show or hide them.',
+        image: '/help/column-visibility.webp',
       },
       {
         id: 5,
-        title: 'Sorting Options',
-        description: 'Click column headers to sort by date, amount, merchant, or status.',
-        imageSlot: '/help/sorting-options.png',
+        title: 'Search Functionality',
+        description:
+          'Use the search bar to find expenses by merchant name or OR number. Keyword search can be combined with filters.',
+        image: '/help/expense-search.webp',
       },
       {
         id: 6,
+        title: 'Sorting Options',
+        description: 'Click column headers to sort in ascending or descending order.',
+        image: '/help/expense-sorting.webp',
+      },
+      {
+        id: 7,
         title: 'Pagination',
         description: 'Navigate through pages when you have many expenses.',
-        imageSlot: '/help/pagination.png',
-        tips: ['Adjust items per page in settings', 'Use keyboard shortcuts for faster navigation'],
+        image: '/help/expense-pagination.webp',
       },
     ],
   },
   {
     id: 'view-expense',
     title: 'Viewing Expense Details',
-    description: 'Access complete information about any expense',
-    icon: Eye,
-    difficulty: 'Beginner',
+    description: 'View the complete details of an expense',
     steps: [
       {
         id: 1,
-        title: 'Click on an Expense',
-        description: 'Click any expense row in the list to view its details.',
-        imageSlot: '/help/click-expense.png',
+        title: 'Click "View" Button',
+        description: 'Click the "View" action button to view the expense details.',
+        image: '/help/view-from-list.webp',
       },
       {
         id: 2,
-        title: 'Expense Detail View',
-        description: 'See complete information including receipt image, line items, and metadata.',
-        imageSlot: '/help/expense-detail.png',
-        tips: ['Click receipt image to view full size', 'Download receipt for your records'],
+        title: 'View Expense Details',
+        description: 'See complete expense information including receipt images.',
+        image: '/help/view-expense-detail.webp',
       },
       {
         id: 3,
-        title: 'View Line Items',
-        description: 'See itemized breakdown of the expense if available.',
-        imageSlot: '/help/view-line-items.png',
+        title: 'Check Audit Trail',
+        description: 'View history of changes and who made them.',
+        image: '/help/expense-audit-trail.webp',
       },
       {
         id: 4,
-        title: 'Check Audit Trail',
-        description: 'View history of changes and who made them.',
-        imageSlot: '/help/audit-trail.png',
+        title: 'Quick Verify',
+        description:
+          'You can also quickly verify the expense from expense detail view by clicking the "Verify" button.',
+        image: '/help/verify-expense-button.webp',
       },
     ],
   },
   {
     id: 'verify-expense',
-    title: 'Verifying and Approving Expenses',
-    description: 'Review and approve pending expenses',
-    icon: CheckCircle,
-    difficulty: 'Intermediate',
+    title: 'Verifying Expenses',
+    description: 'Different ways to verify pending expenses',
     steps: [
       {
         id: 1,
-        title: 'Filter Pending Expenses',
+        title: 'Verify From Expense List',
         description:
-          'Use the status filter to show only "Pending" expenses that need verification.',
-        imageSlot: '/help/filter-pending.png',
+          'Click the "Verify" action button to quickly verify the expense from the expense list.',
+        image: '/help/verify-from-list.webp',
       },
       {
         id: 2,
-        title: 'Review Expense Details',
-        description: 'Click on a pending expense to review all details and receipt.',
-        imageSlot: '/help/review-for-verification.png',
-        tips: ['Check receipt matches the entered amount', 'Verify expense is business-related'],
+        title: 'Verify From Expense Detail',
+        description:
+          'Click the "Verify" button to quickly verify the expense from the expense detail view.',
+        image: '/help/verify-expense-button.webp',
       },
       {
         id: 3,
-        title: 'Verify or Reject',
-        description: 'Click "Verify" to approve or "Reject" if corrections are needed.',
-        imageSlot: '/help/verify-reject-buttons.png',
-      },
-      {
-        id: 4,
-        title: 'Add Verification Notes',
-        description: 'Optionally add notes explaining your verification decision.',
-        imageSlot: '/help/verification-notes.png',
-        tips: ['Notes are helpful for rejected expenses', 'Explain what needs correction'],
-      },
-      {
-        id: 5,
-        title: 'Bulk Verification',
-        description: 'Select multiple expenses to verify them all at once.',
-        imageSlot: '/help/bulk-verify.png',
-        warning: "Only bulk verify expenses you've thoroughly reviewed",
+        title: 'Verify or Reject From Edit Expense',
+        description:
+          'Select "Verify" to approve or "Reject" if corrections are needed from the status dropdown in the edit expense form then click the "Update Expense" button to save changes.',
+        image: '/help/verify-from-edit.webp',
       },
     ],
   },
@@ -360,43 +317,26 @@ const expenseGuides: ExpenseGuide[] = [
     id: 'edit-expense',
     title: 'Editing an Expense',
     description: 'Modify expense details after creation',
-    icon: Edit,
-    difficulty: 'Beginner',
     steps: [
       {
         id: 1,
-        title: 'Open Expense Details',
-        description: 'Click on the expense you want to edit from the list.',
-        imageSlot: '/help/open-expense-edit.png',
+        title: 'Click "Edit" Button',
+        description: 'Click the "Edit" action button to edit the expense from the expense list.',
+        image: '/help/edit-from-list.webp',
       },
       {
         id: 2,
-        title: 'Click Edit Button',
-        description: 'Click the "Edit" button in the expense detail view.',
-        imageSlot: '/help/edit-button.png',
-        warning: 'Verified expenses may require re-verification after editing',
-      },
-      {
-        id: 3,
-        title: 'Modify Details',
-        description: 'Change any field including amount, date, category, or description.',
-        imageSlot: '/help/edit-form.png',
-      },
-      {
-        id: 4,
-        title: 'Update Line Items',
-        description: 'Add, remove, or modify individual line items.',
-        imageSlot: '/help/edit-line-items.png',
+        title: 'Edit Expense Details',
+        description:
+          'Change any field including the photos, OR number, merchant name, total amount, VAT, dates, status, and category.',
+        image: '/help/edit-expense-details.webp',
       },
       {
         id: 5,
         title: 'Save Changes',
-        description: 'Click "Save Changes" to update the expense.',
-        imageSlot: '/help/save-edits.png',
-        tips: [
-          'Changes are tracked in the audit log',
-          'Notification sent if expense was previously verified',
-        ],
+        description: 'Click "Update Expense" to save changes.',
+        image: '/help/save-changes-expense.webp',
+        info: 'Audit log shows who made the most recent changes.',
       },
     ],
   },
@@ -404,37 +344,20 @@ const expenseGuides: ExpenseGuide[] = [
     id: 'delete-expense',
     title: 'Deleting an Expense',
     description: 'Remove unwanted or duplicate expenses',
-    icon: Trash2,
-    difficulty: 'Beginner',
     steps: [
       {
         id: 1,
-        title: 'Select Expense',
-        description: 'Find and click on the expense you want to delete.',
-        imageSlot: '/help/select-for-delete.png',
+        title: 'Click "Delete" Button',
+        description:
+          'Click the "Delete" action button to delete the expense from the expense list.',
+        image: '/help/delete-from-list.webp',
       },
       {
         id: 2,
-        title: 'Click Delete Button',
-        description: 'Click the "Delete" button in the expense detail view.',
-        imageSlot: '/help/delete-button.png',
-        warning: 'Deleting is permanent and cannot be undone',
-      },
-      {
-        id: 3,
         title: 'Confirm Deletion',
         description: 'Confirm your intent to delete in the popup dialog.',
-        imageSlot: '/help/confirm-delete.png',
-      },
-      {
-        id: 4,
-        title: 'Bulk Delete',
-        description: 'Select multiple expenses and use bulk delete action.',
-        imageSlot: '/help/bulk-delete.png',
-        tips: [
-          'Useful for removing duplicate entries',
-          'Archive instead of delete for record keeping',
-        ],
+        image: '/help/delete-expense-confirmation.webp',
+        warning: 'Deleting is permanent and cannot be undone',
       },
     ],
   },
@@ -445,19 +368,19 @@ interface ExpenseGuidesProps {
 }
 
 export function ExpenseGuides({ initialGuideId }: ExpenseGuidesProps) {
-  // Find the guide based on initialGuideId or default to first guide
   const getInitialGuide = (guideId?: string | null) => {
     if (guideId) {
-      const foundGuide = expenseGuides.find(guide => guide.id === guideId);
+      const foundGuide = expenseGuides.find((guide) => guide.id === guideId);
       if (foundGuide) return foundGuide;
     }
     return expenseGuides[0];
   };
 
-  const [selectedGuide, setSelectedGuide] = useState<ExpenseGuide>(() => getInitialGuide(initialGuideId));
+  const [selectedGuide, setSelectedGuide] = useState<ExpenseGuide>(() =>
+    getInitialGuide(initialGuideId),
+  );
   const contentRef = useRef<HTMLDivElement>(null);
 
-  // Update selected guide when initialGuideId changes
   useEffect(() => {
     const newGuide = getInitialGuide(initialGuideId);
     setSelectedGuide(newGuide);
@@ -469,7 +392,7 @@ export function ExpenseGuides({ initialGuideId }: ExpenseGuidesProps) {
       {/* Header */}
       <div className="mb-6">
         <h2 className="text-2xl font-bold mb-2">Expense Management Guides</h2>
-        <p className="text-muted-foreground text-sm">
+        <p className="text-muted-foreground text-md">
           Learn how to create, manage, and process expenses in Feenex
         </p>
       </div>
@@ -490,9 +413,7 @@ export function ExpenseGuides({ initialGuideId }: ExpenseGuidesProps) {
                       contentRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
                     }}
                     className={`w-full text-left px-3 py-2 rounded-lg transition-all text-sm ${
-                      isSelected
-                        ? 'text-primary bg-primary/5'
-                        : 'hover:bg-muted text-foreground'
+                      isSelected ? 'text-primary bg-primary/5' : 'hover:bg-muted text-foreground'
                     }`}
                   >
                     {guide.title}
@@ -507,10 +428,8 @@ export function ExpenseGuides({ initialGuideId }: ExpenseGuidesProps) {
         <div className="flex-1 min-w-0 overflow-y-auto h-full" ref={contentRef}>
           <div className="space-y-6 pb-8">
             {/* Guide Header */}
-            <div>
-              <h3 className="text-xl font-semibold mb-2">
-                {selectedGuide.title}
-              </h3>
+            <div className="mb-4 py-4 border-l-3 border-l-primary pl-4 bg-primary/5 rounded-br-lg rounded-tr-lg">
+              <h3 className="text-xl font-semibold mb-2">{selectedGuide.title}</h3>
               <p className="text-muted-foreground">{selectedGuide.description}</p>
             </div>
 
@@ -526,23 +445,14 @@ export function ExpenseGuides({ initialGuideId }: ExpenseGuidesProps) {
                   </div>
 
                   {/* Image Placeholder */}
-                  {step.imageSlot && (
-                    <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg flex items-center justify-center bg-muted/5 aspect-[2/1] max-w-[1200px] w-full">
-                      <div className="text-center space-y-2">
-                        <FileImage className="h-12 w-12 text-muted-foreground/50 mx-auto" />
-                        <p className="text-sm text-muted-foreground">
-                          Screenshot: {step.imageSlot}
-                        </p>
-                      </div>
-                    </div>
+                  {step.image && (
+                    <img src={step.image} alt={step.title} className="rounded-lg border-1" />
                   )}
 
                   {/* Tips */}
                   {step.tips && step.tips.length > 0 && (
                     <Alert>
-                      <AlertCircle className="h-4 w-4" />
                       <AlertDescription>
-                        <strong>Tips:</strong>
                         <ul className="mt-1 ml-4 list-disc space-y-1">
                           {step.tips.map((tip, tipIndex) => (
                             <li key={tipIndex} className="text-sm">
@@ -561,6 +471,14 @@ export function ExpenseGuides({ initialGuideId }: ExpenseGuidesProps) {
                       <AlertDescription>
                         <strong>Warning:</strong> {step.warning}
                       </AlertDescription>
+                    </Alert>
+                  )}
+
+                  {/* Info */}
+                  {step.info && (
+                    <Alert variant="info">
+                      <LightbulbIcon className="size-12" />
+                      <AlertDescription>{step.info}</AlertDescription>
                     </Alert>
                   )}
                 </div>
