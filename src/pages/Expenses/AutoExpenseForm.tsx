@@ -71,7 +71,7 @@ const AutoExpenseForm = forwardRef<IAutoExpenseFormRef, IAutoExpenseFormProps>(
     };
 
     return (
-      <div className="flex flex-col h-full min-h-0">
+      <div className="flex flex-col h-dvh min-h-0">
         <div className="flex-1 overflow-y-auto p-6 min-h-0">
           <Form {...form}>
             <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
@@ -108,7 +108,7 @@ const AutoExpenseForm = forwardRef<IAutoExpenseFormRef, IAutoExpenseFormProps>(
           </Form>
         </div>
 
-        <div className="border-t p-6 flex-shrink-0 bg-background">
+        <div className="border-t p-6 pb-safe flex-shrink-0 bg-background">
           <div className="flex gap-4">
             <Button type="button" variant="outline" onClick={handleClose} className="flex-1">
               Cancel

@@ -4,14 +4,14 @@ import TermsAndPrivacyAgreement from '@/components/ui/terms-and-privacy-agreemen
 
 export default function ResetPassword() {
   return (
-    <div className="grid min-h-svh lg:grid-cols-2 relative">
-      <div className="flex flex-col gap-4 p-6 md:p-10">
-        <div className="flex flex-1 items-center justify-center">
+    <div className="grid h-dvh lg:grid-cols-2 relative">
+      <div className="flex flex-col p-6 md:p-10">
+        <div className="flex flex-1 items-center justify-center min-h-0">
           <div className="w-full max-w-xs">
             <ResetPasswordForm />
           </div>
         </div>
-        <TermsAndPrivacyAgreement className="absolute bottom-8 left-6 right-6 lg:left-10 lg:right-auto lg:w-[calc(50%-5rem)]" />
+        <TermsAndPrivacyAgreement className="mt-6 pb-safe lg:absolute lg:bottom-8 lg:left-10 lg:right-auto lg:w-[calc(50%-5rem)] lg:mt-0 lg:pb-0" />
       </div>
       <AuthImagePanel />
     </div>

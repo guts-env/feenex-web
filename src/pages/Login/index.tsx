@@ -11,7 +11,7 @@ export default function Login() {
             <LoginForm />
           </div>
         </div>
-        <TermsAndPrivacyAgreement className="mt-4 pb-safe lg:absolute lg:bottom-8 lg:left-10 lg:right-auto lg:w-[calc(50%-5rem)] lg:mt-0 lg:pb-0" />
+        <TermsAndPrivacyAgreement className="mt-6 pb-safe lg:absolute lg:bottom-8 lg:left-10 lg:right-auto lg:w-[calc(50%-5rem)] lg:mt-0 lg:pb-0" />
       </div>
       <AuthImagePanel />
     </div>
