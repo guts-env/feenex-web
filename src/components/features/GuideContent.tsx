@@ -26,7 +26,7 @@ export function GuideContent({ guide }: GuideContentProps) {
   return (
     <>
       {/* Guide Header */}
-      <div className="mb-4 py-4 border-l-3 border-l-primary pl-4 bg-primary/5 rounded-br-lg rounded-tr-lg">
+      <div className="mb-4 p-4 border-l-3 border-l-primary bg-primary/5 rounded-br-lg rounded-tr-lg">
         <h3 className="text-xl font-semibold mb-2">{guide.title}</h3>
         <p className="text-muted-foreground">{guide.description}</p>
       </div>
