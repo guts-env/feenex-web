@@ -23,7 +23,7 @@ function AppLayout() {
               closeButton
               theme={theme as ToasterProps['theme']}
               position="bottom-left"
-              className="!fixed !bottom-4 !left-[calc(var(--sidebar-width)+1rem)]"
+              className="!md:fixed !md:bottom-4 !md:left-[calc(var(--sidebar-width)+1rem)]"
             />
           </SidebarInset>
         </div>
