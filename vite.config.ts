@@ -56,6 +56,12 @@ export default defineConfig({
             },
           },
         ],
+        cleanupOutdatedCaches: true,
+        clientsClaim: true,
+        skipWaiting: true,
+      },
+      devOptions: {
+        enabled: false,
       },
     }),
     ...(process.env.NODE_ENV === 'production'
