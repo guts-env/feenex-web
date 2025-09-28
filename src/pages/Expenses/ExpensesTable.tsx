@@ -418,7 +418,6 @@ function ExpensesTable() {
     </div>
   );
 
-
   const mobileExpensesList = (
     <div className="space-y-4">
       {data?.data?.map((expense) => (
@@ -467,7 +466,7 @@ function ExpensesTable() {
               ]}
             >
               <Plus />
-              <span className="hidden sm:block">Add Expense</span>
+              <span>Add Expense</span>
             </CompoundButton>
           </div>
         }
