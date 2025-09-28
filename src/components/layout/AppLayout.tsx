@@ -1,11 +1,13 @@
 import { Outlet } from 'react-router-dom';
+import { Toaster, type ToasterProps } from 'sonner';
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
 import { AppSidebar } from '@/components/layout/app-sidebar';
 import { SiteHeader } from '@/components/layout/site-header';
 import { useTheme } from '@/components/theme/theme-provider';
-import { Toaster, type ToasterProps } from 'sonner';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 function AppLayout() {
+  const isMobile = useIsMobile();
   const { theme = 'system' } = useTheme();
 
   return (
@@ -23,7 +25,7 @@ function AppLayout() {
               closeButton
               theme={theme as ToasterProps['theme']}
               position="bottom-left"
-              className="!md:fixed !md:bottom-4 !md:left-[calc(var(--sidebar-width)+1rem)]"
+              className={isMobile ? '' : '!fixed !bottom-4 !left-[calc(var(--sidebar-width)+1rem)]'}
             />
           </SidebarInset>
         </div>
