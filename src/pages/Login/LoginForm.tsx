@@ -18,6 +18,7 @@ import { useLogin } from '@/api/services/AuthService/mutation';
 import { useUserStore } from '@/stores/useUserStore';
 import { type ILoginFormValues } from '@/forms/schema/auth';
 import { type ILoginRes } from '@/types/api';
+import { RoleEnum, RoutesEnum } from '@/constants/enums';
 
 export default function LoginForm({ className, ...props }: React.ComponentProps<'form'>) {
   const navigate = useNavigate();
@@ -54,7 +55,14 @@ export default function LoginForm({ className, ...props }: React.ComponentProps<
           role: user.role,
         });
         setToken(data.accessToken);
-        navigate('/');
+
+        // Direct navigation based on role to avoid route loops
+        const userRole = user.role?.name;
+        if (userRole === RoleEnum.BUSINESS_ADMIN || userRole === RoleEnum.PERSONAL_ADMIN) {
+          navigate(RoutesEnum.DASHBOARD, { replace: true });
+        } else {
+          navigate(RoutesEnum.EXPENSES, { replace: true });
+        }
       },
       onError: (error) => {
         setError(error.message);
